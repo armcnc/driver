@@ -62,7 +62,7 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
     return 0;
 }
 
-static void write_port(void *arg, long period)
+static void gpio_write(void *arg, long period)
 {
      int n;
 }
