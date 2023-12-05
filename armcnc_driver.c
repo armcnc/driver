@@ -206,7 +206,7 @@ int rtapi_app_main(void)
 
     port_data = malloc(MAX_PINS * sizeof(hal_bit_t *));
 
-    retval = hal_pin_bit_newf(ini_data.ESTOP_PIN[2] == "IN" ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.ESTOP_PIN[1])], component_id, ini_data.ESTOP_PIN[0]);
+    retval = hal_pin_bit_new(ini_data.ESTOP_PIN[2] == "IN" ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.ESTOP_PIN[1])], component_id, ini_data.ESTOP_PIN[0]);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: ESTOP_PIN\n");
         hal_exit(component_id);
