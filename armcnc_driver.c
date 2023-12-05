@@ -5,12 +5,7 @@
  ******************************************************************************
  */
 
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include <wiringPi.h>
-
+#include "armcnc_driver.h"
 #include "rtapi.h"
 #include "rtapi_app.h"
 #include "rtapi_math.h"
