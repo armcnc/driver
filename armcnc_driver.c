@@ -174,7 +174,7 @@ static void gpio_read(void *arg, long period)
 
 int rtapi_app_main(void)
 {
-    rtapi_print_msg(RTAPI_MSG_INFO, "armcnc_driver...\n");
+    rtapi_print_msg(RTAPI_MSG_DBG, "armcnc_driver...\n");
 
     const char* env_var = "MACHINE_PATH";
     char* env_value = getenv(env_var);
@@ -196,7 +196,7 @@ int rtapi_app_main(void)
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: wiringPiSetup\n");
         return -1;
     }else{
-        rtapi_print_msg(RTAPI_MSG_DEBUG, "wiringPiSetup...\n");
+        rtapi_print_msg(RTAPI_MSG_DBG, "wiringPiSetup...\n");
     }
 
     component_id = hal_init("armcnc_driver");
