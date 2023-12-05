@@ -64,6 +64,7 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
                     token = strtok(NULL, " ");
                     i++;
                 }
+                continue;
             }
             if (strcmp(key, "SPINDLE_ENABLE_PIN") == 0 && strcmp(val, "") != 0) {
                 char *token;
@@ -75,6 +76,7 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
                     token = strtok(NULL, " ");
                     i++;
                 }
+                continue;
             }
             if (strcmp(key, "SPINDLE_PWM_PIN") == 0 && strcmp(val, "") != 0) {
                 char *token;
@@ -86,6 +88,7 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
                     token = strtok(NULL, " ");
                     i++;
                 }
+                continue;
             }
             if (strcmp(key, "X_HOME_PIN") == 0 && strcmp(val, "") != 0) {
                 char *token;
@@ -97,6 +100,7 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
                     token = strtok(NULL, " ");
                     i++;
                 }
+                continue;
             }
             if (strcmp(key, "Y_HOME_PIN") == 0 && strcmp(val, "") != 0) {
                 char *token;
@@ -108,6 +112,7 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
                     token = strtok(NULL, " ");
                     i++;
                 }
+                continue;
             }
             if (strcmp(key, "Z_HOME_PIN") == 0 && strcmp(val, "") != 0) {
                 char *token;
@@ -119,6 +124,7 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
                     token = strtok(NULL, " ");
                     i++;
                 }
+                continue;
             }
             if (strcmp(key, "A_HOME_PIN") == 0 && strcmp(val, "") != 0) {
                 char *token;
@@ -130,6 +136,7 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
                     token = strtok(NULL, " ");
                     i++;
                 }
+                continue;
             }
             if (strcmp(key, "B_HOME_PIN") == 0 && strcmp(val, "") != 0) {
                 char *token;
@@ -141,6 +148,7 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
                     token = strtok(NULL, " ");
                     i++;
                 }
+                continue;
             }
             if (strcmp(key, "C_HOME_PIN") == 0 && strcmp(val, "") != 0) {
                 char *token;
@@ -152,6 +160,7 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
                     token = strtok(NULL, " ");
                     i++;
                 }
+                continue;
             }
         }
     }
