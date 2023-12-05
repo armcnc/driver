@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#include <wiringPi.h>
+#include "wiringPi.h"
 
 #include "rtapi.h"
 #include "rtapi_bitops.h"
