@@ -53,7 +53,7 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
 
     while (fgets(line, MAX_INI_LINE_LENGTH, file) != NULL) {
         if (line[0] == '#' || line[0] == ';' || line[0] == '\n') continue;
-        if (sscanf(line, "%[^=] = %[^\n]", key, val) == 0) {
+        if (sscanf(line, "%[^=] = %[^\n]", key, val) == 2) {
             if (strcmp(key, "ESTOP_PIN") == 0) {
                 char *token;
                 int i = 0;
@@ -66,102 +66,102 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
                 }
                 continue;
             }
-            if (strcmp(key, "SPINDLE_ENABLE_PIN") == 0 && strcmp(val, "") != 0) {
-                char *token;
-                int i = 0;
-                token = strtok(val, " ");
-                while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
-                    strncpy(result->SPINDLE_ENABLE_PIN[i], token, MAX_INI_LINE_LENGTH);
-                    result->SPINDLE_ENABLE_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
-                    token = strtok(NULL, " ");
-                    i++;
-                }
-                continue;
-            }
-            if (strcmp(key, "SPINDLE_PWM_PIN") == 0 && strcmp(val, "") != 0) {
-                char *token;
-                int i = 0;
-                token = strtok(val, " ");
-                while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
-                    strncpy(result->SPINDLE_PWM_PIN[i], token, MAX_INI_LINE_LENGTH);
-                    result->SPINDLE_PWM_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
-                    token = strtok(NULL, " ");
-                    i++;
-                }
-                continue;
-            }
-            if (strcmp(key, "X_HOME_PIN") == 0 && strcmp(val, "") != 0) {
-                char *token;
-                int i = 0;
-                token = strtok(val, " ");
-                while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
-                    strncpy(result->X_HOME_PIN[i], token, MAX_INI_LINE_LENGTH);
-                    result->X_HOME_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
-                    token = strtok(NULL, " ");
-                    i++;
-                }
-                continue;
-            }
-            if (strcmp(key, "Y_HOME_PIN") == 0 && strcmp(val, "") != 0) {
-                char *token;
-                int i = 0;
-                token = strtok(val, " ");
-                while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
-                    strncpy(result->Y_HOME_PIN[i], token, MAX_INI_LINE_LENGTH);
-                    result->Y_HOME_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
-                    token = strtok(NULL, " ");
-                    i++;
-                }
-                continue;
-            }
-            if (strcmp(key, "Z_HOME_PIN") == 0 && strcmp(val, "") != 0) {
-                char *token;
-                int i = 0;
-                token = strtok(val, " ");
-                while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
-                    strncpy(result->Z_HOME_PIN[i], token, MAX_INI_LINE_LENGTH);
-                    result->Z_HOME_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
-                    token = strtok(NULL, " ");
-                    i++;
-                }
-                continue;
-            }
-            if (strcmp(key, "A_HOME_PIN") == 0 && strcmp(val, "") != 0) {
-                char *token;
-                int i = 0;
-                token = strtok(val, " ");
-                while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
-                    strncpy(result->A_HOME_PIN[i], token, MAX_INI_LINE_LENGTH);
-                    result->A_HOME_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
-                    token = strtok(NULL, " ");
-                    i++;
-                }
-                continue;
-            }
-            if (strcmp(key, "B_HOME_PIN") == 0 && strcmp(val, "") != 0) {
-                char *token;
-                int i = 0;
-                token = strtok(val, " ");
-                while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
-                    strncpy(result->B_HOME_PIN[i], token, MAX_INI_LINE_LENGTH);
-                    result->B_HOME_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
-                    token = strtok(NULL, " ");
-                    i++;
-                }
-                continue;
-            }
-            if (strcmp(key, "C_HOME_PIN") == 0 && strcmp(val, "") != 0) {
-                char *token;
-                int i = 0;
-                token = strtok(val, " ");
-                while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
-                    strncpy(result->C_HOME_PIN[i], token, MAX_INI_LINE_LENGTH);
-                    result->C_HOME_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
-                    token = strtok(NULL, " ");
-                    i++;
-                }
-                continue;
-            }
+//            if (strcmp(key, "SPINDLE_ENABLE_PIN") == 0 && strcmp(val, "") != 0) {
+//                char *token;
+//                int i = 0;
+//                token = strtok(val, " ");
+//                while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
+//                    strncpy(result->SPINDLE_ENABLE_PIN[i], token, MAX_INI_LINE_LENGTH);
+//                    result->SPINDLE_ENABLE_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
+//                    token = strtok(NULL, " ");
+//                    i++;
+//                }
+//                continue;
+//            }
+//            if (strcmp(key, "SPINDLE_PWM_PIN") == 0 && strcmp(val, "") != 0) {
+//                char *token;
+//                int i = 0;
+//                token = strtok(val, " ");
+//                while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
+//                    strncpy(result->SPINDLE_PWM_PIN[i], token, MAX_INI_LINE_LENGTH);
+//                    result->SPINDLE_PWM_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
+//                    token = strtok(NULL, " ");
+//                    i++;
+//                }
+//                continue;
+//            }
+//            if (strcmp(key, "X_HOME_PIN") == 0 && strcmp(val, "") != 0) {
+//                char *token;
+//                int i = 0;
+//                token = strtok(val, " ");
+//                while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
+//                    strncpy(result->X_HOME_PIN[i], token, MAX_INI_LINE_LENGTH);
+//                    result->X_HOME_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
+//                    token = strtok(NULL, " ");
+//                    i++;
+//                }
+//                continue;
+//            }
+//            if (strcmp(key, "Y_HOME_PIN") == 0 && strcmp(val, "") != 0) {
+//                char *token;
+//                int i = 0;
+//                token = strtok(val, " ");
+//                while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
+//                    strncpy(result->Y_HOME_PIN[i], token, MAX_INI_LINE_LENGTH);
+//                    result->Y_HOME_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
+//                    token = strtok(NULL, " ");
+//                    i++;
+//                }
+//                continue;
+//            }
+//            if (strcmp(key, "Z_HOME_PIN") == 0 && strcmp(val, "") != 0) {
+//                char *token;
+//                int i = 0;
+//                token = strtok(val, " ");
+//                while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
+//                    strncpy(result->Z_HOME_PIN[i], token, MAX_INI_LINE_LENGTH);
+//                    result->Z_HOME_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
+//                    token = strtok(NULL, " ");
+//                    i++;
+//                }
+//                continue;
+//            }
+//            if (strcmp(key, "A_HOME_PIN") == 0 && strcmp(val, "") != 0) {
+//                char *token;
+//                int i = 0;
+//                token = strtok(val, " ");
+//                while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
+//                    strncpy(result->A_HOME_PIN[i], token, MAX_INI_LINE_LENGTH);
+//                    result->A_HOME_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
+//                    token = strtok(NULL, " ");
+//                    i++;
+//                }
+//                continue;
+//            }
+//            if (strcmp(key, "B_HOME_PIN") == 0 && strcmp(val, "") != 0) {
+//                char *token;
+//                int i = 0;
+//                token = strtok(val, " ");
+//                while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
+//                    strncpy(result->B_HOME_PIN[i], token, MAX_INI_LINE_LENGTH);
+//                    result->B_HOME_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
+//                    token = strtok(NULL, " ");
+//                    i++;
+//                }
+//                continue;
+//            }
+//            if (strcmp(key, "C_HOME_PIN") == 0 && strcmp(val, "") != 0) {
+//                char *token;
+//                int i = 0;
+//                token = strtok(val, " ");
+//                while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
+//                    strncpy(result->C_HOME_PIN[i], token, MAX_INI_LINE_LENGTH);
+//                    result->C_HOME_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
+//                    token = strtok(NULL, " ");
+//                    i++;
+//                }
+//                continue;
+//            }
         }
     }
 
