@@ -231,7 +231,7 @@ int rtapi_app_main(void)
     retval = hal_pin_bit_newf(strcmp(ini_data.SPINDLE_ENABLE_PIN[2], "IN") == 0 ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.SPINDLE_ENABLE_PIN[1])], component_id, ini_data.SPINDLE_ENABLE_PIN[0]);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "%s\n", env_value);
-        rtapi_print_msg(RTAPI_MSG_ERR, "%d\n", sscanf("ESTOP_PIN = gpio.estop 2 IN", "%[^=] = %[^\n]"));
+        rtapi_print_msg(RTAPI_MSG_ERR, "%d\n", sscanf("ESTOP_PIN = gpio.estop 2 IN\n", "%[^=] = %[^\n]"));
         rtapi_print_msg(RTAPI_MSG_ERR, "%s\n", ini_data.ESTOP_PIN[0]);
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: SPINDLE_ENABLE_PIN\n");
         hal_exit(component_id);
