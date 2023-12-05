@@ -16,6 +16,7 @@
 #include "rtapi_app.h"
 #include "hal.h"
 
+#define RTAPI_BIT(nr)           (1UL << (nr))
 #define MAX_INI_LINE_LENGTH 255
 #define MAX_INI_VALUE_LENGTH 10
 
