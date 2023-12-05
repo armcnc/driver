@@ -38,6 +38,12 @@ MODULE_DESCRIPTION("Driver for ARMCNC");
 MODULE_LICENSE("GPL");
 #endif
 
+if (wiringPiSetup() == -1){
+    rtapi_print_msg(RTAPI_MSG_ERR, "[error]: wiringPiSetup\n");
+}else{
+    rtapi_print_msg(RTAPI_MSG_DBG, "wiringPiSetup...\n");
+}
+
 int read_ini_file(const char *filename, INI_RESULT *result) {
 
     FILE *file = fopen(filename, "r");
@@ -190,13 +196,6 @@ int rtapi_app_main(void)
     if(!read_ini_file(filePath, &ini_data)){
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: read_ini_file\n");
         return -1;
-    }
-
-    if (wiringPiSetup() == -1){
-        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: wiringPiSetup\n");
-        return -1;
-    }else{
-        rtapi_print_msg(RTAPI_MSG_DBG, "wiringPiSetup...\n");
     }
 
     component_id = hal_init("armcnc_driver");
