@@ -1,6 +1,6 @@
 /**
  ******************************************************************************
- * @file    armcncio.c
+ * @file    armcnc_driver.c
  * @author  ARMCNC site:www.armcnc.net github:armcnc.github.io
  ******************************************************************************
  */
@@ -70,12 +70,11 @@ static void write_port(void *arg, long period)
 static void gpio_read(void *arg, long period)
 {
      int n;
-
 }
 
 int rtapi_app_main(void)
 {
-    rtapi_print_msg(RTAPI_MSG_INFO, "armcncio...\n");
+    rtapi_print_msg(RTAPI_MSG_INFO, "armcnc_driver...\n");
 
     const char* env_var = "MACHINE_PATH";
     char* env_value = getenv(env_var);
@@ -98,7 +97,7 @@ int rtapi_app_main(void)
         return -1;
     }
 
-    component_id = hal_init("armcncio");
+    component_id = hal_init("armcnc_driver");
     if (component_id < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: component_id\n");
         return -1;
@@ -107,12 +106,14 @@ int rtapi_app_main(void)
     retval = hal_export_funct("gpio.write", gpio_write, 0, 0, 0, component_id);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: gpio.write\n");
+        hal_exit(component_id);
         return -1;
     }
 
     retval = hal_export_funct("gpio.read", gpio_read, 0, 0, 0, component_id);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: gpio.read\n");
+        hal_exit(component_id);
         return -1;
     }
 

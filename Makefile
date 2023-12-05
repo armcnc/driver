@@ -25,7 +25,7 @@ BINS	=	$(SRC:.c=)
 all:
 	$(BINS)
 
-armcncio:	armcncio.o
+armcncio:	armcnc_driver.o
 	$Q echo [link]
 	$Q $(CC) -o $@ armcncio.o $(LDFLAGS) $(LDLIBS)
 
