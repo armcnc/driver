@@ -31,7 +31,7 @@ typedef struct {
     char C_HOME_PIN[MAX_INI_VALUE_LENGTH][MAX_INI_LINE_LENGTH];
 } INI_RESULT;
 
-static INI_RESULT ini_data;
+static INI_RESULT ini_data = {0};
 
 #ifdef RTAPI
 MODULE_AUTHOR("ARMCNC");
@@ -220,7 +220,7 @@ int rtapi_app_main(void)
         return -1;
     }
 
-    retval = hal_pin_bit_newf(ini_data.ESTOP_PIN[2] == "IN" ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.ESTOP_PIN[1])], component_id, ini_data.ESTOP_PIN[0]);
+    retval = hal_pin_bit_newf(strcmp(ini_data.ESTOP_PIN[2], "IN") ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.ESTOP_PIN[1])], component_id, ini_data.ESTOP_PIN[0]);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: ESTOP_PIN\n");
         hal_exit(component_id);
@@ -228,7 +228,7 @@ int rtapi_app_main(void)
     }
     //pinMode(atoi(ini_data.ESTOP_PIN[1]), ini_data.ESTOP_PIN[2] == "IN" ? INPUT : OUTPUT);
 
-    retval = hal_pin_bit_newf(ini_data.SPINDLE_ENABLE_PIN[2] == "IN" ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.SPINDLE_ENABLE_PIN[1])], component_id, ini_data.SPINDLE_ENABLE_PIN[0]);
+    retval = hal_pin_bit_newf(strcmp(ini_data.SPINDLE_ENABLE_PIN[2], "IN") ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.SPINDLE_ENABLE_PIN[1])], component_id, ini_data.SPINDLE_ENABLE_PIN[0]);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: SPINDLE_ENABLE_PIN\n");
         hal_exit(component_id);
@@ -236,7 +236,7 @@ int rtapi_app_main(void)
     }
     //pinMode(atoi(ini_data.SPINDLE_ENABLE_PIN[1]), ini_data.SPINDLE_ENABLE_PIN[2] == "IN" ? INPUT : OUTPUT);
 
-    retval = hal_pin_bit_newf(ini_data.SPINDLE_PWM_PIN[2] == "IN" ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.SPINDLE_PWM_PIN[1])], component_id, ini_data.SPINDLE_PWM_PIN[0]);
+    retval = hal_pin_bit_newf(strcmp(ini_data.SPINDLE_PWM_PIN[2], "IN") ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.SPINDLE_PWM_PIN[1])], component_id, ini_data.SPINDLE_PWM_PIN[0]);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: SPINDLE_PWM_PIN\n");
         hal_exit(component_id);
@@ -244,7 +244,7 @@ int rtapi_app_main(void)
     }
     //pinMode(atoi(ini_data.SPINDLE_PWM_PIN[1]), ini_data.SPINDLE_PWM_PIN[2] == "IN" ? INPUT : OUTPUT);
 
-    retval = hal_pin_bit_newf(ini_data.X_HOME_PIN[2] == "IN" ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.X_HOME_PIN[1])], component_id, ini_data.X_HOME_PIN[0]);
+    retval = hal_pin_bit_newf(strcmp(ini_data.X_HOME_PIN[2], "IN") ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.X_HOME_PIN[1])], component_id, ini_data.X_HOME_PIN[0]);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: X_HOME_PIN\n");
         hal_exit(component_id);
@@ -252,7 +252,7 @@ int rtapi_app_main(void)
     }
     //pinMode(atoi(ini_data.X_HOME_PIN[1]), ini_data.X_HOME_PIN[2] == "IN" ? INPUT : OUTPUT);
 
-    retval = hal_pin_bit_newf(ini_data.Y_HOME_PIN[2] == "IN" ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.Y_HOME_PIN[1])], component_id, ini_data.Y_HOME_PIN[0]);
+    retval = hal_pin_bit_newf(strcmp(ini_data.Y_HOME_PIN[2], "IN") ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.Y_HOME_PIN[1])], component_id, ini_data.Y_HOME_PIN[0]);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: Y_HOME_PIN\n");
         hal_exit(component_id);
@@ -260,7 +260,7 @@ int rtapi_app_main(void)
     }
     //pinMode(atoi(ini_data.Y_HOME_PIN[1]), ini_data.Y_HOME_PIN[2] == "IN" ? INPUT : OUTPUT);
 
-    retval = hal_pin_bit_newf(ini_data.Z_HOME_PIN[2] == "IN" ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.Z_HOME_PIN[1])], component_id, ini_data.Z_HOME_PIN[0]);
+    retval = hal_pin_bit_newf(strcmp(ini_data.Z_HOME_PIN[2], "IN") ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.Z_HOME_PIN[1])], component_id, ini_data.Z_HOME_PIN[0]);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: Z_HOME_PIN\n");
         hal_exit(component_id);
@@ -268,7 +268,7 @@ int rtapi_app_main(void)
     }
     //pinMode(atoi(ini_data.Z_HOME_PIN[1]), ini_data.Z_HOME_PIN[2] == "IN" ? INPUT : OUTPUT);
 
-    retval = hal_pin_bit_newf(ini_data.A_HOME_PIN[2] == "IN" ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.A_HOME_PIN[1])], component_id, ini_data.A_HOME_PIN[0]);
+    retval = hal_pin_bit_newf(strcmp(ini_data.A_HOME_PIN[2], "IN") ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.A_HOME_PIN[1])], component_id, ini_data.A_HOME_PIN[0]);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: A_HOME_PIN\n");
         hal_exit(component_id);
@@ -276,7 +276,7 @@ int rtapi_app_main(void)
     }
     //pinMode(atoi(ini_data.A_HOME_PIN[1]), ini_data.A_HOME_PIN[2] == "IN" ? INPUT : OUTPUT);
 
-    retval = hal_pin_bit_newf(ini_data.B_HOME_PIN[2] == "IN" ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.B_HOME_PIN[1])], component_id, ini_data.B_HOME_PIN[0]);
+    retval = hal_pin_bit_newf(strcmp(ini_data.B_HOME_PIN[2], "IN") ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.B_HOME_PIN[1])], component_id, ini_data.B_HOME_PIN[0]);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: B_HOME_PIN\n");
         hal_exit(component_id);
@@ -284,7 +284,7 @@ int rtapi_app_main(void)
     }
     //pinMode(atoi(ini_data.B_HOME_PIN[1]), ini_data.B_HOME_PIN[2] == "IN" ? INPUT : OUTPUT);
 
-    retval = hal_pin_bit_newf(ini_data.C_HOME_PIN[2] == "IN" ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.C_HOME_PIN[1])], component_id, ini_data.C_HOME_PIN[0]);
+    retval = hal_pin_bit_newf(strcmp(ini_data.C_HOME_PIN[2], "IN") ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.C_HOME_PIN[1])], component_id, ini_data.C_HOME_PIN[0]);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: C_HOME_PIN\n");
         hal_exit(component_id);
