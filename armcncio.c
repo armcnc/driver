@@ -62,20 +62,27 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
     return 0;
 }
 
+static void write_port(void *arg, long period)
+{
+     int n;
+}
+
+static void gpio_read(void *arg, long period)
+{
+     int n;
+
+}
+
 int rtapi_app_main(void)
 {
     rtapi_print_msg(RTAPI_MSG_INFO, "armcncio...\n");
 
     const char* env_var = "MACHINE_PATH";
     char* env_value = getenv(env_var);
+    int retval = 0;
 
     if (!env_value || strcmp(env_value, "") == 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: MACHINE_PATH\n");
-        return -1;
-    }
-
-    if (wiringPiSetup() == -1){
-        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: wiringPiSetup\n");
         return -1;
     }
 
@@ -86,13 +93,31 @@ int rtapi_app_main(void)
         return -1;
     }
 
+    if (wiringPiSetup() == -1){
+        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: wiringPiSetup\n");
+        return -1;
+    }
+
     component_id = hal_init("armcncio");
     if (component_id < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: component_id\n");
         return -1;
     }
 
+    retval = hal_export_funct("gpio.write", gpio_write, 0, 0, 0, component_id);
+    if (retval < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: gpio.write\n");
+        return -1;
+    }
 
+    retval = hal_export_funct("gpio.read", gpio_read, 0, 0, 0, component_id);
+    if (retval < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: gpio.read\n");
+        return -1;
+    }
+
+    hal_ready(component_id);
+    return 0;
 }
 
 void rtapi_app_exit(void)
