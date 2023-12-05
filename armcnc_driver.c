@@ -31,7 +31,7 @@ typedef struct {
     char C_HOME_PIN[MAX_INI_VALUE_LENGTH][MAX_INI_LINE_LENGTH];
 } INI_RESULT;
 
-static INI_RESULT ini_data = {0};
+static INI_RESULT ini_data;
 
 #ifdef RTAPI
 MODULE_AUTHOR("ARMCNC");
@@ -207,11 +207,16 @@ int rtapi_app_main(void)
 //        return -1;
 //    }
 
-    port_data = hal_malloc(MAX_PINS * sizeof(void *));
-
     component_id = hal_init("armcnc_driver");
     if (component_id < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: component_id\n");
+        return -1;
+    }
+
+    port_data = hal_malloc(MAX_PINS * sizeof(hal_bit_t *));
+    if (port_data == 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: port_data\n");
+        hal_exit(component_id);
         return -1;
     }
 
