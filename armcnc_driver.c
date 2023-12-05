@@ -196,7 +196,7 @@ int rtapi_app_main(void)
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: wiringPiSetup\n");
         return -1;
     }else{
-        rtapi_print_msg(RTAPI_MSG_INFO, "wiringPiSetup...\n");
+        rtapi_print_msg(RTAPI_MSG_DEBUG, "wiringPiSetup...\n");
     }
 
     component_id = hal_init("armcnc_driver");
