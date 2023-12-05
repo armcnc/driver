@@ -17,8 +17,7 @@ cd WiringPi
 ```shell
 git clone git@github.com:armcnc/driver.git
 cd driver
-make really-all
-cp armcncio /usr/lib/linuxcnc/modules/
+sudo halcompile --install armcnc_driver.c | grep Linking
 ```
 
 ## 📖 Use
@@ -26,7 +25,7 @@ cp armcncio /usr/lib/linuxcnc/modules/
 ```shell
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
-loadusr -W armcncio
+loadusr -W armcnc_driver
 ...
 ```
 
