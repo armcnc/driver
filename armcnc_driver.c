@@ -20,7 +20,7 @@
 #define MAX_INI_VALUE_LENGTH 10
 
 static int component_id;
-static int
+hal_bit_t **port_data;
 
 typedef struct {
     char ESTOP_PIN[MAX_INI_VALUE_LENGTH][MAX_INI_LINE_LENGTH];
@@ -70,6 +70,7 @@ static void write_port(void *arg, long period)
 static void gpio_read(void *arg, long period)
 {
      int n;
+     port_data[ini_data->ESTOP_PIN[0]] = 1
 }
 
 int rtapi_app_main(void)
