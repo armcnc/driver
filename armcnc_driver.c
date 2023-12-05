@@ -5,15 +5,9 @@
  ******************************************************************************
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <errno.h>
+#include <stdint.h>
 #include <string.h>
+#include <stdlib.h>
 #include <wiringPi.h>
 
 #include "rtapi.h"
@@ -21,7 +15,6 @@
 #include "rtapi_app.h"
 #include "hal.h"
 
-#define RTAPI_BIT(nr)           (1UL << (nr))
 #define MAX_INI_LINE_LENGTH 255
 #define MAX_INI_VALUE_LENGTH 10
 
@@ -34,9 +27,11 @@ typedef struct {
 
 static INI_RESULT ini_data = {0};
 
+#ifdef RTAPI
 MODULE_AUTHOR("ARMCNC");
 MODULE_DESCRIPTION("Driver for ARMCNC");
 MODULE_LICENSE("GPL");
+#endif
 
 int read_ini_file(const char *filename, INI_RESULT *result) {
 
@@ -80,7 +75,6 @@ static void gpio_write(void *arg, long period)
 static void gpio_read(void *arg, long period)
 {
      int n;
-     port_data[ini_data.ESTOP_PIN[0]] = 1;
 }
 
 int rtapi_app_main(void)
