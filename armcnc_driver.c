@@ -80,7 +80,7 @@ static void gpio_write(void *arg, long period)
 static void gpio_read(void *arg, long period)
 {
      int n;
-     port_data[ini_data.ESTOP_PIN[0]] = 1
+     port_data[ini_data.ESTOP_PIN[0]] = 1;
 }
 
 int rtapi_app_main(void)
