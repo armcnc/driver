@@ -16,7 +16,7 @@ CFLAGS	= $(DEBUG) -Wall $(INCLUDE) -Winline -pipe $(EXTRA_CFLAGS)
 LDFLAGS	= -L/usr/local/lib
 LDLIBS    = -lwiringPi -lwiringPiDev -lpthread -lm -lcrypt -lrt
 
-SRC	=	armcncio.c
+SRC	=	armcnc_driver.c
 
 OBJ	=	$(SRC:.c=.o)
 
@@ -25,9 +25,9 @@ BINS	=	$(SRC:.c=)
 all:
 	$(BINS)
 
-armcncio:	armcnc_driver.o
+armcnc_driver:	armcnc_driver.o
 	$Q echo [link]
-	$Q $(CC) -o $@ armcncio.o $(LDFLAGS) $(LDLIBS)
+	$Q $(CC) -o $@ armcnc_driver.o $(LDFLAGS) $(LDLIBS)
 
 .c.o:
 	$Q echo [CC] $<
