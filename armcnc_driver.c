@@ -172,6 +172,17 @@ static void gpio_read(void *arg, long period)
      }
 }
 
+int check_pi(void)
+{
+    if (wiringPiSetup() == -1){
+        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: wiringPiSetup\n");
+        return -1;
+    }else{
+        rtapi_print_msg(RTAPI_MSG_DBG, "wiringPiSetup...\n");
+    }
+    return 0;
+}
+
 int rtapi_app_main(void)
 {
     rtapi_print_msg(RTAPI_MSG_DBG, "armcnc_driver...\n");
@@ -192,11 +203,8 @@ int rtapi_app_main(void)
         return -1;
     }
 
-    if (wiringPiSetup() == -1){
-        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: wiringPiSetup\n");
-        return -1;
-    }else{
-        rtapi_print_msg(RTAPI_MSG_DBG, "wiringPiSetup...\n");
+    if (check_pi() != 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: check_pi\n");
     }
 
     component_id = hal_init("armcnc_driver");

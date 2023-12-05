@@ -14,7 +14,7 @@ INCLUDE	= -I/usr/local/include -I/usr/include/linuxcnc
 CFLAGS	= $(DEBUG) -Wall $(INCLUDE) -Winline -pipe $(EXTRA_CFLAGS)
 
 LDFLAGS	= -L/usr/local/lib
-LDLIBS    = -lwiringPi -lwiringPiDev -lpthread -lm -lcrypt -lrt -llinuxcnchal
+LDLIBS    = -lwiringPi -lwiringPiDev -lpthread -lm -lcrypt -lrt
 
 SRC	=	armcnc_driver.c
 
