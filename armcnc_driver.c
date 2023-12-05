@@ -59,7 +59,6 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
                 int i = 0;
                 token = strtok(val, " ");
                 while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
-                    printf("-->%c\n", token);
                     strncpy(result->ESTOP_PIN[i], token, MAX_INI_LINE_LENGTH);
                     result->ESTOP_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
                     token = strtok(NULL, " ");
@@ -72,7 +71,6 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
                 int i = 0;
                 token = strtok(val, " ");
                 while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
-                    printf("-->%c\n", token);
                     strncpy(result->SPINDLE_ENABLE_PIN[i], token, MAX_INI_LINE_LENGTH);
                     result->SPINDLE_ENABLE_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
                     token = strtok(NULL, " ");
