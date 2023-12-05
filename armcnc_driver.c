@@ -5,11 +5,12 @@
  ******************************************************************************
  */
 
+#include "armcnc_driver.h"
+#include "wiringPi.h"
 #include "rtapi.h"
 #include "rtapi_app.h"
 #include "rtapi_math.h"
 #include "hal.h"
-#include "armcnc_driver.h"
 
 #define MAX_PINS 40
 #define MAX_INI_LINE_LENGTH 255
