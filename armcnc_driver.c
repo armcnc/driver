@@ -54,7 +54,7 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
     while (fgets(line, MAX_INI_LINE_LENGTH, file) != NULL) {
         if (line[0] == '#' || line[0] == ';' || line[0] == '\n') continue;
         if (sscanf(line, "%[^=] = %[^\n]", key, val) == 2) {
-            if (strcmp(key, "ESTOP_PIN") == 0 && strcmp(val, "") != 0) {
+            if (strcmp(key, "ESTOP_PIN") == 0) {
                 char *token;
                 int i = 0;
                 token = strtok(val, " ");
