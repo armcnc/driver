@@ -59,8 +59,8 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
                 int i = 0;
                 token = strtok(val, " ");
                 while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
-                    strncpy(result->ESTOP_PIN[i], token, MAX_INI_LINE_LENGTH);
-                    result->ESTOP_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
+                    strncpy(ini_data->ESTOP_PIN[i], token, MAX_INI_LINE_LENGTH);
+                    ini_data->ESTOP_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
                     token = strtok(NULL, " ");
                     i++;
                 }
@@ -235,7 +235,7 @@ int rtapi_app_main(void)
         int result = sscanf("ESTOP_PIN = gpio.estop 2 IN", "%[^=] = %[^\n]", key, val);
         rtapi_print_msg(RTAPI_MSG_ERR, "%d\n", result);
         rtapi_print_msg(RTAPI_MSG_ERR, "Key: %s, Value: %s\n", key, val);
-        rtapi_print_msg(RTAPI_MSG_ERR, "%s\n", ini_data->ESTOP_PIN[0]);
+        rtapi_print_msg(RTAPI_MSG_ERR, "%s\n", ini_data.ESTOP_PIN[0]);
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: SPINDLE_ENABLE_PIN\n");
         hal_exit(component_id);
         return -1;
