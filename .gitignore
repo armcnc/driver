@@ -2,4 +2,5 @@
 .DS*
 .git
 .vscode
+.o
 armcncio
