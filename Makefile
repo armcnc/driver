@@ -10,7 +10,7 @@ endif
 
 DEBUG	= -O3
 CC	?= gcc
-INCLUDE	= -I/usr/local/include
+INCLUDE	= -I/usr/local/include -I/usr/include/linuxcnc
 CFLAGS	= $(DEBUG) -Wall $(INCLUDE) -Winline -pipe $(EXTRA_CFLAGS)
 
 LDFLAGS	= -L/usr/local/lib
