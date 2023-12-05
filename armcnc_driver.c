@@ -28,6 +28,10 @@ typedef struct {
 
 static INI_RESULT ini_data = {0};
 
+MODULE_AUTHOR("ARMCNC");
+MODULE_DESCRIPTION("Driver for ARMCNC");
+MODULE_LICENSE("GPL");
+
 int read_ini_file(const char *filename, INI_RESULT *result) {
 
     FILE *file = fopen(filename, "r");
