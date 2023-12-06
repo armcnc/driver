@@ -72,6 +72,7 @@
 #include <asm/ioctl.h>
 
 #include "softPwm.h"
+// #include "softTone.h"
 
 #include "wiringPi.h"
 #include "../version.h"
