@@ -252,7 +252,7 @@ int rtapi_app_main(void)
     }
     //pinMode(atoi(ini_data.SPINDLE_ENABLE_PIN[1]), ini_data.SPINDLE_ENABLE_PIN[2] == "IN" ? INPUT : OUTPUT);
 
-    retval = hal_pin_bit_newf(strcmp(ini_data.SPINDLE_PWM_PIN[2], "IN") == 0 ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.SPINDLE_PWM_PIN[1])], component_id, ini_data.SPINDLE_PWM_PIN[0]);
+    retval = hal_pin_float_newf(strcmp(ini_data.SPINDLE_PWM_PIN[2], "IN") == 0 ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.SPINDLE_PWM_PIN[1])], component_id, ini_data.SPINDLE_PWM_PIN[0]);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: SPINDLE_PWM_PIN\n");
         hal_exit(component_id);
