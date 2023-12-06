@@ -61,7 +61,7 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
         if (line[0] == '#' || line[0] == ';' || line[0] == '\n') continue;
         if (sscanf(line, "%[^=] = %[^\n]", key, val) == 2) {
             rtapi_print_msg(RTAPI_MSG_ERR, "->%s %s\n", key, val);
-            if (strcmp(key, "ESTOP_PIN") == 0) {
+            if (strcmp(key, "ESTOP_PIN ") == 0) {
                 rtapi_print_msg(RTAPI_MSG_ERR, "-->%s %s\n", key, val);
                 char *token;
                 int i = 0;
