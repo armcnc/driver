@@ -23,7 +23,6 @@
 
 static int component_id;
 static int pins = 40;
-static int mem_fd;
 hal_bit_t **port_data;
 hal_float_t **port_data_float;
 
@@ -197,8 +196,8 @@ static void gpio_write(void *arg, long period)
 static void gpio_read(void *arg, long period)
 {
      for (int n = 0; n < pins; n++) {
-        *port_data[n] = 1;
         rtapi_print_msg(RTAPI_MSG_ERR, "gpio_read %d\n", n);
+        *port_data[n] = 1;
      }
 }
 
@@ -230,18 +229,6 @@ int rtapi_app_main(void)
     component_id = hal_init("armcnc_driver");
     if (component_id < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: component_id\n");
-        return -1;
-    }
-
-    if (system("sudo chmod 777 /dev/mem") != 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: /dev/mem\n");
-        hal_exit(component_id);
-        return -1;
-    }
-
-    if ((mem_fd = open("/dev/mem", O_RDWR|O_SYNC)) < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: /dev/mem\n");
-        hal_exit(component_id);
         return -1;
     }
 
