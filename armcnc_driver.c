@@ -22,7 +22,9 @@
 #define RTAPI_BIT(nr) (1UL << (nr))
 
 static int component_id;
-static int pins = 40; 
+static int pins = 40;
+static void gpio_write(void *arg, long period);
+static void gpio_read(void *arg, long period);
 hal_bit_t **port_data;
 hal_float_t **port_data_float;
 
@@ -45,14 +47,6 @@ MODULE_AUTHOR("ARMCNC");
 MODULE_DESCRIPTION("Driver for ARMCNC");
 MODULE_LICENSE("GPL");
 #endif
-
-static char *dir = "0";
-RTAPI_MP_STRING(dir, "port direction, 1=output");
-static unsigned dir_map;
-
-static char *exclude = "0";
-RTAPI_MP_STRING(exclude, "port excusion, 1=excluded");
-static unsigned exc_map;
 
 void read_ini_trim(char *str) {
     char *end;
@@ -205,7 +199,6 @@ static void gpio_read(void *arg, long period)
 {
      int n;
      for (n = 0; n < pins; n++) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "->%d\n", n);
         *port_data[n] = 1;
      }
 }
