@@ -218,7 +218,7 @@ int rtapi_app_main(void)
 //        return -1;
 //    }
 
-    rtapi_print_msg(RTAPI_MSG_DBG, "%s\n", ini_data.ESTOP_PIN[0]);
+    rtapi_print_msg(RTAPI_MSG_ERR, "%s\n", ini_data.ESTOP_PIN[0]);
 
     component_id = hal_init("armcnc_driver");
     if (component_id < 0) {
@@ -233,7 +233,7 @@ int rtapi_app_main(void)
         return -1;
     }
 
-    rtapi_print_msg(RTAPI_MSG_DBG, "%s\n", ini_data.ESTOP_PIN[0]);
+    rtapi_print_msg(RTAPI_MSG_ERR, "%s\n", ini_data.ESTOP_PIN[0]);
 
 //    retval = hal_pin_bit_newf(strcmp(ini_data.ESTOP_PIN[2], "IN") == 0 ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.ESTOP_PIN[1])], component_id, ini_data.ESTOP_PIN[0]);
 //    if (retval < 0) {
