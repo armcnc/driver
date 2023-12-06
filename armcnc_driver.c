@@ -9,7 +9,6 @@
 #include "rtapi.h"
 #include "rtapi_app.h"
 #include "rtapi_math.h"
-#include "rtapi_bitops.h"
 #include "hal.h"
 
 #define MAX_PINS 40
