@@ -206,7 +206,7 @@ static void gpio_read(void *arg, long period)
      int n;
      for (n = 0; n < pins; n++) {
         rtapi_print_msg(RTAPI_MSG_ERR, "->%d\n", n);
-        *(port_data[n]) = 1;
+        *port_data[n] = 1;
      }
 }
 
