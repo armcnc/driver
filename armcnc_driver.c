@@ -18,6 +18,7 @@
 static int component_id;
 static char *component_name = "armcnc_driver";
 hal_bit_t **port_data;
+hal_float_t **port_data_float;
 
 typedef struct {
     char ESTOP_PIN[MAX_INI_VALUE_LENGTH][MAX_INI_LINE_LENGTH];
@@ -232,6 +233,13 @@ int rtapi_app_main(void)
         return -1;
     }
 
+    port_data_float = hal_malloc(MAX_PINS * sizeof(hal_float_t *));
+    if (port_data_float == 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: port_data\n");
+        hal_exit(component_id);
+        return -1;
+    }
+
     rtapi_print_msg(RTAPI_MSG_ERR, "%s\n", ini_data.ESTOP_PIN[0]);
 
     retval = hal_pin_bit_newf(strcmp(ini_data.ESTOP_PIN[2], "IN") == 0 ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.ESTOP_PIN[1])], component_id, ini_data.ESTOP_PIN[0]);
@@ -252,7 +260,7 @@ int rtapi_app_main(void)
     }
     //pinMode(atoi(ini_data.SPINDLE_ENABLE_PIN[1]), ini_data.SPINDLE_ENABLE_PIN[2] == "IN" ? INPUT : OUTPUT);
 
-    retval = hal_pin_float_newf(strcmp(ini_data.SPINDLE_PWM_PIN[2], "IN") == 0 ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.SPINDLE_PWM_PIN[1])], component_id, ini_data.SPINDLE_PWM_PIN[0]);
+    retval = hal_pin_float_newf(strcmp(ini_data.SPINDLE_PWM_PIN[2], "IN") == 0 ? HAL_IN : HAL_OUT, &port_data_float[atoi(ini_data.SPINDLE_PWM_PIN[1])], component_id, ini_data.SPINDLE_PWM_PIN[0]);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: SPINDLE_PWM_PIN\n");
         hal_exit(component_id);
