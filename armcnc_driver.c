@@ -6,6 +6,10 @@
  */
 
 #include "armcnc_driver.h"
+#include "./lib/wiringPi/piHiPri_c.h"
+#include "./lib/wiringPi/wiringPi.h"
+#include "./lib/wiringPi/wiringPi_c.h"
+
 #include "rtapi.h"
 #include "rtapi_app.h"
 #include "rtapi_math.h"
