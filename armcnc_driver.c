@@ -233,6 +233,12 @@ int rtapi_app_main(void)
         return -1;
     }
 
+    if (system("sudo chmod 777 /dev/mem") != 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: /dev/mem\n");
+        hal_exit(component_id);
+        return -1;
+    }
+
     port_data = hal_malloc(ARMCNC_MAX_PINS * sizeof(void *));
     if (port_data == 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: port_data\n");
