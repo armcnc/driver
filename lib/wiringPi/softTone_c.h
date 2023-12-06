@@ -32,12 +32,12 @@
 #include "wiringPi.h"
 #include "softTone.h"
 
-#define	MAX_PINS	64
+#define	TONE_TONE_MAX_PINS	64
 
 #define	PULSE_TIME	100
 
-static int freqs         [MAX_PINS] ;
-static pthread_t threads [MAX_PINS] ;
+static int freqs         [TONE_MAX_PINS] ;
+static pthread_t threads [TONE_MAX_PINS] ;
 
 static int newPin = -1 ;
 
