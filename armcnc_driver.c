@@ -180,9 +180,6 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
     return 0;
 }
 
-static void gpio_write(void *arg, long period);
-static void gpio_read(void *arg, long period);
-
 static void gpio_write(void *arg, long period)
 {
      int n;
@@ -198,7 +195,7 @@ static void gpio_read(void *arg, long period)
 
 int rtapi_app_main(void)
 {
-    rtapi_print_msg(RTAPI_MSG_INFO, "armcnc_driver...\n");
+    rtapi_print_msg(RTAPI_MSG_DBG, "armcnc_driver...\n");
 
     const char* env_var = "MACHINE_PATH";
     char* env_value = getenv(env_var);
@@ -233,6 +230,8 @@ int rtapi_app_main(void)
         hal_exit(component_id);
         return -1;
     }
+
+    rtapi_print_msg(RTAPI_MSG_DBG, "%s\n", ini_data.ESTOP_PIN[0]);
 
 //    retval = hal_pin_bit_newf(strcmp(ini_data.ESTOP_PIN[2], "IN") == 0 ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.ESTOP_PIN[1])], component_id, ini_data.ESTOP_PIN[0]);
 //    if (retval < 0) {
