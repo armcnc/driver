@@ -5,12 +5,7 @@
  ******************************************************************************
  */
 
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include <wiringPi.h>
-
+#include "armcnc_driver.h"
 #include "rtapi.h"
 #include "rtapi_app.h"
 #include "rtapi_math.h"
@@ -184,9 +179,6 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
     fclose(file);
     return 0;
 }
-
-static void gpio_write(void *arg, long period);
-static void gpio_read(void *arg, long period);
 
 static void gpio_write(void *arg, long period)
 {
