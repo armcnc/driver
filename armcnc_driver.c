@@ -16,6 +16,7 @@
 #define MAX_INI_VALUE_LENGTH 10
 
 static int component_id;
+static char component_name = "armcnc_driver";
 hal_bit_t **port_data;
 
 typedef struct {
@@ -218,7 +219,7 @@ int rtapi_app_main(void)
 //        return -1;
 //    }
 
-    component_id = hal_init("armcnc_driver");
+    component_id = hal_init(component_name);
     if (component_id < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: component_id\n");
         return -1;
