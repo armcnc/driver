@@ -202,7 +202,7 @@ int rtapi_app_main(void)
 
     char filePath[1024];
     snprintf(filePath, sizeof(filePath), "/opt/armcnc/configs/%s/machine.user", env_value);
-    if(read_ini_file(filePath, &ini_data) != 0){
+    if(read_ini_file(&filePath, &ini_data) != 0){
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: read_ini_file\n");
         return -1;
     }
