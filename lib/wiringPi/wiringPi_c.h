@@ -2232,7 +2232,7 @@ void pinMode (int pin, int mode)
       return ;
 
     softPwmStop  (origPin) ;
-    softToneStop (origPin) ;
+    // softToneStop (origPin) ;
 
     // fSel    = gpioToGPFSEL [pin] ;
     // shift   = gpioToShift  [pin] ;
@@ -2244,7 +2244,7 @@ void pinMode (int pin, int mode)
     else if (mode == SOFT_PWM_OUTPUT)
       softPwmCreate (origPin, 0, 100) ;
     else if (mode == SOFT_TONE_OUTPUT)
-      softToneCreate (origPin) ;
+      // softToneCreate (origPin) ;
     else if (mode == PWM_TONE_OUTPUT)
     {
       pinMode (origPin, PWM_OUTPUT) ;	// Call myself to enable PWM mode
