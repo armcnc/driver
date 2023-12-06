@@ -23,6 +23,7 @@
 
 static int component_id;
 static int pins = 40;
+static int mem_fd;
 hal_bit_t **port_data;
 hal_float_t **port_data_float;
 
@@ -233,6 +234,12 @@ int rtapi_app_main(void)
     }
 
     if (system("sudo chmod 777 /dev/mem") != 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: /dev/mem\n");
+        hal_exit(component_id);
+        return -1;
+    }
+
+    if ((mem_fd = open("/dev/mem", O_RDWR|O_SYNC)) < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: /dev/mem\n");
         hal_exit(component_id);
         return -1;
