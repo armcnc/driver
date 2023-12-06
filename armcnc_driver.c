@@ -60,7 +60,6 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
     while (fgets(line, MAX_INI_LINE_LENGTH, file) != NULL) {
         if (line[0] == '#' || line[0] == ';' || line[0] == '\n') continue;
         if (sscanf(line, "%[^=] = %[^\n]", key, val) == 2) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "->%s %s\n", key, val);
             for (int i = 0; key[i] != '\0'; i++) {
                 rtapi_print_msg(RTAPI_MSG_INFO, "key[%d] = %d\n", i, key[i]);
             }
