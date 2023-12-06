@@ -15,6 +15,8 @@
 #include "rtapi.h"
 #include "rtapi_app.h"
 #include "rtapi_math.h"
+#include "rtapi_ctype.h"
+#include "rtapi_io.h"
 #include "hal.h"
 
 #define MAX_INI_LINE_LENGTH 255
