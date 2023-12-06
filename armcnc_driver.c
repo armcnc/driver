@@ -11,6 +11,8 @@
 #include "./lib/wiringPi/wiringPi_c.h"
 #include "./lib/wiringPi/softPwm.h"
 #include "./lib/wiringPi/softPwm_c.h"
+#include "./lib/wiringPi/softTone.h"
+#include "./lib/wiringPi/softTone_c.h"
 
 #include "rtapi.h"
 #include "rtapi_app.h"
