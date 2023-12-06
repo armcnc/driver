@@ -43,9 +43,17 @@ MODULE_DESCRIPTION("Driver for ARMCNC");
 MODULE_LICENSE("GPL");
 #endif
 
-int read_ini_file(const char *filename, INI_RESULT *result) {
+void read_ini_trim(char *str) {
+    char *end;
+    while (isspace((unsigned char)*str)) str++;
+    if (*str == 0)
+        return;
+    end = str + strlen(str) - 1;
+    while (end > str && isspace((unsigned char)*end)) end--;
+    *(end + 1) = 0;
+}
 
-    rtapi_print_msg(RTAPI_MSG_ERR, "%s\n", filename);
+int read_ini_file(const char *filename, INI_RESULT *result) {
 
     FILE *file = fopen(filename, "r");
     if (!file) {
@@ -60,14 +68,13 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
     while (fgets(line, MAX_INI_LINE_LENGTH, file) != NULL) {
         if (line[0] == '#' || line[0] == ';' || line[0] == '\n') continue;
         if (sscanf(line, "%[^=] = %[^\n]", key, val) == 2) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "->%s %s\n", key, val);
-            trim(key);
+            read_ini_trim(key);
+            read_ini_trim(val);
             if (strcmp(key, "ESTOP_PIN") == 0) {
                 rtapi_print_msg(RTAPI_MSG_ERR, "-->%s %s\n", key, val);
                 char *token;
                 int i = 0;
                 token = strtok(val, " ");
-                rtapi_print_msg(RTAPI_MSG_ERR, "%s\n", token);
                 while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
                     strncpy(result->ESTOP_PIN[i], token, MAX_INI_LINE_LENGTH);
                     result->ESTOP_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
