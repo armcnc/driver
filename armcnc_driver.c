@@ -197,7 +197,7 @@ static void gpio_read(void *arg, long period)
 {
      int n;
      for (n = 0; n < MAX_PINS; n++) {
-        *(port_data[n]) = 0;
+        *(port_data[n]) = 1;
      }
 }
 
