@@ -62,6 +62,7 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
                 char *token;
                 int i = 0;
                 token = strtok(val, " ");
+                rtapi_print_msg(RTAPI_MSG_ERR, "%s\n", token);
                 while (token != NULL && i < MAX_INI_VALUE_LENGTH) {
                     strncpy(result->ESTOP_PIN[i], token, MAX_INI_LINE_LENGTH);
                     result->ESTOP_PIN[i][MAX_INI_LINE_LENGTH - 1] = '\0';
