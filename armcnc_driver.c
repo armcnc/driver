@@ -205,7 +205,7 @@ static void gpio_read(void *arg, long period)
 
 int rtapi_app_main(void)
 {
-    rtapi_print_msg(RTAPI_MSG_DBG, "armcnc_driver...\n");
+    rtapi_print_msg(RTAPI_MSG_ERR, "rtapi_app_main\n");
 
     const char* env_var = "MACHINE_PATH";
     char* env_value = getenv(env_var);
@@ -348,5 +348,6 @@ int rtapi_app_main(void)
 
 void rtapi_app_exit(void)
 {
+    rtapi_print_msg(RTAPI_MSG_ERR, "rtapi_app_exit\n");
     hal_exit(component_id);
 }
