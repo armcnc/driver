@@ -16,7 +16,7 @@
 #define MAX_INI_VALUE_LENGTH 10
 
 static int component_id;
-static char component_name = "armcnc_driver";
+static char *component_name = "armcnc_driver";
 hal_bit_t **port_data;
 
 typedef struct {
