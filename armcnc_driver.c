@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <wiringPi.h>
 
 #include "rtapi.h"
