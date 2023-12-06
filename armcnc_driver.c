@@ -19,8 +19,8 @@
 #include "rtapi_io.h"
 #include "hal.h"
 
-#define MAX_INI_LINE_LENGTH 255
-#define MAX_INI_VALUE_LENGTH 255
+#define MAX_INI_LINE_LENGTH 512
+#define MAX_INI_VALUE_LENGTH 10
 #define RTAPI_BIT(nr) (1UL << (nr))
 
 static int component_id;
@@ -75,6 +75,7 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
         if (sscanf(line, "%[^=] = %[^\n]", key, val) == 2) {
             read_ini_trim(key);
             read_ini_trim(val);
+            rtapi_print_msg(RTAPI_MSG_ERR, "read_ini_file %s %s\n", key, val);
             if (strcmp(key, "ESTOP_PIN") == 0) {
                 char *token;
                 int i = 0;
