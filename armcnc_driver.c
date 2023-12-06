@@ -9,6 +9,8 @@
 #include "./lib/wiringPi/piHiPri_c.h"
 #include "./lib/wiringPi/wiringPi.h"
 #include "./lib/wiringPi/wiringPi_c.h"
+#include "./lib/wiringPi/softPwm.h"
+#include "./lib/wiringPi/softPwm_c.h"
 
 #include "rtapi.h"
 #include "rtapi_app.h"
