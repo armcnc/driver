@@ -211,6 +211,8 @@ int rtapi_app_main(void)
         return -1;
     }
 
+    rtapi_print_msg(RTAPI_MSG_ERR, "--->%s %s\n", ini_data.ESTOP_PIN[0], ini_data.ESTOP_PIN[2]);
+
 //    if (wiringPiSetup() == -1){
 //        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: wiringPiSetup\n");
 //        return -1;
