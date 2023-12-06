@@ -21,7 +21,7 @@
 
 #define ARMCNC_MAX_PINS 40
 #define MAX_INI_LINE_LENGTH 255
-#define MAX_INI_VALUE_LENGTH 10
+#define MAX_INI_VALUE_LENGTH 255
 
 static int component_id;
 static char *component_name = "armcnc_driver";
