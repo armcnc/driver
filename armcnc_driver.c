@@ -215,10 +215,10 @@ int rtapi_app_main(void)
         return -1;
     }
 
-//    if (wiringPiSetup() == -1){
-//        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: wiringPiSetup\n");
-//        return -1;
-//    }
+    if (wiringPiSetup() == -1){
+        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: wiringPiSetup\n");
+        return -1;
+    }
 
     component_id = hal_init(component_name);
     if (component_id < 0) {
