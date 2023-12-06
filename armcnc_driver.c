@@ -46,6 +46,14 @@ MODULE_DESCRIPTION("Driver for ARMCNC");
 MODULE_LICENSE("GPL");
 #endif
 
+static char *dir = "0";
+RTAPI_MP_STRING(dir, "port direction, 1=output");
+static unsigned dir_map;
+
+static char *exclude = "0";
+RTAPI_MP_STRING(exclude, "port excusion, 1=excluded");
+static unsigned exc_map;
+
 void read_ini_trim(char *str) {
     char *end;
     while (isspace((unsigned char)*str)) str++;
