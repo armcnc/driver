@@ -9,6 +9,7 @@
 #include "rtapi.h"
 #include "rtapi_app.h"
 #include "rtapi_math.h"
+#include "rtapi_bitops.h"
 #include "hal.h"
 
 #define MAX_PINS 40
@@ -31,6 +32,8 @@ typedef struct {
 } INI_RESULT;
 
 static INI_RESULT ini_data = {0};
+static void gpio_write(void *arg, long period);
+static void gpio_read(void *arg, long period);
 
 #ifdef RTAPI
 MODULE_AUTHOR("ARMCNC");
@@ -217,8 +220,6 @@ int rtapi_app_main(void)
 //        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: wiringPiSetup\n");
 //        return -1;
 //    }
-
-    rtapi_print_msg(RTAPI_MSG_ERR, "%s\n", ini_data.ESTOP_PIN[0]);
 
     component_id = hal_init("armcnc_driver");
     if (component_id < 0) {
