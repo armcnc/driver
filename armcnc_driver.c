@@ -20,6 +20,7 @@
 #define ARMCNC_MAX_PINS 40
 #define MAX_INI_LINE_LENGTH 255
 #define MAX_INI_VALUE_LENGTH 255
+#define RTAPI_BIT(nr) (1UL << (nr))
 
 static int component_id;
 static char *component_name = "armcnc_driver";
@@ -197,6 +198,7 @@ static void gpio_read(void *arg, long period)
 {
      int n;
      for (n = 0; n < MAX_PINS; n++) {
+        rtapi_print_msg(RTAPI_MSG_ERR, n);
         *(port_data[n]) = 1;
      }
 }
