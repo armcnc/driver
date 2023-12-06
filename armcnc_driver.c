@@ -218,6 +218,8 @@ int rtapi_app_main(void)
 //        return -1;
 //    }
 
+    rtapi_print_msg(RTAPI_MSG_DBG, "%s\n", ini_data.ESTOP_PIN[0]);
+
     component_id = hal_init("armcnc_driver");
     if (component_id < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: component_id\n");
