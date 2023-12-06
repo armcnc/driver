@@ -2243,7 +2243,7 @@ void pinMode (int pin, int mode)
       xj3_gpio_direction_output(pin);
     else if (mode == SOFT_PWM_OUTPUT)
       softPwmCreate (origPin, 0, 100) ;
-    else if (mode == SOFT_TONE_OUTPUT)
+    // else if (mode == SOFT_TONE_OUTPUT)
       // softToneCreate (origPin) ;
     else if (mode == PWM_TONE_OUTPUT)
     {
