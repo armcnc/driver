@@ -32,7 +32,7 @@
 #include "wiringPi.h"
 #include "softTone.h"
 
-#define	TONE_TONE_MAX_PINS	64
+#define	TONE_MAX_PINS	64
 
 #define	PULSE_TIME	100
 
