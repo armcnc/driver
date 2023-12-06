@@ -32,8 +32,6 @@ typedef struct {
 } INI_RESULT;
 
 static INI_RESULT ini_data = {0};
-static void gpio_write(void *arg, long period);
-static void gpio_read(void *arg, long period);
 
 #ifdef RTAPI
 MODULE_AUTHOR("ARMCNC");
@@ -310,14 +308,14 @@ int rtapi_app_main(void)
 //    }
 //    //pinMode(atoi(ini_data.C_HOME_PIN[1]), ini_data.C_HOME_PIN[2] == "IN" ? INPUT : OUTPUT);
 
-    retval = hal_export_funct("gpio.write", gpio_write, 0, 0, 0, component_id);
+    retval = hal_export_funct("armcnc_driver.gpio.write", gpio_write, 0, 0, 0, component_id);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: gpio.write\n");
         hal_exit(component_id);
         return -1;
     }
 
-    retval = hal_export_funct("gpio.read", gpio_read, 0, 0, 0, component_id);
+    retval = hal_export_funct("armcnc_driver.gpio.read", gpio_read, 0, 0, 0, component_id);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: gpio.read\n");
         hal_exit(component_id);
