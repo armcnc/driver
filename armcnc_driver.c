@@ -5,13 +5,7 @@
  ******************************************************************************
  */
 
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <wiringPi.h>
-
+#include "armcnc_driver.h"
 #include "rtapi.h"
 #include "rtapi_app.h"
 #include "rtapi_math.h"
@@ -72,7 +66,6 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
             read_ini_trim(key);
             read_ini_trim(val);
             if (strcmp(key, "ESTOP_PIN") == 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "-->%s %s\n", key, val);
                 char *token;
                 int i = 0;
                 token = strtok(val, " ");
@@ -219,8 +212,6 @@ int rtapi_app_main(void)
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: read_ini_file\n");
         return -1;
     }
-
-    rtapi_print_msg(RTAPI_MSG_ERR, "--->%s %s\n", ini_data.ESTOP_PIN[0], ini_data.ESTOP_PIN[2]);
 
 //    if (wiringPiSetup() == -1){
 //        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: wiringPiSetup\n");
