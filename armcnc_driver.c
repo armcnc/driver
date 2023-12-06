@@ -75,7 +75,6 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
         if (sscanf(line, "%[^=] = %[^\n]", key, val) == 2) {
             read_ini_trim(key);
             read_ini_trim(val);
-            rtapi_print_msg(RTAPI_MSG_ERR, "read_ini_file %s %s\n", key, val);
             if (strcmp(key, "ESTOP_PIN") == 0) {
                 char *token;
                 int i = 0;
@@ -349,6 +348,5 @@ int rtapi_app_main(void)
 
 void rtapi_app_exit(void)
 {
-    rtapi_print_msg(RTAPI_MSG_ERR, "rtapi_app_exit\n");
     hal_exit(component_id);
 }
