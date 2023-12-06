@@ -23,8 +23,6 @@
 
 static int component_id;
 static int pins = 40;
-static void gpio_write(void *arg, long period);
-static void gpio_read(void *arg, long period);
 hal_bit_t **port_data;
 hal_float_t **port_data_float;
 
@@ -197,9 +195,9 @@ static void gpio_write(void *arg, long period)
 
 static void gpio_read(void *arg, long period)
 {
-     int n;
-     for (n = 0; n < pins; n++) {
+     for (int n = 0; n < pins; n++) {
         *port_data[n] = 1;
+        rtapi_print_msg(RTAPI_MSG_ERR, "gpio_read %d\n", n);
      }
 }
 
