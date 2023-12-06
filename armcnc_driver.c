@@ -17,7 +17,7 @@
 #include "rtapi_math.h"
 #include "hal.h"
 
-#define MAX_PINS 40
+#define ARMCNC_MAX_PINS 40
 #define MAX_INI_LINE_LENGTH 255
 #define MAX_INI_VALUE_LENGTH 10
 
@@ -232,14 +232,14 @@ int rtapi_app_main(void)
         return -1;
     }
 
-    port_data = hal_malloc(MAX_PINS * sizeof(hal_bit_t *));
+    port_data = hal_malloc(ARMCNC_MAX_PINS * sizeof(hal_bit_t *));
     if (port_data == 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: port_data\n");
         hal_exit(component_id);
         return -1;
     }
 
-    port_data_float = hal_malloc(MAX_PINS * sizeof(hal_float_t *));
+    port_data_float = hal_malloc(ARMCNC_MAX_PINS * sizeof(hal_float_t *));
     if (port_data_float == 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: port_data\n");
         hal_exit(component_id);
