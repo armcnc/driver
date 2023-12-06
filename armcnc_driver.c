@@ -240,6 +240,12 @@ int rtapi_app_main(void)
         return -1;
     }
 
+    if ((mem_fd = open("/dev/mem", O_RDWR|O_SYNC)) < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: /dev/mem\n");
+        hal_exit(component_id);
+        return -1;
+    }
+
     port_data = hal_malloc(pins * sizeof(void *));
     if (port_data == 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: port_data\n");
