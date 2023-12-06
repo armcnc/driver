@@ -23,7 +23,6 @@
 #define RTAPI_BIT(nr) (1UL << (nr))
 
 static int component_id;
-static char *component_name = "armcnc_driver";
 hal_bit_t **port_data;
 hal_float_t **port_data_float;
 
@@ -228,15 +227,9 @@ int rtapi_app_main(void)
         return -1;
     }
 
-    component_id = hal_init(component_name);
+    component_id = hal_init("armcnc_driver");
     if (component_id < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: component_id\n");
-        return -1;
-    }
-
-    if (system("sudo chmod 777 /dev/mem") != 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: /dev/mem\n");
-        hal_exit(component_id);
         return -1;
     }
 
@@ -253,8 +246,6 @@ int rtapi_app_main(void)
         hal_exit(component_id);
         return -1;
     }
-
-    rtapi_print_msg(RTAPI_MSG_ERR, "%s\n", ini_data.ESTOP_PIN[0]);
 
     retval = hal_pin_bit_newf(strcmp(ini_data.ESTOP_PIN[2], "IN") == 0 ? HAL_IN : HAL_OUT, &port_data[atoi(ini_data.ESTOP_PIN[1])], component_id, ini_data.ESTOP_PIN[0]);
     if (retval < 0) {
