@@ -201,11 +201,15 @@ static void gpio_write(void *arg, long period)
 static void gpio_read(void *arg, long period)
 {
      for (int n = 0; n < pins; n++) {
-        if (*port_data[n]){
-            if (digitalRead(n) == HIGH){
-                *port_data[n] = 1;
-            }else{
-                *port_data[n] = 0;
+        if(n == atoi(ini_data.SPINDLE_PWM_PIN[1])){
+            *hal_float_t[n] = 0;
+        }else{
+            if (*port_data[n]){
+                if (digitalRead(n) == HIGH){
+                    *port_data[n] = 1;
+                }else{
+                    *port_data[n] = 0;
+                }
             }
         }
      }
