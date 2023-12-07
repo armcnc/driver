@@ -239,10 +239,14 @@ int rtapi_app_main(void)
         return -1;
     }
 
-    int32_t mem_fd;
-    mem_fd = open("/dev/mem", O_RDWR|O_SYNC);
+    int32_t mem_fd = open("/dev/mem", O_RDWR|O_SYNC);
     if (mem_fd < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: /dev/mem\n");
+        return -1;
+    }
+
+    if (system("sudo chmod 777 /dev/mem") != 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: chmod /dev/mem\n");
         return -1;
     }
 
