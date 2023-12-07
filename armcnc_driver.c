@@ -204,6 +204,8 @@ int rtapi_app_main(void)
 {
     rtapi_print_msg(RTAPI_MSG_ERR, "rtapi_app_main\n");
 
+    char name[HAL_NAME_LEN + 1];
+
     const char* env_var = "MACHINE_PATH";
     char* env_value = getenv(env_var);
     int retval = 0;
