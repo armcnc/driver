@@ -253,7 +253,7 @@ int rtapi_app_main(void)
         return -1;
     }
 
-    port_data = hal_malloc(pins * sizeof(void *));
+    port_data = hal_malloc(pins * sizeof(hal_bit_t *));
     if (port_data == 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: port_data\n");
         hal_exit(component_id);
