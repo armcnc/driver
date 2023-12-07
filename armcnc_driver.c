@@ -193,15 +193,7 @@ int read_ini_file(const char *filename, INI_RESULT *result)
 static void gpio_write(void *arg, long period)
 {
      for (int n = 0; n < pins; n++) {
-        if(n == atoi(ini_data.SPINDLE_PWM_PIN[1])){
 
-        }else{
-            if (*port_data[n]){
-                digitalWrite(n, HIGH);
-            }else{
-                digitalWrite(n, LOW);
-            }
-        }
      }
 }
 
@@ -211,12 +203,10 @@ static void gpio_read(void *arg, long period)
         if(n == atoi(ini_data.SPINDLE_PWM_PIN[1])){
             *port_data_float[n] = 0.25;
         }else{
-            if (*port_data[n]){
-                if (digitalRead(n) == HIGH){
-                    *port_data[n] = 1;
-                }else{
-                    *port_data[n] = 0;
-                }
+            if (digitalRead(n) == HIGH){
+                *port_data[n] = 1;
+            }else{
+                *port_data[n] = 0;
             }
         }
      }
