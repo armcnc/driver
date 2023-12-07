@@ -44,7 +44,8 @@ MODULE_AUTHOR("ARMCNC");
 MODULE_DESCRIPTION("Driver for ARMCNC");
 MODULE_LICENSE("GPL");
 
-void read_ini_trim(char *str) {
+void read_ini_trim(char *str)
+{
     char *end;
     while (isspace((unsigned char)*str)) str++;
     if (*str == 0)
@@ -54,8 +55,8 @@ void read_ini_trim(char *str) {
     *(end + 1) = 0;
 }
 
-int read_ini_file(const char *filename, INI_RESULT *result) {
-
+int read_ini_file(const char *filename, INI_RESULT *result)
+{
     FILE *file = fopen(filename, "r");
     if (!file) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: INI_RESULT\n");
