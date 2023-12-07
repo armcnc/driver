@@ -31,6 +31,8 @@ static char *pwm = "";
 RTAPI_MP_STRING(pwm, "channels control type, comma separated");
 #endif
 
+static const char *gpio_name[GPIO_PORTS_MAX_CNT] = {"PA","PB","PC","PD","PE","PF","PG","PL"};
+
 static hal_bit_t **gpio_hal_0[GPIO_PORTS_MAX_CNT];
 static hal_bit_t **gpio_hal_1[GPIO_PORTS_MAX_CNT];
 static hal_bit_t gpio_hal_0_prev[GPIO_PORTS_MAX_CNT][GPIO_PINS_MAX_CNT];
@@ -90,27 +92,17 @@ int32_t malloc_and_export(const char *comp_name, int32_t comp_id)
         if (!arg_str[n]) continue;
 
         int8_t *data = arg_str[n], *token;
-        uint8_t pin, found;
+        int pin;
         int32_t retval;
         int8_t* type_str = n ? "out" : "in";
 
         while ((token = strtok(data, ",")) != NULL)
         {
             if (data != NULL) data = NULL;
-            if (strlen(token) < 3) continue;
 
-            for (found = 0, port = GPIO_PORTS_MAX_CNT; port--;) {
-                if (0 == memcmp(token, gpio_name[port], 2)) {
-                    found = 1;
-                    break;
-                }
-            }
+            pin = atoi(token);
 
-            if (!found) continue;
-
-            pin = (uint8_t) strtoul(&token[2], NULL, 10);
-
-            if ((pin == 0 && token[2] != '0') || pin >= GPIO_PINS_MAX_CNT) continue;
+            if (pin == 0 || pin >= GPIO_PINS_MAX_CNT) continue;
 
             retval = hal_pin_bit_newf((n ? HAL_IN : HAL_OUT), &gpio_hal_0[port][pin], comp_id,"%s.gpio.%s-%s", comp_name, token, type_str);
 
@@ -118,7 +110,7 @@ int32_t malloc_and_export(const char *comp_name, int32_t comp_id)
 
             retval += hal_pin_s32_newf(HAL_IN, &gpio_hal_pull[port][pin], comp_id, "%s.gpio.%s-pull", comp_name, token);
 
-            retval += hal_pin_u32_newf( HAL_IN, &gpio_hal_drive[port][pin], comp_id, "%s.gpio.%s-multi-drive-level", comp_name, token);
+            retval += hal_pin_u32_newf(HAL_IN, &gpio_hal_drive[port][pin], comp_id, "%s.gpio.%s-multi-drive-level", comp_name, token);
 
             if (retval < 0) {
                 rtapi_print_msg(RTAPI_MSG_ERR, "[error]: %s.gpio: pin %s export failed \n", comp_name, token);
@@ -128,29 +120,29 @@ int32_t malloc_and_export(const char *comp_name, int32_t comp_id)
             if (n) {
                 gpio_out_cnt++;
                 gpio_out_mask[port] |= pin_msk[pin];
-                //  gpio_pin_func_set(port, pin, GPIO_FUNC_OUT, 0);
+                pinMode(pin, OUTPUT);
             }else{
                 gpio_in_cnt++;
                 gpio_in_mask[port] |= pin_msk[pin];
-                // gpio_pin_func_set(port, pin, GPIO_FUNC_IN, 0);
+                pinMode(pin, INPUT);
             }
 
-            // gpio_pin_pull_set(port, pin, GPIO_PULL_DISABLE, 0);
+            pullUpDnControl(pin, PUD_OFF);
 
-            // *gpio_hal_0[port][pin] = gpio_pin_get(port, pin, 0);
+            *gpio_hal_0[port][pin] = digitalRead(pin);
             *gpio_hal_1[port][pin] = *gpio_hal_0[port][pin] ? 0 : 1;
             gpio_hal_0_prev[port][pin] = *gpio_hal_0[port][pin];
             gpio_hal_1_prev[port][pin] = *gpio_hal_1[port][pin];
 
-            switch (gpio_pin_pull_get(port, pin, 0)) {
-                case GPIO_PULL_UP:      *gpio_hal_pull[port][pin] = 1;
-                case GPIO_PULL_DOWN:    *gpio_hal_pull[port][pin] = -1;
-                default:                *gpio_hal_pull[port][pin] = 0;
+            switch (xj3_get_gpio_pull(getAlt(pin))) {
+                case PUD_UP:      *gpio_hal_pull[port][pin] = 2;
+                case PUD_DOWN:    *gpio_hal_pull[port][pin] = 1;
+                default:          *gpio_hal_pull[port][pin] = 0;
             }
 
             gpio_hal_pull_prev[port][pin] = *gpio_hal_pull[port][pin];
 
-            // *gpio_hal_drive[port][pin] = gpio_pin_multi_drive_get(port, pin, 0);
+            *gpio_hal_drive[port][pin] = xj3_get_pin_drive(getAlt(pin));
             gpio_hal_drive_prev[port][pin] = *gpio_hal_drive[port][pin];
 
             if (port >= gpio_ports_cnt) gpio_ports_cnt = port + 1;
@@ -253,7 +245,7 @@ int32_t malloc_and_export(const char *comp_name, int32_t comp_id)
 static inline
 void gpio_read(void *arg, long period)
 {
-    static uint32_t port, pin, port_state;
+    static uint32_t port, pin;
 
     if ( !gpio_in_cnt ) return;
 
@@ -261,12 +253,14 @@ void gpio_read(void *arg, long period)
     {
         if (!gpio_in_mask[port]) continue;
 
-        // port_state = gpio_port_get(port, 0);
+        port_state = gpio_port_get(port, 0);
 
         for (pin = gpio_pins_cnt[port]; pin--;) {
             if (!(gpio_in_mask[port] & pin_msk[pin])) continue;
 
-            if ( port_state & pin_msk[pin] ) {
+            int port_state = digitalRead(pin);
+
+            if (port_state & pin_msk[pin]) {
                 *gpio_hal_0[port][pin] = 1;
                 *gpio_hal_1[port][pin] = 0;
             } else {

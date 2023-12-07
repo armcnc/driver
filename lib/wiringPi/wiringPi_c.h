@@ -1002,6 +1002,16 @@ static void xj3_set_pin_drive(char gpio_num, uint32_t val)
 	reg32_write((volatile unsigned int *)(_wiringPiGpioPinMux + offset/4), reg);
 }
 
+// ARMCNC
+static uint32_t xj3_get_pin_drive(char gpio_num) {
+    uint32_t reg = 0;
+    uint32_t offset = gpio_num * 4;
+
+    reg = reg32_read((volatile unsigned int *)(_wiringPiGpioPinMux + offset/4));
+
+    return (reg >> 2) & 0xf;
+}
+
 static void xj3_set_gpio_pull(char gpio_num, int state)
 {
 	uint32_t reg = 0;
@@ -1048,6 +1058,35 @@ static void xj3_set_gpio_pull(char gpio_num, int state)
 		reg32_write((volatile unsigned int *)(_wiringPiGpioPinMux + offset/4), reg);
 	}
   // printf("pull gpio_num: %d, pin_type: %d, reg: 0x%x\n", gpio_num, pin_type, reg);
+}
+
+// ARMCNC
+int xj3_get_gpio_pull(char gpio_num) {
+    uint32_t reg = 0;
+    uint32_t offset = gpio_num * 4;
+    uint32_t pin_type = xj3_pin_type(gpio_num);
+
+    reg = reg32_read((volatile unsigned int *)(_wiringPiGpioPinMux + offset/4));
+
+    if (pin_type == PULL_TYPE1) {
+        if ((reg & PIN_TYPE1_PULL_ENABLE) && (reg & PIN_TYPE1_PULL_UP)) {
+            return PUD_UP;
+        } else if ((reg & PIN_TYPE1_PULL_ENABLE) && (reg & PIN_TYPE1_PULL_DOWN)) {
+            return PUD_DOWN;
+        } else {
+            return PUD_OFF;
+        }
+    } else if (pin_type == PULL_TYPE2) {
+        if ((reg & PIN_TYPE2_PULL_UP_ENABLE) && !(reg & PIN_TYPE2_PULL_DOWN_ENABLE)) {
+            return PUD_UP;
+        } else if ((reg & PIN_TYPE2_PULL_DOWN_ENABLE) && !(reg & PIN_TYPE2_PULL_UP_ENABLE)) {
+            return PUD_DOWN;
+        } else {
+            return PUD_OFF;
+        }
+    }
+
+    return -1;
 }
 
 // void dump_pin_info(void)
