@@ -196,7 +196,6 @@ static void gpio_write(void *arg, long period)
 static void gpio_read(void *arg, long period)
 {
      for (int n = 0; n < pins; n++) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "gpio_read %d\n", n);
         *port_data[n] = 1;
      }
 }
