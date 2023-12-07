@@ -16,19 +16,19 @@ MODULE_LICENSE("GPL");
 static int32_t comp_id;
 static const uint8_t * comp_name = "armcncio";
 
-static int8_t *in = "";
+static int8_t *armcnc_in = "";
 #ifdef RTAPI
-RTAPI_MP_STRING(in, "input pins, comma separated");
+RTAPI_MP_STRING(armcnc_in, "input pins, comma separated");
 #endif
 
-static int8_t *out = "";
+static int8_t *armcnc_out = "";
 #ifdef RTAPI
-RTAPI_MP_STRING(out, "output pins, comma separated");
+RTAPI_MP_STRING(armcnc_out, "output pins, comma separated");
 #endif
 
-static char *pwm = "";
+static char *armcnc_pwm = "";
 #ifdef RTAPI
-RTAPI_MP_STRING(pwm, "channels control type, comma separated");
+RTAPI_MP_STRING(armcnc_pwm, "channels control type, comma separated");
 #endif
 
 static const char *gpio_name[GPIO_PORTS_MAX_CNT] = {"PA","PB","PC","PD","PE","PF","PG","PL"};
@@ -65,11 +65,11 @@ static void pwm_read(void *arg, long period);
 static inline
 int32_t malloc_and_export(const char *comp_name, int32_t comp_id)
 {
-    int8_t* arg_str[2] = {in, out};
+    int8_t* arg_str[2] = {armcnc_in, armcnc_out};
     int8_t n;
     uint8_t port;
     int32_t r, ch;
-    int8_t *data = pwm, *token, type[PWM_CH_MAX_CNT] = {0};
+    int8_t *data = armcnc_pwm, *token, type[PWM_CH_MAX_CNT] = {0};
     char name[HAL_NAME_LEN + 1];
 
     for (n = GPIO_PINS_MAX_CNT; n--; ) pin_msk[n] = 1UL << n;
