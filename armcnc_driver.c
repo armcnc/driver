@@ -250,7 +250,7 @@ int rtapi_app_main(void)
         return -1;
     }
 
-    if (system("sudo chmod 777 /dev/*") != 0) {
+    if (system("sudo chmod 777 /dev/gpiochip0") != 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: chmod /dev/mem\n");
         return -1;
     }
