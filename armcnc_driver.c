@@ -190,10 +190,14 @@ int read_ini_file(const char *filename, INI_RESULT *result)
 static void gpio_write(void *arg, long period)
 {
      for (int n = 0; n < pins; n++) {
-        if (*port_data[n]){
-            digitalWrite(n, HIGH);
+        if(n == atoi(ini_data.SPINDLE_PWM_PIN[1])){
+
         }else{
-            digitalWrite(n, LOW);
+            if (*port_data[n]){
+                digitalWrite(n, HIGH);
+            }else{
+                digitalWrite(n, LOW);
+            }
         }
      }
 }
