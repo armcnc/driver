@@ -247,7 +247,7 @@ void gpio_read(void *arg, long period)
 {
     static uint32_t port, pin;
 
-    if ( !gpio_in_cnt ) return;
+    if (!gpio_in_cnt) return;
 
     for (port = gpio_ports_cnt; port--;)
     {
@@ -291,19 +291,19 @@ void gpio_write(void *arg, long period)
             {
                 if (*gpio_hal_pull[port][pin] > 0) {
                     *gpio_hal_pull[port][pin] = 1;
-                    // gpio_pin_pull_set(port, pin, GPIO_PULL_UP, 0);
+                    pullUpDnControl(pin, PUD_UP);
                 }else if (*gpio_hal_pull[port][pin] < 0) {
                     *gpio_hal_pull[port][pin] = -1;
-                    // gpio_pin_pull_set(port, pin, GPIO_PULL_DOWN, 0);
+                    pullUpDnControl(pin, PUD_DOWN);
                 }else{
-                    // gpio_pin_pull_set(port, pin, GPIO_PULL_DISABLE, 0);
+                    pullUpDnControl(pin, PUD_OFF);
                 }
                 gpio_hal_pull_prev[port][pin] = *gpio_hal_pull[port][pin];
             }
 
             if (gpio_hal_drive_prev[port][pin] != *gpio_hal_drive[port][pin]) {
                 *gpio_hal_drive[port][pin] &= (GPIO_PULL_CNT - 1);
-                // gpio_pin_multi_drive_set(port, pin, *gpio_hal_drive[port][pin], 0);
+                xj3_set_pin_drive(getAlt(pin), *gpio_hal_drive[port][pin]);
                 gpio_hal_drive_prev[port][pin] = *gpio_hal_drive[port][pin];
             }
 
@@ -334,8 +334,13 @@ void gpio_write(void *arg, long period)
             }
         }
 
-        // if (mask_0) gpio_port_clr(port, mask_0, 0);
-        // if (mask_1) gpio_port_set(port, mask_1, 0);
+        if (mask_0 & pin_msk[pin]) {
+            digitalWrite(pin_msk[pin], LOW);
+        }
+
+        if (mask_1 & pin_msk[pin]) {
+            digitalWrite(pin_msk[pin], HIGH);
+        }
     }
 }
 
