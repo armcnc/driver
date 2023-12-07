@@ -26,14 +26,6 @@ static int pins = 40;
 hal_bit_t **port_data;
 hal_float_t **port_data_float;
 
-static char *dir = "0";
-RTAPI_MP_STRING(dir, "port direction, 1=output");
-static unsigned dir_map;
-
-static char *exclude = "0";
-RTAPI_MP_STRING(exclude, "port excusion, 1=excluded");
-static unsigned exc_map;
-
 typedef struct {
     char ESTOP_PIN[MAX_INI_VALUE_LENGTH][MAX_INI_LINE_LENGTH];
     char SPINDLE_ENABLE_PIN[MAX_INI_VALUE_LENGTH][MAX_INI_LINE_LENGTH];
@@ -244,6 +236,13 @@ int rtapi_app_main(void)
 
     if (wiringPiSetup() == -1){
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: wiringPiSetup\n");
+        return -1;
+    }
+
+    int32_t mem_fd;
+    mem_fd = open("/dev/mem", O_RDWR|O_SYNC);
+    if (mem_fd < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: /dev/mem\n");
         return -1;
     }
 
