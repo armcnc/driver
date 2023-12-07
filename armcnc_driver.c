@@ -202,7 +202,7 @@ static void gpio_read(void *arg, long period)
 {
      for (int n = 0; n < pins; n++) {
         if(n == atoi(ini_data.SPINDLE_PWM_PIN[1])){
-            *hal_float_t[n] = 0;
+            *port_data_float[n] = 0.25;
         }else{
             if (*port_data[n]){
                 if (digitalRead(n) == HIGH){
