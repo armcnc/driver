@@ -274,59 +274,56 @@ int rtapi_app_main(void)
             if (retval < 0) {
                 break;
             }
-        }
-        if(n == atoi(ini_data.SPINDLE_ENABLE_PIN[1])){
+        }else if(n == atoi(ini_data.SPINDLE_ENABLE_PIN[1])){
             pinMode(atoi(ini_data.SPINDLE_ENABLE_PIN[1]), strcmp(ini_data.SPINDLE_ENABLE_PIN[2], "IN") == 0 ? INPUT : OUTPUT);
             retval = hal_pin_bit_newf(strcmp(ini_data.SPINDLE_ENABLE_PIN[2], "IN") == 0 ? HAL_IN : HAL_OUT, &port_data[n], component_id, ini_data.SPINDLE_ENABLE_PIN[0], n);
             if (retval < 0) {
                 break;
             }
-        }
-        if(n == atoi(ini_data.SPINDLE_PWM_PIN[1])){
+        }else if(n == atoi(ini_data.SPINDLE_PWM_PIN[1])){
             pinMode(atoi(ini_data.SPINDLE_PWM_PIN[1]), strcmp(ini_data.SPINDLE_PWM_PIN[2], "IN") == 0 ? INPUT : OUTPUT);
             retval = hal_pin_float_newf(strcmp(ini_data.SPINDLE_PWM_PIN[2], "IN") == 0 ? HAL_IN : HAL_OUT, &port_data_float[n], component_id, ini_data.SPINDLE_PWM_PIN[0], n);
             if (retval < 0) {
                 break;
             }
-        }
-        if(n == atoi(ini_data.X_HOME_PIN[1])){
+        }else if(n == atoi(ini_data.X_HOME_PIN[1])){
             pinMode(atoi(ini_data.X_HOME_PIN[1]), strcmp(ini_data.X_HOME_PIN[2], "IN") == 0 ? INPUT : OUTPUT);
             retval = hal_pin_bit_newf(strcmp(ini_data.X_HOME_PIN[2], "IN") == 0 ? HAL_IN : HAL_OUT, &port_data[n], component_id, ini_data.X_HOME_PIN[0], n);
             if (retval < 0) {
                 break;
             }
-        }
-        if(n == atoi(ini_data.Y_HOME_PIN[1])){
+        }else if(n == atoi(ini_data.Y_HOME_PIN[1])){
             pinMode(atoi(ini_data.Y_HOME_PIN[1]), strcmp(ini_data.Y_HOME_PIN[2], "IN") == 0 ? INPUT : OUTPUT);
             retval = hal_pin_bit_newf(strcmp(ini_data.Y_HOME_PIN[2], "IN") == 0 ? HAL_IN : HAL_OUT, &port_data[n], component_id, ini_data.Y_HOME_PIN[0], n);
             if (retval < 0) {
                 break;
             }
-        }
-        if(n == atoi(ini_data.Z_HOME_PIN[1])){
+        }else if(n == atoi(ini_data.Z_HOME_PIN[1])){
             pinMode(atoi(ini_data.Z_HOME_PIN[1]), strcmp(ini_data.Z_HOME_PIN[2], "IN") == 0 ? INPUT : OUTPUT);
             retval = hal_pin_bit_newf(strcmp(ini_data.Z_HOME_PIN[2], "IN") == 0 ? HAL_IN : HAL_OUT, &port_data[n], component_id, ini_data.Z_HOME_PIN[0], n);
             if (retval < 0) {
                 break;
             }
-        }
-        if(n == atoi(ini_data.A_HOME_PIN[1])){
+        }else if(n == atoi(ini_data.A_HOME_PIN[1])){
             pinMode(atoi(ini_data.A_HOME_PIN[1]), strcmp(ini_data.A_HOME_PIN[2], "IN") == 0 ? INPUT : OUTPUT);
             retval = hal_pin_bit_newf(strcmp(ini_data.A_HOME_PIN[2], "IN") == 0 ? HAL_IN : HAL_OUT, &port_data[n], component_id, ini_data.A_HOME_PIN[0], n);
             if (retval < 0) {
                 break;
             }
-        }
-        if(n == atoi(ini_data.B_HOME_PIN[1])){
+        }else if(n == atoi(ini_data.B_HOME_PIN[1])){
             pinMode(atoi(ini_data.B_HOME_PIN[1]), strcmp(ini_data.B_HOME_PIN[2], "IN") == 0 ? INPUT : OUTPUT);
             retval = hal_pin_bit_newf(strcmp(ini_data.B_HOME_PIN[2], "IN") == 0 ? HAL_IN : HAL_OUT, &port_data[n], component_id, ini_data.B_HOME_PIN[0], n);
             if (retval < 0) {
                 break;
             }
-        }
-        if(n == atoi(ini_data.C_HOME_PIN[1])){
+        }else if(n == atoi(ini_data.C_HOME_PIN[1])){
             pinMode(atoi(ini_data.C_HOME_PIN[1]), strcmp(ini_data.C_HOME_PIN[2], "IN") == 0 ? INPUT : OUTPUT);
             retval = hal_pin_bit_newf(strcmp(ini_data.C_HOME_PIN[2], "IN") == 0 ? HAL_IN : HAL_OUT, &port_data[n], component_id, ini_data.C_HOME_PIN[0], n);
+            if (retval < 0) {
+                break;
+            }
+        }else{
+            retval = hal_pin_bit_newf(HAL_IN, &port_data[n], component_id, "armcnc_driver.pin-%02d-in", n);
             if (retval < 0) {
                 break;
             }
