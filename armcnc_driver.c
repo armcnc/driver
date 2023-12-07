@@ -194,9 +194,9 @@ static void gpio_write(void *arg, long period)
 {
      for (int n = 0; n < pins; n++) {
         if (RTAPI_BIT(n)) {
-            digitalWrite (n, HIGH);
+            digitalWrite(n, HIGH);
         }else{
-            digitalWrite (n, LOW);
+            digitalWrite(n, LOW);
         }
      }
 }
