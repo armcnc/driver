@@ -196,7 +196,9 @@ static void gpio_write(void *arg, long period)
 static void gpio_read(void *arg, long period)
 {
      for (int n = 0; n < pins; n++) {
-        *port_data[n] = 1;
+        if(n != atoi(ini_data.SPINDLE_PWM_PIN[1])){
+            *port_data[n] = 1;
+        }
      }
 }
 
