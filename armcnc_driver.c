@@ -44,6 +44,9 @@ MODULE_AUTHOR("ARMCNC");
 MODULE_DESCRIPTION("Driver for ARMCNC");
 MODULE_LICENSE("GPL");
 
+static void gpio_write(void *arg, long period);
+static void gpio_read(void *arg, long period);
+
 void read_ini_trim(char *str)
 {
     char *end;
