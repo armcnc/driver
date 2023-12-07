@@ -253,8 +253,6 @@ void gpio_read(void *arg, long period)
     {
         if (!gpio_in_mask[port]) continue;
 
-        port_state = gpio_port_get(port, 0);
-
         for (pin = gpio_pins_cnt[port]; pin--;) {
             if (!(gpio_in_mask[port] & pin_msk[pin])) continue;
 
