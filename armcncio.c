@@ -82,7 +82,7 @@ int32_t malloc_and_export(const char *comp_name, int32_t comp_id)
         gpio_hal_drive[port] = hal_malloc(GPIO_PINS_MAX_CNT * sizeof(hal_u32_t *));
 
         if (!gpio_hal_0[port] || !gpio_hal_1[port] || !gpio_hal_pull[port] || !gpio_hal_drive[port]) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[error]: %s.gpio: port %s hal_malloc() failed \n", comp_name, gpio_name[port]);
+            rtapi_print_msg(RTAPI_MSG_ERR, "[error]: %s.gpio: port %s hal_malloc() failed\n", comp_name, gpio_name[port]);
             return -1;
         }
     }
@@ -113,7 +113,7 @@ int32_t malloc_and_export(const char *comp_name, int32_t comp_id)
             retval += hal_pin_u32_newf(HAL_IN, &gpio_hal_drive[port][pin], comp_id, "%s.gpio.%s-multi-drive-level", comp_name, token);
 
             if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[error]: %s.gpio: pin %s export failed \n", comp_name, token);
+                rtapi_print_msg(RTAPI_MSG_ERR, "[error]: %s.gpio: pin %s export failed\n", comp_name, token);
                 return -1;
             }
 
@@ -185,7 +185,7 @@ int32_t malloc_and_export(const char *comp_name, int32_t comp_id)
         if (pwm_ch_cnt > PWM_CH_MAX_CNT) pwm_ch_cnt = PWM_CH_MAX_CNT;
 
          pwmh = hal_malloc(pwm_ch_cnt * sizeof(pwm_ch_shmem_t));
-         if (!pwmh) PRINT_ERROR_AND_RETURN("[error]: hal_malloc() failed", -1);
+         if (!pwmh) rtapi_print_msg(RTAPI_MSG_ERR, "[error]: hal_malloc() failed\n");
 
          for (r = 0, ch = pwm_ch_cnt; ch--;)
          {
@@ -391,7 +391,7 @@ static void pwm_write(void *arg, long period)
 int32_t rtapi_app_main(void)
 {
     if ((comp_id = hal_init(comp_name)) < 0) {
-        PRINT_ERROR_AND_RETURN("[error]: hal_init() failed\n", -1);
+        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: hal_init() failed\n");
     }
 
     if (malloc_and_export(comp_name, comp_id)) {
