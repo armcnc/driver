@@ -203,10 +203,35 @@ static void gpio_read(void *arg, long period)
         if(n == atoi(ini_data.SPINDLE_PWM_PIN[1])){
             *port_data_float[n] = 0.25;
         }else{
+            int not = 0;
+            if (n == atoi(ini_data.ESTOP_PIN[1]) && ini_data.ESTOP_PIN[3] && ini_data.ESTOP_PIN[3] == "NOT") {
+                not = 1;
+            }
+            if (n == atoi(ini_data.SPINDLE_ENABLE_PIN[1]) && ini_data.SPINDLE_ENABLE_PIN[3] && ini_data.SPINDLE_ENABLE_PIN[3] == "NOT") {
+                not = 1;
+            }
+            if (n == atoi(ini_data.X_HOME_PIN[1]) && ini_data.X_HOME_PIN[3] && ini_data.X_HOME_PIN[3] == "NOT") {
+                not = 1;
+            }
+            if (n == atoi(ini_data.Y_HOME_PIN[1]) && ini_data.Y_HOME_PIN[3] && ini_data.Y_HOME_PIN[3] == "NOT") {
+                not = 1;
+            }
+            if (n == atoi(ini_data.Z_HOME_PIN[1]) && ini_data.Z_HOME_PIN[3] && ini_data.Z_HOME_PIN[3] == "NOT") {
+                not = 1;
+            }
+            if (n == atoi(ini_data.A_HOME_PIN[1]) && ini_data.A_HOME_PIN[3] && ini_data.A_HOME_PIN[3] == "NOT") {
+                not = 1;
+            }
+            if (n == atoi(ini_data.B_HOME_PIN[1]) && ini_data.B_HOME_PIN[3] && ini_data.B_HOME_PIN[3] == "NOT") {
+                not = 1;
+            }
+            if (n == atoi(ini_data.C_HOME_PIN[1]) && ini_data.C_HOME_PIN[3] && ini_data.C_HOME_PIN[3] == "NOT") {
+                not = 1;
+            }
             if (digitalRead(n) == HIGH){
-                *port_data[n] = 1;
+                *port_data[n] = not == 0 ? 1 : 0;
             }else{
-                *port_data[n] = 0;
+                *port_data[n] = not == 0 ? 0 : 1;
             }
         }
      }
