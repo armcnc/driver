@@ -6,16 +6,6 @@
  */
 
 #include "armcnc_driver.h"
-#include "./lib/wiringPi/piHiPri_c.h"
-#include "./lib/wiringPi/wiringPi.h"
-#include "./lib/wiringPi/wiringPi_c.h"
-#include "./lib/wiringPi/softPwm.h"
-#include "./lib/wiringPi/softPwm_c.h"
-
-#include "rtapi.h"
-#include "rtapi_app.h"
-#include "rtapi_math.h"
-#include "hal.h"
 
 #define MAX_INI_LINE_LENGTH 512
 #define MAX_INI_VALUE_LENGTH 512

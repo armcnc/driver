@@ -10,9 +10,14 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <errno.h>
+
+#include "./lib/wiringPi/piHiPri_c.h"
+#include "./lib/wiringPi/wiringPi.h"
+#include "./lib/wiringPi/wiringPi_c.h"
+#include "./lib/wiringPi/softPwm.h"
+#include "./lib/wiringPi/softPwm_c.h"
+
+#include "rtapi.h"
+#include "rtapi_app.h"
+#include "rtapi_math.h"
+#include "hal.h"
