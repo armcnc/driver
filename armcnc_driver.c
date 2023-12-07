@@ -18,7 +18,7 @@
 #include "hal.h"
 
 #define MAX_INI_LINE_LENGTH 512
-#define MAX_INI_VALUE_LENGTH 10
+#define MAX_INI_VALUE_LENGTH 512
 #define RTAPI_BIT(nr) (1UL << (nr))
 
 static int component_id;
