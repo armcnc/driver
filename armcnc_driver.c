@@ -229,9 +229,9 @@ static void gpio_read(void *arg, long period)
                 not = 1;
             }
             if (digitalRead(n) == HIGH){
-                *port_data[n] = not == 0 ? 1 : 0;
+                *port_data[n] = (not == 1 ? 0 : 1);
             }else{
-                *port_data[n] = not == 0 ? 0 : 1;
+                *port_data[n] = (not == 1 ? 1 : 0);
             }
         }
      }
