@@ -247,7 +247,7 @@ int rtapi_app_main(void)
         return -1;
     }
 
-    for (n = 0; n < pins; n++) {
+    for (int n = 0; n < pins; n++) {
         if(n == atoi(ini_data.ESTOP_PIN[1])){
             pinMode(atoi(ini_data.ESTOP_PIN[1]), strcmp(ini_data.ESTOP_PIN[2], "IN") == 0 ? INPUT : OUTPUT);
             retval = hal_pin_bit_new(ini_data.ESTOP_PIN[0], strcmp(ini_data.ESTOP_PIN[2], "IN") == 0 ? HAL_IN : HAL_OUT, &port_data[n], component_id);
