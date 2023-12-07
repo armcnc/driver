@@ -190,7 +190,9 @@ int read_ini_file(const char *filename, INI_RESULT *result) {
 
 static void gpio_write(void *arg, long period)
 {
-     int n;
+     for (int n = 0; n < pins; n++) {
+
+     }
 }
 
 static void gpio_read(void *arg, long period)
