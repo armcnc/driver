@@ -40,11 +40,9 @@ typedef struct {
 
 static INI_RESULT ini_data = {0};
 
-#ifdef RTAPI
 MODULE_AUTHOR("ARMCNC");
 MODULE_DESCRIPTION("Driver for ARMCNC");
 MODULE_LICENSE("GPL");
-#endif
 
 void read_ini_trim(char *str) {
     char *end;
