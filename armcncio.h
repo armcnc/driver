@@ -42,6 +42,44 @@ enum
     PWM_CTRL_BY_FREQ
 };
 
+enum
+{
+    GPIO_PULL_DISABLE,
+    GPIO_PULL_UP,
+    GPIO_PULL_DOWN,
+    GPIO_PULL_RESERVED3,
+    GPIO_PULL_CNT
+};
+
+enum
+{
+    PWM_CH_POS,
+    PWM_CH_TICK,
+    PWM_CH_TIMEOUT,
+    PWM_CH_STATE,
+    PWM_CH_WATCHDOG,
+
+    PWM_CH_P_PORT,
+    PWM_CH_P_PIN_MSK,
+    PWM_CH_P_PIN_MSKN,
+    PWM_CH_P_INV,
+    PWM_CH_P_T0,
+    PWM_CH_P_T1,
+    PWM_CH_P_STOP,
+    PWM_CH_P_TICK,
+
+    PWM_CH_D_PORT,
+    PWM_CH_D_PIN_MSK,
+    PWM_CH_D_PIN_MSKN,
+    PWM_CH_D,
+    PWM_CH_D_INV,
+    PWM_CH_D_T0,
+    PWM_CH_D_T1,
+    PWM_CH_D_CHANGE,
+
+    PWM_CH_DATA_CNT
+};
+
 typedef struct
 {
     hal_bit_t *enable;
