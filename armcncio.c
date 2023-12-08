@@ -13,14 +13,14 @@ MODULE_DESCRIPTION("Driver for ARMCNC");
 MODULE_LICENSE("GPL");
 #endif
 
-static char *in_pins = "0";
+static char *in_pins = "";
 #ifdef RTAPI
 RTAPI_MP_STRING(in_pins, "input pins");
 #endif
 static int in_pins_array[GPIO_MAX_COUNT];
 static int in_pins_count = 0;
 
-static char *out_pins = "0";
+static char *out_pins = "";
 #ifdef RTAPI
 RTAPI_MP_STRING(out_pins, "input pins");
 #endif
