@@ -89,7 +89,8 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
         }
     }
 
-    if (in_pins_count || out_pins_count){
+    if (in_pins_count > 0 && out_pins_count > 0)
+    {
         rtapi_snprintf(name, sizeof(name), "%s.gpio.write", component_name);
         retval = hal_export_funct(name, gpio_write, 0, 0, 0, component_id);
         if (retval < 0) {
