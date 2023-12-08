@@ -31,39 +31,7 @@ static char *armcnc_pwm = "";
 RTAPI_MP_STRING(armcnc_pwm, "channels control type, comma separated");
 #endif
 
-static const char *gpio_name[GPIO_PORTS_MAX_CNT] = {"PA","PB","PC","PD","PE","PF","PG","PL"};
-
-static hal_bit_t **gpio_hal_0[GPIO_PORTS_MAX_CNT];
-static hal_bit_t **gpio_hal_1[GPIO_PORTS_MAX_CNT];
-static hal_bit_t gpio_hal_0_prev[GPIO_PORTS_MAX_CNT][GPIO_PINS_MAX_CNT];
-static hal_bit_t gpio_hal_1_prev[GPIO_PORTS_MAX_CNT][GPIO_PINS_MAX_CNT];
-
-static hal_s32_t **gpio_hal_pull[GPIO_PORTS_MAX_CNT];
-static hal_s32_t gpio_hal_pull_prev[GPIO_PORTS_MAX_CNT][GPIO_PINS_MAX_CNT];
-static hal_u32_t **gpio_hal_drive[GPIO_PORTS_MAX_CNT];
-static hal_u32_t gpio_hal_drive_prev[GPIO_PORTS_MAX_CNT][GPIO_PINS_MAX_CNT];
-
-static uint32_t gpio_out_mask[GPIO_PORTS_MAX_CNT] = {0};
-static uint32_t gpio_in_mask[GPIO_PORTS_MAX_CNT] = {0};
-
-static uint32_t gpio_in_cnt = 0;
-static uint32_t gpio_out_cnt = 0;
-static uint32_t gpio_ports_cnt = 0;
-static uint32_t gpio_pins_cnt[GPIO_PINS_MAX_CNT] = {0};
-
-static uint32_t pin_msk[GPIO_PINS_MAX_CNT] = {0};
-
-static pwm_ch_shmem_t *pwmh;
-static pwm_ch_priv_t pwmp[PWM_CH_MAX_CNT] = {0};
-static uint8_t pwm_ch_cnt = 0;
-
-static void gpio_write(void *arg, long period);
-static void gpio_read(void *arg, long period);
-static void pwm_write(void *arg, long period);
-static void pwm_read(void *arg, long period);
-
-static inline
-int32_t malloc_and_export(const char *comp_name, int32_t comp_id)
+static int32_t malloc_and_export(const char *comp_name, int32_t comp_id)
 {
     int8_t* arg_str[2] = {armcnc_in, armcnc_out};
     int8_t n;
@@ -237,13 +205,12 @@ int32_t malloc_and_export(const char *comp_name, int32_t comp_id)
          #undef EXPORT_PIN
     }
 
-    // pwm_data_set(PWM_CH_CNT, pwm_ch_cnt, 1);
+    pwm_data_set(PWM_CH_CNT, pwm_ch_cnt, 1);
 
     return 0;
 }
 
-static inline
-void gpio_read(void *arg, long period)
+static void gpio_read(void *arg, long period)
 {
     static uint32_t port, pin;
 
@@ -269,8 +236,7 @@ void gpio_read(void *arg, long period)
     }
 }
 
-static inline
-void gpio_write(void *arg, long period)
+static void gpio_write(void *arg, long period)
 {
     static uint32_t port, pin, mask_0, mask_1;
 
@@ -289,13 +255,14 @@ void gpio_write(void *arg, long period)
 
             if (gpio_hal_pull_prev[port][pin] != *gpio_hal_pull[port][pin])
             {
-                if (*gpio_hal_pull[port][pin] > 0) {
-                    *gpio_hal_pull[port][pin] = 1;
+                if (*gpio_hal_pull[port][pin] == 2) {
+                    *gpio_hal_pull[port][pin] = 2;
                     pullUpDnControl(pin, PUD_UP);
-                }else if (*gpio_hal_pull[port][pin] < 0) {
-                    *gpio_hal_pull[port][pin] = -1;
+                }else if (*gpio_hal_pull[port][pin] == 1) {
+                    *gpio_hal_pull[port][pin] = 1;
                     pullUpDnControl(pin, PUD_DOWN);
                 }else{
+                    *gpio_hal_pull[port][pin] = 0;
                     pullUpDnControl(pin, PUD_OFF);
                 }
                 gpio_hal_pull_prev[port][pin] = *gpio_hal_pull[port][pin];
@@ -360,10 +327,10 @@ static void pwm_read(void *arg, long period)
                 ph.counts = pp.counts;
                 ph.pos_fb = ph.pos_cmd;
             }else{
-                ph.pos_fb = ((hal_float_t)pwm_ch_pos_get(ch,1)) / ph.pos_scale / 1000;
+                ph.pos_fb = ((hal_float_t)pwm_ch_pos_get(ch, 1)) / ph.pos_scale / 1000;
             }
         } else {
-            ph.pos_fb = ((hal_float_t)pwm_ch_pos_get(ch,1)) / ph.pos_scale / 1000;
+            ph.pos_fb = ((hal_float_t)pwm_ch_pos_get(ch, 1)) / ph.pos_scale / 1000;
         }
     }
 }
@@ -376,17 +343,17 @@ static void pwm_write(void *arg, long period)
         if (pp.enable != ph.enable) {
             pp.enable = ph.enable;
             if ( !ph.enable ) {
-                // pwm_ch_data_set(ch, PWM_CH_WATCHDOG, 0, 1);
-                // pwm_ch_times_setup(ch, 0, 0, ph.dc_max_t, ph.dir_hold, ph.dir_setup, 1);
+                pwm_ch_data_set(ch, PWM_CH_WATCHDOG, 0, 1);
+                pwm_ch_times_setup(ch, 0, 0, ph.dc_max_t, ph.dir_hold, ph.dir_setup, 1);
                 continue;
             }
         }
-        // pwm_pins_update(ch);
-        // dc = pwm_get_new_dc(ch);
-        // f = pwm_get_new_freq(ch, period);
-        // pwm_ch_data_set(ch, PWM_CH_WATCHDOG, (f && dc ? 1000 : 0), 1);
+        pwm_pins_update(ch);
+        dc = pwm_get_new_dc(ch);
+        f = pwm_get_new_freq(ch, period);
+        pwm_ch_data_set(ch, PWM_CH_WATCHDOG, (f && dc ? 1000 : 0), 1);
         if (pp.freq_mHz != f || pp.dc_s32 != dc) {
-            // pwm_ch_times_setup(ch, f, dc, ph.dc_max_t, ph.dir_hold, ph.dir_setup, 1);
+            pwm_ch_times_setup(ch, f, dc, ph.dc_max_t, ph.dir_hold, ph.dir_setup, 1);
             pp.dc_s32 = dc;
             pp.freq_mHz = f;
         }
