@@ -47,7 +47,8 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
 
     if (in_pins == NULL || in_pins[0] == '\0')
     {
-        in_pins = "0";
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() in_pins failed \n");
+        return -1;
     }
 
     char *in_pins_token = strtok(in_pins, ",");
@@ -75,7 +76,8 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
 
     if (out_pins == NULL || out_pins[0] == '\0')
     {
-        out_pins = "0";
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() out_pins failed \n");
+        return -1;
     }
 
     char *out_pins_token = strtok(out_pins, ",");
