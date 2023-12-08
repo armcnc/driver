@@ -55,6 +55,7 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
 
     for (int in_pins_i = 0; in_pins_i < in_pins_count; in_pins_i++)
     {
+        pinMode(in_pins_array[in_pins_i], INPUT);
         retval = hal_pin_bit_newf(HAL_IN, &gpio_hal[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "in");
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() failed  code 2 \n");
@@ -77,6 +78,7 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
 
     for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
     {
+        pinMode(out_pins_array[out_pins_i], OUTPUT);
         retval = hal_pin_bit_newf(HAL_OUT, &gpio_hal[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, out_pins_array[out_pins_i], "out");
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() failed  code 4 \n");
@@ -112,7 +114,6 @@ static void gpio_read(void *arg, long period)
 {
     for (int in_pins_i = 0; in_pins_i < in_pins_count; in_pins_i++)
     {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[info]: %d \n", in_pins_array[in_pins_i]);
         if (digitalRead(in_pins_array[in_pins_i]) == HIGH)
         {
             *gpio_hal[in_pins_array[in_pins_i]] = 1;
