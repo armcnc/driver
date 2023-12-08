@@ -40,7 +40,7 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
     gpio_hal_not = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
     gpio_hal_up_down = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_s32_t *));
 
-    if (!gpio_hal[port] || !gpio_hal_not[port] || !gpio_hal_up_down[port]) {
+    if (!gpio_hal || !gpio_hal_not || !gpio_hal_up_down) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() failed code 1 \n");
         return -1;
     }
