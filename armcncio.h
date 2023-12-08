@@ -26,6 +26,15 @@
 #define GPIO_PINS_MAX_CNT 24
 #define PWM_CH_MAX_CNT 16
 
+enum
+{
+    GPIO_PULL_DISABLE,
+    GPIO_PULL_UP,
+    GPIO_PULL_DOWN,
+    GPIO_PULL_RESERVED3,
+    GPIO_PULL_CNT
+};
+
 static const char *gpio_name[GPIO_PORTS_MAX_CNT] = {"PA","PB","PC","PD","PE","PF","PG","PL"};
 
 static hal_bit_t **gpio_hal_0[GPIO_PORTS_MAX_CNT];
