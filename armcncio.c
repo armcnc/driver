@@ -45,6 +45,16 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
         return -1;
     }
 
+    if (in_pins == NULL || in_pins[0] == '\0')
+    {
+        in_pins = "0";
+    }
+
+    if (out_pins == NULL || out_pins[0] == '\0')
+    {
+        out_pins = "0";
+    }
+
     char *in_pins_token = strtok(in_pins, ",");
     while (in_pins_token != NULL)
     {
@@ -91,20 +101,17 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
         }
     }
 
-    if (in_pins_count > 0 && out_pins_count > 0)
-    {
-        rtapi_snprintf(name, sizeof(name), "%s.gpio.write", component_name);
-        retval = hal_export_funct(name, gpio_write, 0, 0, 0, component_id);
-        if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() failed  code 6 \n");
-            return -1;
-        }
-        rtapi_snprintf(name, sizeof(name), "%s.gpio.read", component_name);
-        retval = hal_export_funct(name, gpio_read, 0, 0, 0, component_id);
-        if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() failed  code 7 \n");
-            return -1;
-        }
+    rtapi_snprintf(name, sizeof(name), "%s.gpio.write", component_name);
+    retval = hal_export_funct(name, gpio_write, 0, 0, 0, component_id);
+    if (retval < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() failed  code 6 \n");
+        return -1;
+    }
+    rtapi_snprintf(name, sizeof(name), "%s.gpio.read", component_name);
+    retval = hal_export_funct(name, gpio_read, 0, 0, 0, component_id);
+    if (retval < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() failed  code 7 \n");
+        return -1;
     }
 
     return 0;
