@@ -223,7 +223,7 @@ static void gpio_write(void *arg, long period)
     }
 }
 
-int32_t rtapi_app_main(void)
+int rtapi_app_main(void)
 {
     if ((comp_id = hal_init(comp_name)) < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: hal_init() failed\n");
