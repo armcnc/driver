@@ -110,9 +110,16 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
 
 static void gpio_read(void *arg, long period)
 {
-    for (int port = in_pins_count; port--;)
+    for (int in_pins_i = 0; in_pins_i < in_pins_count; in_pins_i++)
     {
-        
+        if (digitalRead(in_pins_array[in_pins_i]) == HIGH)
+        {
+            gpio_hal[in_pins_array[in_pins_i]] = 1;
+            gpio_hal_not[in_pins_array[in_pins_i]] = 0;
+        }else{
+            gpio_hal[in_pins_array[in_pins_i]] = 0;
+            gpio_hal_not[in_pins_array[in_pins_i]] = 1;
+        }
     }
 }
 
