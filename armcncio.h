@@ -89,6 +89,15 @@ enum
     PWM_DATA_CNT
 };
 
+enum
+{
+    PWM_CH_STATE_IDLE,
+    PWM_CH_STATE_P0,
+    PWM_CH_STATE_P1,
+    PWM_CH_STATE_D0,
+    PWM_CH_STATE_D1
+};
+
 typedef struct
 {
     hal_bit_t *enable;
