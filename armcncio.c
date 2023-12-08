@@ -127,7 +127,7 @@ static void gpio_read(void *arg, long period)
 
 static void gpio_write(void *arg, long period)
 {
-    for (int port = in_pins_count; port--;)
+    for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
     {
         
     }

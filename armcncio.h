@@ -24,6 +24,8 @@
 
 #define GPIO_MAX_COUNT 40
 
+#define RTAPI_BIT(nr) (1UL << (nr))
+
 static hal_bit_t **gpio_hal;
 static hal_bit_t **gpio_hal_not;
 static hal_s32_t **gpio_hal_up_down;
