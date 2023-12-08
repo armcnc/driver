@@ -13,16 +13,16 @@ MODULE_DESCRIPTION("Driver for ARMCNC");
 MODULE_LICENSE("GPL");
 #endif
 
-static int *in_pins = "";
+static char *ins = "";
 #ifdef RTAPI
-RTAPI_MP_STRING(in_pins, "channels control type, comma separated");
+RTAPI_MP_STRING(ins, "channels control type, comma separated");
 #endif
 static int in_pins_array[GPIO_MAX_COUNT];
 static int in_pins_count = 0;
 
-static char *out_pins = "";
+static char *outs = "";
 #ifdef RTAPI
-RTAPI_MP_STRING(out_pins, "channels control type, comma separated");
+RTAPI_MP_STRING(outs, "channels control type, comma separated");
 #endif
 static int out_pins_array[GPIO_MAX_COUNT];
 static int out_pins_count = 0;
@@ -43,7 +43,7 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
         return -1;
     }
 
-    char *in_pins_token = strtok(in_pins, ",");
+    char *in_pins_token = strtok(ins, ",");
     while (in_pins_token != NULL)
     {
         in_pins_array[in_pins_count] = atoi(in_pins_token);
@@ -61,7 +61,7 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
         }
     }
 
-    char *out_pins_token = strtok(out_pins, ",");
+    char *out_pins_token = strtok(outs, ",");
     while (out_pins_token != NULL)
     {
         out_pins_array[in_pins_count] = atoi(out_pins_token);
@@ -84,7 +84,7 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
 
 static void gpio_read(void *arg, long period)
 {
-    for (port = gpio_ports_cnt; port--;)
+    for (port = in_pins_count; port--;)
     {
         
     }
@@ -92,7 +92,7 @@ static void gpio_read(void *arg, long period)
 
 static void gpio_write(void *arg, long period)
 {
-    for (port = gpio_ports_cnt; port--;)
+    for (port = in_pins_count; port--;)
     {
         
     }
