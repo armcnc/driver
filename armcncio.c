@@ -34,6 +34,8 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
 {
     int port, retval;
 
+    char name[HAL_NAME_LEN + 1];
+
     gpio_hal = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
     gpio_hal_not = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
     gpio_hal_up_down = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_s32_t *));
@@ -73,6 +75,17 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
     {
         retval = hal_pin_bit_newf(HAL_OUT, &gpio_hal[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, out_pins_array[out_pins_i], "out");
         retval += hal_pin_bit_newf(HAL_OUT, &gpio_hal_not[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-%s-not", component_name, out_pins_array[out_pins_i], "out");
+        if (retval < 0) {
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() failed \n");
+            return -1;
+        }
+    }
+
+    if (in_pins_count || out_pins_count){
+        rtapi_snprintf(name, sizeof(name), "%s.gpio.write", component_name);
+        retval = hal_export_funct(name, gpio_write, 0, 0, 0, component_id);
+        rtapi_snprintf(name, sizeof(name), "%s.gpio.read", component_name);
+        retval += hal_export_funct(name, gpio_read, 0, 0, 0, component_id);
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() failed \n");
             return -1;
