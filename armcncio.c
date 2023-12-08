@@ -114,11 +114,11 @@ static void gpio_read(void *arg, long period)
     {
         if (digitalRead(in_pins_array[in_pins_i]) == HIGH)
         {
-            gpio_hal[in_pins_array[in_pins_i]] = 1;
-            gpio_hal_not[in_pins_array[in_pins_i]] = 0;
+            *gpio_hal[in_pins_array[in_pins_i]] = 1;
+            *gpio_hal_not[in_pins_array[in_pins_i]] = 0;
         }else{
-            gpio_hal[in_pins_array[in_pins_i]] = 0;
-            gpio_hal_not[in_pins_array[in_pins_i]] = 1;
+            *gpio_hal[in_pins_array[in_pins_i]] = 0;
+            *gpio_hal_not[in_pins_array[in_pins_i]] = 1;
         }
     }
 }
