@@ -84,7 +84,7 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
 
 static void gpio_read(void *arg, long period)
 {
-    for (port = in_pins_count; port--;)
+    for (int port = in_pins_count; port--;)
     {
         
     }
@@ -92,7 +92,7 @@ static void gpio_read(void *arg, long period)
 
 static void gpio_write(void *arg, long period)
 {
-    for (port = in_pins_count; port--;)
+    for (int port = in_pins_count; port--;)
     {
         
     }
