@@ -18,14 +18,14 @@ static char *in_pins = "";
 RTAPI_MP_STRING(in_pins, "channels control type, comma separated");
 #endif
 static int in_pins_array[GPIO_MAX_COUNT];
-static int in_pins_count = 1;
+static int in_pins_count = 0;
 
 static char *out_pins = "";
 #ifdef RTAPI
 RTAPI_MP_STRING(out_pins, "channels control type, comma separated");
 #endif
 static int out_pins_array[GPIO_MAX_COUNT];
-static int out_pins_count = 1;
+static int out_pins_count = 0;
 
 static int32_t component_id;
 static const uint8_t * component_name = "armcncio";
@@ -69,6 +69,12 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
 
     for (int in_pins_i = 0; in_pins_i < in_pins_count; in_pins_i++)
     {
+
+        if (in_pins_array[in_pins_i] == 0)
+        {
+            continue;
+        }
+
         pinMode(in_pins_array[in_pins_i], INPUT);
         retval = hal_pin_bit_newf(HAL_IN, &gpio_hal_in[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "in");
         if (retval < 0) {
@@ -92,6 +98,12 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
 
     for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
     {
+
+        if (out_pins_array[out_pins_i] == 0)
+        {
+            continue;
+        }
+
         pinMode(out_pins_array[out_pins_i], OUTPUT);
         retval = hal_pin_bit_newf(HAL_OUT, &gpio_hal_out[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, out_pins_array[out_pins_i], "out");
         if (retval < 0) {
