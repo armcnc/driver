@@ -210,7 +210,7 @@ static inline void _pwm_spin_lock()
 {
     *_pwmd[PWM_ARM_LOCK] = 1;
     if (!*_pwmd[PWM_CH_CNT]) return;
-    while  *_pwmd[PWM_ARISC_LOCK]);
+    while ( *_pwmd[PWM_ARISC_LOCK] );
 }
 
 static void _pwm_spin_unlock()
