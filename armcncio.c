@@ -15,14 +15,14 @@ MODULE_LICENSE("GPL");
 
 static char *in_pins = "";
 #ifdef RTAPI
-RTAPI_MP_STRING(in_pins, "input pins");
+RTAPI_MP_STRING(in_pins, "channels control type, comma separated");
 #endif
 static int in_pins_array[GPIO_MAX_COUNT];
 static int in_pins_count = 0;
 
 static char *out_pins = "";
 #ifdef RTAPI
-RTAPI_MP_STRING(out_pins, "input pins");
+RTAPI_MP_STRING(out_pins, "channels control type, comma separated");
 #endif
 static int out_pins_array[GPIO_MAX_COUNT];
 static int out_pins_count = 0;
