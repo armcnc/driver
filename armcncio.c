@@ -135,8 +135,15 @@ static void gpio_write(void *arg, long period)
 
 int rtapi_app_main(void)
 {
+
+    if (wiringPiSetup() == -1){
+        rtapi_print_msg(RTAPI_MSG_ERR, "[error]: wiringPiSetup() failed \n");
+        return -1;
+    }
+
     if ((component_id = hal_init(component_name)) < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: hal_init() failed \n");
+        return -1;
     }
 
     if (malloc_and_export(component_name, component_id)) {
