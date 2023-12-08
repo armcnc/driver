@@ -60,7 +60,7 @@ static int32_t malloc_and_export(const char *comp_name, int32_t comp_id)
         if (!arg_str[n]) continue;
 
         int8_t *data = arg_str[n], *token;
-        int pin, found;
+        uint8_t pin, found;
         int32_t retval;
         int8_t* type_str = n ? "out" : "in";
 
@@ -79,7 +79,7 @@ static int32_t malloc_and_export(const char *comp_name, int32_t comp_id)
 
             if ( !found ) continue;
 
-            pin = atoi(token[2]);
+            pin = (uint8_t) strtoul(&token[2], NULL, 10);
 
             if (pin == 0 || pin >= GPIO_PINS_MAX_CNT) continue;
 
