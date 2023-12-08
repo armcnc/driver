@@ -50,11 +50,6 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
         in_pins = "0";
     }
 
-    if (out_pins == NULL || out_pins[0] == '\0')
-    {
-        out_pins = "0";
-    }
-
     char *in_pins_token = strtok(in_pins, ",");
     while (in_pins_token != NULL)
     {
@@ -76,6 +71,11 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() failed  code 3 \n");
             return -1;
         }
+    }
+
+    if (out_pins == NULL || out_pins[0] == '\0')
+    {
+        out_pins = "0";
     }
 
     char *out_pins_token = strtok(out_pins, ",");
