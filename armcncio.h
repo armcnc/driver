@@ -53,7 +53,7 @@ enum
 
 enum
 {
-    PWM_CH_POS
+    PWM_CH_POS,
     PWM_CH_TICK,
     PWM_CH_TIMEOUT,
     PWM_CH_STATE,
@@ -435,7 +435,7 @@ static int32_t pwm_get_new_freq(uint8_t ch, long period)
     }
 
     ph.freq_fb = freq ? ((hal_float_t) freq) / 1000 : 0.0;
-    
+
     return freq;
 }
 
