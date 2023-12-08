@@ -70,10 +70,7 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
     for (int in_pins_i = 0; in_pins_i < in_pins_count; in_pins_i++)
     {
 
-        if (in_pins_array[in_pins_i] == 0)
-        {
-            continue;
-        }
+        if (in_pins_array[in_pins_i] == 0) continue;
 
         pinMode(in_pins_array[in_pins_i], INPUT);
         retval = hal_pin_bit_newf(HAL_IN, &gpio_hal_in[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "in");
@@ -99,10 +96,7 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
     for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
     {
 
-        if (out_pins_array[out_pins_i] == 0)
-        {
-            continue;
-        }
+        if (out_pins_array[out_pins_i] == 0) continue;
 
         pinMode(out_pins_array[out_pins_i], OUTPUT);
         retval = hal_pin_bit_newf(HAL_OUT, &gpio_hal_out[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, out_pins_array[out_pins_i], "out");
