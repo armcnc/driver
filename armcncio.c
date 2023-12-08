@@ -13,7 +13,7 @@ MODULE_DESCRIPTION("Driver for ARMCNC");
 MODULE_LICENSE("GPL");
 #endif
 
-static char *in_pins = "";
+static int *in_pins = "";
 #ifdef RTAPI
 RTAPI_MP_STRING(in_pins, "channels control type, comma separated");
 #endif
