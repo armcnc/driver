@@ -179,7 +179,7 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
                 rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal enable failed \n");
                 return -1;
             }
-            *pwm_hal[pwm_types_i].enable = 0;
+            *pwm_hal[pwm_types_i].enable = 1;
 
             retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].pwm_port, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pwm-port");
             if (retval < 0) {
