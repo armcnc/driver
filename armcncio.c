@@ -238,9 +238,9 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
                 rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dc_max failed \n");
                 return -1;
             }
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_max, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-max");
+            retval = hal_pin_u32_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_max_t, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-max-t");
             if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dc_max failed \n");
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dc_max_t failed \n");
                 return -1;
             }
         }
