@@ -34,3 +34,5 @@ static hal_s32_t **gpio_hal_up_down;
 
 static void gpio_write(void *arg, long period);
 static void gpio_read(void *arg, long period);
+static void pwm_write(void *arg, long period);
+static void pwm_read(void *arg, long period);
