@@ -179,70 +179,170 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
                 rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal enable failed \n");
                 return -1;
             }
-            *pwm_hal[pwm_types_i].enable = 1;
+            *pwm_hal[pwm_types_i].enable = 0;
 
             retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].pwm_port, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pwm-port");
             if (retval < 0) {
                 rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal pwm_port failed \n");
                 return -1;
             }
+            *pwm_hal[pwm_types_i].pwm_port = UINT32_MAX;
             retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].pwm_pin, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pwm-pin");
             if (retval < 0) {
                 rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal pwm_pin failed \n");
                 return -1;
             }
+            *pwm_hal[pwm_types_i].pwm_pin = UINT32_MAX;
             retval = hal_pin_bit_newf(HAL_IN, &pwm_hal[pwm_types_i].pwm_invert, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pwm-invert");
             if (retval < 0) {
                 rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal pwm_invert failed \n");
                 return -1;
             }
+            *pwm_hal[pwm_types_i].pwm_invert = 0;
 
             retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].dir_port, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-port");
             if (retval < 0) {
                 rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dir_port failed \n");
                 return -1;
             }
+            *pwm_hal[pwm_types_i].dir_port = UINT32_MAX;
             retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].dir_pin, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-pin");
             if (retval < 0) {
                 rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dir_pin failed \n");
                 return -1;
             }
+            *pwm_hal[pwm_types_i].dir_pin = UINT32_MAX;
             retval = hal_pin_bit_newf(HAL_IN, &pwm_hal[pwm_types_i].dir_invert, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-invert");
             if (retval < 0) {
                 rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dir_invert failed \n");
                 return -1;
             }
+            *pwm_hal[pwm_types_i].dir_invert = 0;
             retval = hal_pin_u32_newf(HAL_IO, &pwm_hal[pwm_types_i].dir_hold, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-hold");
             if (retval < 0) {
                 rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dir_hold failed \n");
                 return -1;
             }
+            *pwm_hal[pwm_types_i].dir_hold = 50000;
             retval = hal_pin_u32_newf(HAL_IO, &pwm_hal[pwm_types_i].dir_setup, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-setup");
             if (retval < 0) {
                 rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dir_setup failed \n");
                 return -1;
             }
+            *pwm_hal[pwm_types_i].dir_setup = 50000;
 
             retval = hal_pin_float_newf(HAL_IN, &pwm_hal[pwm_types_i].dc_cmd, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-cmd");
             if (retval < 0) {
                 rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dc_cmd failed \n");
                 return -1;
             }
+            *pwm_hal[pwm_types_i].dc_cmd = 0.0;
             retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_min, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-min");
             if (retval < 0) {
                 rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dc_min failed \n");
                 return -1;
             }
+            *pwm_hal[pwm_types_i].dc_min = -1.0;
             retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_max, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-max");
             if (retval < 0) {
                 rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dc_max failed \n");
                 return -1;
             }
+            *pwm_hal[pwm_types_i].dc_max = 1.0;
             retval = hal_pin_u32_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_max_t, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-max-t");
             if (retval < 0) {
                 rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dc_max_t failed \n");
                 return -1;
             }
+            *pwm_hal[pwm_types_i].dc_max_t = 0;
+            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_offset, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-offset");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dc_offset failed \n");
+                return -1;
+            }
+            *pwm_hal[pwm_types_i].dc_offset = 0.0;
+            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_scale, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-scale");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dc_scale failed \n");
+                return -1;
+            }
+            *pwm_hal[pwm_types_i].dc_scale = 1.0;
+            
+            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].pos_scale, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pos-scale");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal pos_scale failed \n");
+                return -1;
+            }
+            *pwm_hal[pwm_types_i].pos_scale = 1.0;
+            retval = hal_pin_float_newf(HAL_IN, &pwm_hal[pwm_types_i].pos_cmd, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pos-cmd");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal pos_cmd failed \n");
+                return -1;
+            }
+            *pwm_hal[pwm_types_i].pos_cmd = 0.0;
+
+            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].vel_scale, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "vel-scale");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal vel_scale failed \n");
+                return -1;
+            }
+            *pwm_hal[pwm_types_i].vel_scale = 1.0;
+            retval = hal_pin_float_newf(HAL_IN, &pwm_hal[pwm_types_i].vel_cmd, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "vel-cmd");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal vel_cmd failed \n");
+                return -1;
+            }
+            *pwm_hal[pwm_types_i].vel_cmd = 0.0;
+
+            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].freq_cmd, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "freq-cmd");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal freq_cmd failed \n");
+                return -1;
+            }
+            *pwm_hal[pwm_types_i].freq_cmd = 0.0;
+            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].freq_min, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "freq-min");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal freq_min failed \n");
+                return -1;
+            }
+            *pwm_hal[pwm_types_i].freq_min = 50.0;
+            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].freq_max, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "freq-max");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal freq_max failed \n");
+                return -1;
+            }
+            *pwm_hal[pwm_types_i].freq_max = 500000.0;
+
+            retval = hal_pin_float_newf(HAL_OUT, &pwm_hal[pwm_types_i].dc_fb, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-fb");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dc_fb failed \n");
+                return -1;
+            }
+            *pwm_hal[pwm_types_i].dc_fb = 0.0;
+            retval = hal_pin_float_newf(HAL_OUT, &pwm_hal[pwm_types_i].pos_fb, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pos-fb");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal pos_fb failed \n");
+                return -1;
+            }
+            *pwm_hal[pwm_types_i].pos_fb = 0.0;
+            retval = hal_pin_float_newf(HAL_OUT, &pwm_hal[pwm_types_i].freq_fb, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "freq-fb");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal freq_fb failed \n");
+                return -1;
+            }
+            *pwm_hal[pwm_types_i].freq_fb = 0.0;
+            retval = hal_pin_float_newf(HAL_OUT, &pwm_hal[pwm_types_i].vel_fb, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "vel-fb");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal vel_fb failed \n");
+                return -1;
+            }
+            *pwm_hal[pwm_types_i].vel_fb = 0.0;
+            retval = hal_pin_s32_newf(HAL_OUT, &pwm_hal[pwm_types_i].counts, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "counts");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal vel_fb failed \n");
+                return -1;
+            }
+            *pwm_hal[pwm_types_i].counts = 0;
         }
     }
 
