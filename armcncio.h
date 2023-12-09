@@ -30,7 +30,8 @@ static hal_bit_t **gpio_hal_in;
 static hal_bit_t **gpio_hal_in_not;
 static hal_bit_t **gpio_hal_out;
 static hal_bit_t **gpio_hal_out_not;
-static hal_s32_t **gpio_hal_up_down;
+static hal_s32_t **gpio_hal_pull;
+static hal_u32_t **gpio_hal_drive;
 
 static void gpio_write(void *arg, long period);
 static void gpio_read(void *arg, long period);

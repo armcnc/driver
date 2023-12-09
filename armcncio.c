@@ -65,9 +65,10 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
     gpio_hal_in_not = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
     gpio_hal_out = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
     gpio_hal_out_not = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
-    gpio_hal_up_down = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_s32_t *));
+    gpio_hal_pull = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_s32_t *));
+    gpio_hal_drive = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_u32_t *));
 
-    if (!gpio_hal_in || !gpio_hal_in_not || !gpio_hal_out || !gpio_hal_out_not || !gpio_hal_up_down) {
+    if (!gpio_hal_in || !gpio_hal_in_not || !gpio_hal_out || !gpio_hal_out_not || !gpio_hal_pull || !gpio_hal_drive) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() gpio_hal failed \n");
         return -1;
     }
@@ -98,16 +99,34 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
             return -1;
         }
 
-        retval = hal_pin_s32_newf(HAL_IN, &gpio_hal_up_down[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "up-down");
+        retval = hal_pin_s32_newf(HAL_IN, &gpio_hal_pull[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "pull");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() gpio_hal_up_down failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() gpio_hal_pull failed \n");
             return -1;
         }
 
-        *gpio_hal_in[in_pins_array[in_pins_i]] = digitalRead(in_pins_array[in_pins_i]) == HIGH ? 1 : 0;
-        *gpio_hal_up_down[in_pins_array[in_pins_i]] = *gpio_hal_in[in_pins_array[in_pins_i]] ? 0 : 1;
+        retval = hal_pin_u32_newf(HAL_IN, &gpio_hal_drive[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "drive");
+        if (retval < 0) {
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() gpio_hal_drive failed \n");
+            return -1;
+        }
 
+        // disable pin pull up/down
         pullUpDnControl(in_pins_array[in_pins_i], PUD_OFF);
+
+        // get/set pin init state
+        *gpio_hal_in[in_pins_array[in_pins_i]] = digitalRead(in_pins_array[in_pins_i]) == HIGH ? 1 : 0;
+        *gpio_hal_in_not[in_pins_array[in_pins_i]] = *gpio_hal_in[in_pins_array[in_pins_i]] ? 0 : 1;
+
+        // get pin pull up/down state
+        switch (armcnc_xj3_get_gpio_pull(getAlt(in_pins_array[in_pins_i]))) {
+            case PUD_UP:      *gpio_hal_pull[in_pins_array[in_pins_i]] = 2;
+            case PUD_DOWN:    *gpio_hal_pull[in_pins_array[in_pins_i]] = 1;
+            default:          *gpio_hal_pull[in_pins_array[in_pins_i]] = 0;
+        }
+
+        // get pin multi-drive (open drain) state
+        *gpio_hal_drive[in_pins_array[in_pins_i]] = armcnc_xj3_get_pin_drive(getAlt(in_pins_array[in_pins_i]));
     }
 
     char *out_pins_token = strtok(out_pins, ",");
