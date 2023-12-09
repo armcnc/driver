@@ -174,7 +174,7 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
 
         for (int pwm_types_i = 0; pwm_types_i < pwm_types_count; pwm_types_i++)
         {
-            retval = hal_pin_bit_newf(IO_TYPE, &pwm_hal[pwm_types_i].enable, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "enable");
+            retval = hal_pin_bit_newf(HAL_IN, &pwm_hal[pwm_types_i].enable, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "enable");
             if (retval < 0) {
                 rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() gpio_hal_out_not failed \n");
                 return -1;
