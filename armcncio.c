@@ -55,6 +55,12 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
         return -1;
     }
 
+    if (pwm_types == NULL || pwm_types[0] == '\0')
+    {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_types failed \n");
+        return -1;
+    }
+
     gpio_hal_in = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
     gpio_hal_in_not = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
     gpio_hal_out = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
@@ -97,6 +103,11 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() gpio_hal_up_down failed \n");
             return -1;
         }
+
+        *gpio_hal_in[in_pins_array[in_pins_i]] = digitalRead(in_pins_array[in_pins_i]) == HIGH ? 1 : 0;
+        *gpio_hal_up_down[in_pins_array[in_pins_i]] = *gpio_hal_in[in_pins_array[in_pins_i]] ? 0 : 1;
+
+        pullUpDnControl(in_pins_array[in_pins_i], PUD_OFF);
     }
 
     char *out_pins_token = strtok(out_pins, ",");
@@ -125,6 +136,19 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() gpio_hal_out_not failed \n");
             return -1;
         }
+    }
+
+    char *pwm_types_token = strtok(pwm_types, ",");
+    while (pwm_types_token != NULL)
+    {
+        pwm_types_array[pwm_types_count] = atoi(pwm_types_token);
+        pwm_types_count++;
+        pwm_types_token = strtok(NULL, ",");
+    }
+
+    if (pwm_types_count > 0)
+    {
+
     }
 
     rtapi_snprintf(name, sizeof(name), "%s.gpio.write", component_name);
