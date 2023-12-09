@@ -62,6 +62,12 @@ typedef struct
     hal_float_t *vel_fb; // out
     hal_float_t *freq_fb; // out
     hal_s32_t   *counts; // out
+
+    hal_u32_t ctrl_type;
+    hal_s32_t freq_mHz;
+    hal_u32_t freq_min_mHz;
+    hal_u32_t freq_max_mHz;
+    hal_s32_t dc_s32;
 }pwm_hal_struct;
 
 static hal_bit_t **gpio_hal_in;

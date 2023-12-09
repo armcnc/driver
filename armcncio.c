@@ -343,6 +343,11 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
                 return -1;
             }
             *pwm_hal[pwm_types_i].counts = 0;
+
+            *pwm_hal[pwm_types_i].freq_mHz = 0;
+            *pwm_hal[pwm_types_i].freq_min_mHz = 50000;
+            *pwm_hal[pwm_types_i].freq_max_mHz = 500000000;
+            *pwm_hal[pwm_types_i].dc_s32 = 0;
         }
     }
 
@@ -394,6 +399,19 @@ static void gpio_read(void *arg, long period)
 
 static void gpio_write(void *arg, long period)
 {
+
+    for (int in_pins_i = 0; in_pins_i < in_pins_count; in_pins_i++)
+    {
+        if(*gpio_hal_in[in_pins_array[in_pins_i]])
+        {
+            *gpio_hal_in_not[in_pins_array[in_pins_i]] = 0;
+            digitalWrite(in_pins_array[in_pins_i], HIGH);
+        }else{
+            *gpio_hal_in_not[in_pins_array[in_pins_i]] = 1;
+            digitalWrite(in_pins_array[in_pins_i], LOW);
+        }
+    }
+
     for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
     {
         
