@@ -139,7 +139,6 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
 
     for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
     {
-
         if (out_pins_array[out_pins_i] == 0) continue;
 
         pinMode(out_pins_array[out_pins_i], OUTPUT);
@@ -167,7 +166,20 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
 
     if (pwm_types_count > 0)
     {
+        pwm_hal = hal_malloc(pwm_types_count * sizeof(pwm_hal_struct));
+        if (!pwm_hal) {
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal failed \n");
+            return -1;
+        }
 
+        for (int pwm_types_i = 0; pwm_types_i < pwm_types_count; pwm_types_i++)
+        {
+            retval = hal_pin_bit_newf(IO_TYPE, &pwm_hal[pwm_types_i].enable, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "enable");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() gpio_hal_out_not failed \n");
+                return -1;
+            }
+        }
     }
 
     rtapi_snprintf(name, sizeof(name), "%s.gpio.write", component_name);
