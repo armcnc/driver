@@ -32,11 +32,11 @@ typedef struct
 
     hal_u32_t *pwm_port; // in
     hal_u32_t *pwm_pin; // in
-    hal_bit_t *pwm_inv; // in
+    hal_bit_t *pwm_invert; // in
 
     hal_u32_t *dir_port; // in
     hal_u32_t *dir_pin; // in
-    hal_bit_t *dir_inv; // in
+    hal_bit_t *dir_invert; // in
     hal_u32_t *dir_hold; // io
     hal_u32_t *dir_setup; // io
 

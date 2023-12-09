@@ -176,7 +176,71 @@ static int32_t malloc_and_export(const char *component_name, int32_t component_i
         {
             retval = hal_pin_bit_newf(HAL_IN, &pwm_hal[pwm_types_i].enable, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "enable");
             if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() gpio_hal_out_not failed \n");
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal enable failed \n");
+                return -1;
+            }
+            *pwm_hal[pwm_types_i].enable = 0;
+
+            retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].pwm_port, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pwm-port");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal pwm_port failed \n");
+                return -1;
+            }
+            retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].pwm_pin, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pwm-pin");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal pwm_pin failed \n");
+                return -1;
+            }
+            retval = hal_pin_bit_newf(HAL_IN, &pwm_hal[pwm_types_i].pwm_invert, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pwm-invert");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal pwm_invert failed \n");
+                return -1;
+            }
+
+            retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].dir_port, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-port");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dir_port failed \n");
+                return -1;
+            }
+            retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].dir_pin, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-pin");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dir_pin failed \n");
+                return -1;
+            }
+            retval = hal_pin_bit_newf(HAL_IN, &pwm_hal[pwm_types_i].dir_invert, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-invert");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dir_invert failed \n");
+                return -1;
+            }
+            retval = hal_pin_u32_newf(HAL_IO, &pwm_hal[pwm_types_i].dir_hold, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-hold");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dir_hold failed \n");
+                return -1;
+            }
+            retval = hal_pin_u32_newf(HAL_IO, &pwm_hal[pwm_types_i].dir_setup, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-setup");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dir_setup failed \n");
+                return -1;
+            }
+
+            retval = hal_pin_float_newf(HAL_IN, &pwm_hal[pwm_types_i].dc_cmd, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-cmd");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dc_cmd failed \n");
+                return -1;
+            }
+            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_min, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-min");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dc_min failed \n");
+                return -1;
+            }
+            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_max, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-max");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dc_max failed \n");
+                return -1;
+            }
+            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_max, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-max");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: malloc_and_export() pwm_hal dc_max failed \n");
                 return -1;
             }
         }
