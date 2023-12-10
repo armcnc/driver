@@ -72,10 +72,16 @@ typedef struct
 
 static hal_bit_t **gpio_hal_in;
 static hal_bit_t **gpio_hal_in_not;
+static hal_bit_t **gpio_hal_in_prev;
+static hal_bit_t **gpio_hal_in_not_prev;
+
 static hal_bit_t **gpio_hal_out;
 static hal_bit_t **gpio_hal_out_not;
+
 static hal_s32_t **gpio_hal_pull;
+
 static hal_u32_t **gpio_hal_drive;
+
 static pwm_hal_struct *pwm_hal;
 
 static void gpio_write(void *arg, long period);
