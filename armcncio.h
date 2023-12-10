@@ -77,10 +77,14 @@ static hal_bit_t gpio_hal_in_not_prev[GPIO_MAX_COUNT];
 
 static hal_bit_t **gpio_hal_out;
 static hal_bit_t **gpio_hal_out_not;
+static hal_bit_t gpio_hal_out_prev[GPIO_MAX_COUNT];
+static hal_bit_t gpio_hal_out_not_prev[GPIO_MAX_COUNT];
 
 static hal_s32_t **gpio_hal_pull;
+static hal_s32_t gpio_hal_pull_prev[GPIO_MAX_COUNT];
 
 static hal_u32_t **gpio_hal_drive;
+static hal_u32_t gpio_hal_drive_prev[GPIO_MAX_COUNT];
 
 static pwm_hal_struct *pwm_hal;
 

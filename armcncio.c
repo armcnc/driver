@@ -126,9 +126,11 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
             case PUD_DOWN:    *gpio_hal_pull[in_pins_array[in_pins_i]] = 1;
             default:          *gpio_hal_pull[in_pins_array[in_pins_i]] = 0;
         }
+        gpio_hal_pull_prev[in_pins_array[in_pins_i]] = *gpio_hal_pull[in_pins_array[in_pins_i]];
 
         // get pin multi-drive (open drain) state
         *gpio_hal_drive[in_pins_array[in_pins_i]] = armcnc_xj3_get_pin_drive(getAlt(in_pins_array[in_pins_i]));
+        gpio_hal_drive_prev[in_pins_array[in_pins_i]] = *gpio_hal_drive[in_pins_array[in_pins_i]];
     }
 
     char *out_pins_token = strtok(out_pins, ",");
@@ -156,6 +158,11 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_hal_out_not failed \n");
             return -1;
         }
+
+        *gpio_hal_out[out_pins_array[out_pins_i]] = digitalRead(out_pins_array[out_pins_i]) == HIGH ? 1 : 0;
+        *gpio_hal_out_not[out_pins_array[out_pins_i]] = *gpio_hal_in[out_pins_array[out_pins_i]] ? 0 : 1;
+        gpio_hal_out_prev[out_pins_array[out_pins_i]] = *gpio_hal_out[in_pins_array[out_pins_i]];
+        gpio_hal_out_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_out_not[in_pins_array[out_pins_i]];
     }
 
     char *pwm_types_token = strtok(pwm_types, ",");
@@ -430,29 +437,40 @@ static void gpio_write(void *arg, long period)
             gpio_hal_in_prev[in_pins_array[in_pins_i]] = *gpio_hal_in[in_pins_array[in_pins_i]];
             gpio_hal_in_not_prev[in_pins_array[in_pins_i]] = *gpio_hal_in_not[in_pins_array[in_pins_i]];
         }
+
+        
     }
 
-    // for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
-    // {
-    //     if(*gpio_hal_out[out_pins_array[out_pins_i]] == PUD_OFF)
-    //     {
-    //         *gpio_hal_out[out_pins_array[out_pins_i]] = PUD_OFF;
-    //         *gpio_hal_out_not[out_pins_array[out_pins_i]] = PUD_OFF;
-    //         pullUpDnControl(in_pins_array[out_pins_i], PUD_OFF);
-    //     }
-    //     if(*gpio_hal_out[out_pins_array[out_pins_i]] == PUD_UP)
-    //     {
-    //         *gpio_hal_out[out_pins_array[out_pins_i]] = PUD_UP;
-    //         *gpio_hal_out_not[out_pins_array[out_pins_i]] = PUD_DOWN;
-    //         pullUpDnControl(in_pins_array[out_pins_i], PUD_UP);
-    //     }
-    //     if(*gpio_hal_out[out_pins_array[out_pins_i]] == PUD_DOWN)
-    //     {
-    //         *gpio_hal_out[out_pins_array[out_pins_i]] = PUD_DOWN;
-    //         *gpio_hal_out_not[out_pins_array[out_pins_i]] = PUD_UP;
-    //         pullUpDnControl(in_pins_array[out_pins_i], PUD_DOWN);
-    //     }
-    // }
+    for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
+    {
+        if(*gpio_hal_out[out_pins_array[out_pins_i]] != gpio_hal_out_prev[out_pins_array[out_pins_i]])
+        {
+            if (*gpio_hal_out[out_pins_array[out_pins_i]] == HIGH)
+            {
+                *gpio_hal_out_not[out_pins_array[out_pins_i]] = 0;
+                digitalWrite(out_pins_array[out_pins_i], HIGH);
+            }else{
+                *gpio_hal_out_not[out_pins_array[out_pins_i]] = 1;
+                digitalWrite(out_pins_array[out_pins_i], LOW);
+            }
+            gpio_hal_out_prev[out_pins_array[out_pins_i]] = *gpio_hal_out[out_pins_array[out_pins_i]];
+            gpio_hal_out_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_out_not[out_pins_array[out_pins_i]];
+        }
+
+        if(*gpio_hal_out_not[out_pins_array[out_pins_i]] != gpio_hal_out_not_prev[out_pins_array[out_pins_i]])
+        {
+            if (*gpio_hal_out_not[out_pins_array[out_pins_i]] == HIGH)
+            {
+                *gpio_hal_out[out_pins_array[out_pins_i]] = 0;
+                digitalWrite(out_pins_array[out_pins_i], LOW);
+            }else{
+                *gpio_hal_out[out_pins_array[out_pins_i]] = 1;
+                digitalWrite(out_pins_array[out_pins_i], HIGH);
+            }
+            gpio_hal_out_prev[out_pins_array[out_pins_i]] = *gpio_hal_out[out_pins_array[out_pins_i]];
+            gpio_hal_out_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_out_not[out_pins_array[out_pins_i]];
+        }
+    }
 }
 
 static void pwm_read(void *arg, long period)
