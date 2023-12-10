@@ -407,6 +407,8 @@ static void gpio_write(void *arg, long period)
     {
         if (in_pins_i == 0) continue;
 
+        if (!(*gpio_hal_in[in_pins_array[in_pins_i]] || *gpio_hal_in_not[in_pins_array[in_pins_i]])) continue;
+
         if(*gpio_hal_in[in_pins_array[in_pins_i]] != *gpio_hal_in_prev[in_pins_array[in_pins_i]])
         {
             if (*gpio_hal_in[in_pins_array[in_pins_i]])
