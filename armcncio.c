@@ -186,7 +186,7 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
                 rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal enable failed \n");
                 return -1;
             }
-            // *pwm_hal[pwm_types_i].enable = 0;
+            *pwm_hal[pwm_types_i].enable = 0;
 
             retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].pwm_port, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pwm-port");
             if (retval < 0) {
