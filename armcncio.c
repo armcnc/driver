@@ -401,19 +401,19 @@ static void gpio_write(void *arg, long period)
 {
     for (int in_pins_i = 0; in_pins_i < in_pins_count; in_pins_i++)
     {
-        if(*gpio_hal_in[in_pins_array[in_pins_i]] != digitalRead(in_pins_array[in_pins_i]))
-        {
-            if (*gpio_hal_in[in_pins_array[in_pins_i]] == HIGH)
-            {
-                *gpio_hal_in[in_pins_array[in_pins_i]] = 1;
-                *gpio_hal_in_not[in_pins_array[in_pins_i]] = 0;
-                digitalWrite(in_pins_array[in_pins_i], HIGH);
-            }else{
-                *gpio_hal_in[in_pins_array[in_pins_i]] = 0;
-                *gpio_hal_in_not[in_pins_array[in_pins_i]] = 1;
-                digitalWrite(in_pins_array[in_pins_i], LOW);
-            }
-        }
+        // if(*gpio_hal_in[in_pins_array[in_pins_i]] != digitalRead(in_pins_array[in_pins_i]))
+        // {
+        //     if (*gpio_hal_in[in_pins_array[in_pins_i]] == HIGH)
+        //     {
+        //         *gpio_hal_in[in_pins_array[in_pins_i]] = 1;
+        //         *gpio_hal_in_not[in_pins_array[in_pins_i]] = 0;
+        //         digitalWrite(in_pins_array[in_pins_i], HIGH);
+        //     }else{
+        //         *gpio_hal_in[in_pins_array[in_pins_i]] = 0;
+        //         *gpio_hal_in_not[in_pins_array[in_pins_i]] = 1;
+        //         digitalWrite(in_pins_array[in_pins_i], LOW);
+        //     }
+        // }
     }
 
     // for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
