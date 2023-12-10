@@ -63,14 +63,12 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
 
     gpio_hal_in = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
     gpio_hal_in_not = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
-    gpio_hal_in_prev = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
-    gpio_hal_in_not_prev = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
     gpio_hal_out = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
     gpio_hal_out_not = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
     gpio_hal_pull = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_s32_t *));
     gpio_hal_drive = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_u32_t *));
 
-    if (!gpio_hal_in || !gpio_hal_in_not || !gpio_hal_in_prev || !gpio_hal_in_not_prev || !gpio_hal_out || !gpio_hal_out_not || !gpio_hal_pull || !gpio_hal_drive) {
+    if (!gpio_hal_in || !gpio_hal_in_not || !gpio_hal_out || !gpio_hal_out_not || !gpio_hal_pull || !gpio_hal_drive) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_hal failed \n");
         return -1;
     }
