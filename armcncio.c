@@ -403,9 +403,11 @@ static void gpio_write(void *arg, long period)
     {
         if(*gpio_hal_in[in_pins_array[in_pins_i]] == HIGH)
         {
+            *gpio_hal_in[in_pins_array[in_pins_i]] = 1;
             *gpio_hal_in_not[in_pins_array[in_pins_i]] = 0;
             digitalWrite(in_pins_array[in_pins_i], HIGH);
         }else{
+            *gpio_hal_in[in_pins_array[in_pins_i]] = 0;
             *gpio_hal_in_not[in_pins_array[in_pins_i]] = 1;
             digitalWrite(in_pins_array[in_pins_i], LOW);
         }
