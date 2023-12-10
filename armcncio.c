@@ -437,6 +437,26 @@ static void gpio_write(void *arg, long period)
             gpio_hal_in_prev[in_pins_array[in_pins_i]] = *gpio_hal_in[in_pins_array[in_pins_i]];
             gpio_hal_in_not_prev[in_pins_array[in_pins_i]] = *gpio_hal_in_not[in_pins_array[in_pins_i]];
         }
+
+        if (*gpio_hal_pull[in_pins_array[in_pins_i]] != gpio_hal_pull_prev[in_pins_array[in_pins_i]])
+        {
+            if (*gpio_hal_pull[in_pins_array[in_pins_i]] == PUD_OFF)
+            {
+                *gpio_hal_pull[in_pins_array[in_pins_i]] = 0;
+                pullUpDnControl(in_pins_array[in_pins_i], PUD_OFF);
+            }
+            if (*gpio_hal_pull[in_pins_array[in_pins_i]] == PUD_UP)
+            {
+                *gpio_hal_pull[in_pins_array[in_pins_i]] = 2;
+                pullUpDnControl(in_pins_array[in_pins_i], PUD_UP);
+            }
+            if (*gpio_hal_pull[in_pins_array[in_pins_i]] == PUD_DOWN)
+            {
+                *gpio_hal_pull[in_pins_array[in_pins_i]] = 1;
+                pullUpDnControl(in_pins_array[in_pins_i], PUD_DOWN);
+            }
+            gpio_hal_pull_prev[in_pins_array[in_pins_i]] = *gpio_hal_pull[in_pins_array[in_pins_i]];
+        }
     }
 
     for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
