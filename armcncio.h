@@ -72,8 +72,8 @@ typedef struct
 
 static hal_bit_t **gpio_hal_in;
 static hal_bit_t **gpio_hal_in_not;
-static hal_bit_t **gpio_hal_in_prev;
-static hal_bit_t **gpio_hal_in_not_prev;
+static hal_bit_t gpio_hal_in_prev[GPIO_MAX_COUNT];
+static hal_bit_t gpio_hal_in_not_prev[GPIO_MAX_COUNT];
 
 static hal_bit_t **gpio_hal_out;
 static hal_bit_t **gpio_hal_out_not;
