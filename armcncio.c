@@ -161,8 +161,8 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
 
         *gpio_hal_out[out_pins_array[out_pins_i]] = digitalRead(out_pins_array[out_pins_i]) == HIGH ? 1 : 0;
         *gpio_hal_out_not[out_pins_array[out_pins_i]] = *gpio_hal_in[out_pins_array[out_pins_i]] ? 0 : 1;
-        gpio_hal_out_prev[out_pins_array[out_pins_i]] = *gpio_hal_out[in_pins_array[out_pins_i]];
-        gpio_hal_out_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_out_not[in_pins_array[out_pins_i]];
+        gpio_hal_out_prev[out_pins_array[out_pins_i]] = *gpio_hal_out[out_pins_array[out_pins_i]];
+        gpio_hal_out_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_out_not[out_pins_array[out_pins_i]];
     }
 
     char *pwm_types_token = strtok(pwm_types, ",");
@@ -437,8 +437,6 @@ static void gpio_write(void *arg, long period)
             gpio_hal_in_prev[in_pins_array[in_pins_i]] = *gpio_hal_in[in_pins_array[in_pins_i]];
             gpio_hal_in_not_prev[in_pins_array[in_pins_i]] = *gpio_hal_in_not[in_pins_array[in_pins_i]];
         }
-
-        
     }
 
     for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
