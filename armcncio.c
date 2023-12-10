@@ -399,7 +399,6 @@ static void gpio_read(void *arg, long period)
 
 static void gpio_write(void *arg, long period)
 {
-
     for (int in_pins_i = 0; in_pins_i < in_pins_count; in_pins_i++)
     {
         if(*gpio_hal_in[in_pins_array[in_pins_i]])
