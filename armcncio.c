@@ -411,11 +411,6 @@ static void gpio_write(void *arg, long period)
             digitalWrite(in_pins_array[in_pins_i], LOW);
         }
     }
-
-    for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
-    {
-        
-    }
 }
 
 static void pwm_read(void *arg, long period)
