@@ -111,16 +111,13 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
             return -1;
         }
 
-        // disable pin pull up/down
         pullUpDnControl(in_pins_array[in_pins_i], PUD_OFF);
 
-        // get/set pin init state
         *gpio_hal_in[in_pins_array[in_pins_i]] = digitalRead(in_pins_array[in_pins_i]) == HIGH ? 1 : 0;
         *gpio_hal_in_not[in_pins_array[in_pins_i]] = *gpio_hal_in[in_pins_array[in_pins_i]] ? 0 : 1;
         gpio_hal_in_prev[in_pins_array[in_pins_i]] = *gpio_hal_in[in_pins_array[in_pins_i]];
         gpio_hal_in_not_prev[in_pins_array[in_pins_i]] = *gpio_hal_in_not[in_pins_array[in_pins_i]];
 
-        // get pin pull up/down state
         switch (armcnc_xj3_get_gpio_pull(getAlt(in_pins_array[in_pins_i]))) {
             case PUD_UP:      *gpio_hal_pull[in_pins_array[in_pins_i]] = 1;
             case PUD_DOWN:    *gpio_hal_pull[in_pins_array[in_pins_i]] = -1;
@@ -128,7 +125,6 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
         }
         gpio_hal_pull_prev[in_pins_array[in_pins_i]] = *gpio_hal_pull[in_pins_array[in_pins_i]];
 
-        // get pin multi-drive (open drain) state
         *gpio_hal_drive[in_pins_array[in_pins_i]] = armcnc_xj3_get_pin_drive(getAlt(in_pins_array[in_pins_i]));
         gpio_hal_drive_prev[in_pins_array[in_pins_i]] = *gpio_hal_drive[in_pins_array[in_pins_i]];
     }
@@ -159,7 +155,6 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
             return -1;
         }
 
-        // disable pin pull up/down
         pullUpDnControl(out_pins_array[out_pins_i], PUD_OFF);
 
         *gpio_hal_out[out_pins_array[out_pins_i]] = digitalRead(out_pins_array[out_pins_i]) == HIGH ? 1 : 0;
@@ -191,7 +186,7 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
                 rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal enable failed \n");
                 return -1;
             }
-            *pwm_hal[pwm_types_i].enable = 0;
+            // *pwm_hal[pwm_types_i].enable = 0;
 
             retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].pwm_port, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pwm-port");
             if (retval < 0) {
