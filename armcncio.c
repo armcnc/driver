@@ -404,6 +404,18 @@ static void gpio_read(void *arg, long period)
             *gpio_hal_in_not[in_pins_array[in_pins_i]] = 1;
         }
     }
+
+    for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
+    {
+        if (digitalRead(out_pins_array[out_pins_i]) == HIGH)
+        {
+            *gpio_hal_out[out_pins_array[out_pins_i]] = 1;
+            *gpio_hal_in_not[out_pins_array[out_pins_i]] = 0;
+        }else{
+            *gpio_hal_out[out_pins_array[out_pins_i]] = 0;
+            *gpio_hal_in_not[out_pins_array[out_pins_i]] = 1;
+        }
+    }
 }
 
 static void gpio_write(void *arg, long period)
