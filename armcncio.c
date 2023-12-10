@@ -410,6 +410,28 @@ static void gpio_write(void *arg, long period)
             digitalWrite(in_pins_array[in_pins_i], LOW);
         }
     }
+
+    for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
+    {
+        if(*gpio_hal_out[out_pins_array[out_pins_i]] == PUD_OFF)
+        {
+            *gpio_hal_out[out_pins_array[out_pins_i]] = PUD_OFF;
+            *gpio_hal_out_not[out_pins_array[out_pins_i]] = PUD_OFF;
+            pullUpDnControl(in_pins_array[out_pins_i], PUD_OFF);
+        }
+        if(*gpio_hal_out[out_pins_array[out_pins_i]] == PUD_UP)
+        {
+            *gpio_hal_out[out_pins_array[out_pins_i]] = PUD_UP;
+            *gpio_hal_out_not[out_pins_array[out_pins_i]] = PUD_DOWN;
+            pullUpDnControl(in_pins_array[out_pins_i], PUD_UP);
+        }
+        if(*gpio_hal_out[out_pins_array[out_pins_i]] == PUD_DOWN)
+        {
+            *gpio_hal_out[out_pins_array[out_pins_i]] = PUD_DOWN;
+            *gpio_hal_out_not[out_pins_array[out_pins_i]] = PUD_UP;
+            pullUpDnControl(in_pins_array[out_pins_i], PUD_DOWN);
+        }
+    }
 }
 
 static void pwm_read(void *arg, long period)
