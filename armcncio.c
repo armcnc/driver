@@ -410,10 +410,10 @@ static void gpio_read(void *arg, long period)
         if (digitalRead(out_pins_array[out_pins_i]) == HIGH)
         {
             *gpio_hal_out[out_pins_array[out_pins_i]] = 1;
-            *gpio_hal_in_not[out_pins_array[out_pins_i]] = 0;
+            *gpio_hal_out_not[out_pins_array[out_pins_i]] = 0;
         }else{
             *gpio_hal_out[out_pins_array[out_pins_i]] = 0;
-            *gpio_hal_in_not[out_pins_array[out_pins_i]] = 1;
+            *gpio_hal_out_not[out_pins_array[out_pins_i]] = 1;
         }
     }
 }
