@@ -405,7 +405,7 @@ static void gpio_write(void *arg, long period)
 {
     for (int in_pins_i = 0; in_pins_i < GPIO_MAX_COUNT; in_pins_i++)
     {
-        if (in_pins_i == 0 || !in_pins_array || !out_pins_array) continue;
+        if (in_pins_i == 0 || !in_pins_count || !out_pins_count) continue;
 
         if (!(*gpio_hal_in[in_pins_array[in_pins_i]] || *gpio_hal_in_not[in_pins_array[in_pins_i]])) continue;
 
