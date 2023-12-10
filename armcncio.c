@@ -87,25 +87,25 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
 
         pinMode(in_pins_array[in_pins_i], INPUT);
 
-        retval = hal_pin_bit_newf(HAL_IN, &gpio_hal_in[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "in");
+        retval = hal_pin_bit_newf(HAL_OUT, &gpio_hal_in[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "in");
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_hal_in failed \n");
             return -1;
         }
 
-        retval = hal_pin_bit_newf(HAL_IN, &gpio_hal_in_not[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s-not", component_name, in_pins_array[in_pins_i], "in");
+        retval = hal_pin_bit_newf(HAL_OUT, &gpio_hal_in_not[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s-not", component_name, in_pins_array[in_pins_i], "in");
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_hal_in_not failed \n");
             return -1;
         }
 
-        retval = hal_pin_s32_newf(HAL_IN, &gpio_hal_pull[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "pull");
+        retval = hal_pin_s32_newf(HAL_OUT, &gpio_hal_pull[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "pull");
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_hal_pull failed \n");
             return -1;
         }
 
-        retval = hal_pin_u32_newf(HAL_IN, &gpio_hal_drive[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "drive");
+        retval = hal_pin_u32_newf(HAL_OUT, &gpio_hal_drive[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "drive");
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_hal_drive failed \n");
             return -1;
@@ -143,13 +143,13 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
 
         pinMode(out_pins_array[out_pins_i], OUTPUT);
 
-        retval = hal_pin_bit_newf(HAL_OUT, &gpio_hal_out[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, out_pins_array[out_pins_i], "out");
+        retval = hal_pin_bit_newf(HAL_IN, &gpio_hal_out[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, out_pins_array[out_pins_i], "out");
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_hal_out failed \n");
             return -1;
         }
 
-        retval = hal_pin_bit_newf(HAL_OUT, &gpio_hal_out_not[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-%s-not", component_name, out_pins_array[out_pins_i], "out");
+        retval = hal_pin_bit_newf(HAL_IN, &gpio_hal_out_not[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-%s-not", component_name, out_pins_array[out_pins_i], "out");
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_hal_out_not failed \n");
             return -1;
