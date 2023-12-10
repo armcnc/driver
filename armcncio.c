@@ -344,10 +344,10 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
             }
             *pwm_hal[pwm_types_i].counts = 0;
 
-            *pwm_hal[pwm_types_i].freq_mHz = 0;
-            *pwm_hal[pwm_types_i].freq_min_mHz = 50000;
-            *pwm_hal[pwm_types_i].freq_max_mHz = 500000000;
-            *pwm_hal[pwm_types_i].dc_s32 = 0;
+            pwm_hal[pwm_types_i].freq_mHz = 0;
+            pwm_hal[pwm_types_i].freq_min_mHz = 50000;
+            pwm_hal[pwm_types_i].freq_max_mHz = 500000000;
+            pwm_hal[pwm_types_i].dc_s32 = 0;
         }
     }
 
@@ -410,6 +410,11 @@ static void gpio_write(void *arg, long period)
             *gpio_hal_in_not[in_pins_array[in_pins_i]] = 1;
             digitalWrite(in_pins_array[in_pins_i], LOW);
         }
+    }
+
+    for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
+    {
+        
     }
 }
 
