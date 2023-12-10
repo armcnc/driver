@@ -122,8 +122,8 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
 
         // get pin pull up/down state
         switch (armcnc_xj3_get_gpio_pull(getAlt(in_pins_array[in_pins_i]))) {
-            case PUD_UP:      *gpio_hal_pull[in_pins_array[in_pins_i]] = 2;
-            case PUD_DOWN:    *gpio_hal_pull[in_pins_array[in_pins_i]] = 1;
+            case PUD_UP:      *gpio_hal_pull[in_pins_array[in_pins_i]] = 1;
+            case PUD_DOWN:    *gpio_hal_pull[in_pins_array[in_pins_i]] = -1;
             default:          *gpio_hal_pull[in_pins_array[in_pins_i]] = 0;
         }
         gpio_hal_pull_prev[in_pins_array[in_pins_i]] = *gpio_hal_pull[in_pins_array[in_pins_i]];
@@ -447,12 +447,12 @@ static void gpio_write(void *arg, long period)
             }
             if (*gpio_hal_pull[in_pins_array[in_pins_i]] == PUD_UP)
             {
-                *gpio_hal_pull[in_pins_array[in_pins_i]] = 2;
+                *gpio_hal_pull[in_pins_array[in_pins_i]] = 1;
                 pullUpDnControl(in_pins_array[in_pins_i], PUD_UP);
             }
             if (*gpio_hal_pull[in_pins_array[in_pins_i]] == PUD_DOWN)
             {
-                *gpio_hal_pull[in_pins_array[in_pins_i]] = 1;
+                *gpio_hal_pull[in_pins_array[in_pins_i]] = -1;
                 pullUpDnControl(in_pins_array[in_pins_i], PUD_DOWN);
             }
             gpio_hal_pull_prev[in_pins_array[in_pins_i]] = *gpio_hal_pull[in_pins_array[in_pins_i]];
