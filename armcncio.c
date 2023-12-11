@@ -348,7 +348,7 @@ static void gpio_write(void *arg, long period)
 static void pwm_read(void *arg, long period)
 {
     static int32_t ch;
-    for (ch = pwm_ch_cnt; ch--;) {
+    for (ch = pwm_ch_cnt; ch--;)
     {
         
     }
@@ -357,7 +357,7 @@ static void pwm_read(void *arg, long period)
 static void pwm_write(void *arg, long period)
 {
     static int32_t ch, dc, f;
-    for (ch = pwm_ch_cnt; ch--;) {
+    for (ch = pwm_ch_cnt; ch--;)
     {
         
     }
