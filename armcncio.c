@@ -13,375 +13,148 @@ MODULE_DESCRIPTION("Driver for ARMCNC");
 MODULE_LICENSE("GPL");
 #endif
 
-static char *in_pins = "";
+static int8_t *in_pins = "";
 #ifdef RTAPI
 RTAPI_MP_STRING(in_pins, "channels control type, comma separated");
 #endif
-static int in_pins_array[GPIO_MAX_COUNT];
-static int in_pins_count = 0;
 
-static char *out_pins = "";
+static int8_t *out_pins = "";
 #ifdef RTAPI
 RTAPI_MP_STRING(out_pins, "channels control type, comma separated");
 #endif
-static int out_pins_array[GPIO_MAX_COUNT];
-static int out_pins_count = 0;
 
 static char *pwm_types = "";
 #ifdef RTAPI
 RTAPI_MP_STRING(pwm_types, "channels control type, comma separated");
 #endif
-static int pwm_types_array[GPIO_MAX_COUNT];
-static int pwm_types_count = 0;
 
 static int32_t component_id;
 static const uint8_t * component_name = "armcncio";
 
 static int32_t drives_init(const char *component_name, int32_t component_id)
 {
-    int port, retval;
-
+    int8_t* arg_str[2] = {in_pins, out_pins};
+    int8_t n;
+    uint8_t port;
+    int32_t r, ch;
+    int8_t *data = pwm, *token, type[PWM_CH_MAX_CNT] = {0};
     char name[HAL_NAME_LEN + 1];
 
-    if (in_pins == NULL || in_pins[0] == '\0')
+    // init some GPIO vars
+    for (n = GPIO_PINS_MAX_CNT; n--;) pin_msk[n] = 1UL << n;
+
+    // shared memory allocation for GPIO
+    for (port = GPIO_PORTS_MAX_CNT; port--;)
     {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() in_pins failed \n");
-        return -1;
-    }
+        gpio_hal[port] = hal_malloc(GPIO_PINS_MAX_CNT * sizeof(hal_bit_t *));
+        gpio_hal_not[port] = hal_malloc(GPIO_PINS_MAX_CNT * sizeof(hal_bit_t *));
+        gpio_hal_pull[port] = hal_malloc(GPIO_PINS_MAX_CNT * sizeof(hal_s32_t *));
+        gpio_hal_drive[port] = hal_malloc(GPIO_PINS_MAX_CNT * sizeof(hal_u32_t *));
 
-    if (out_pins == NULL || out_pins[0] == '\0')
-    {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() out_pins failed \n");
-        return -1;
-    }
-
-    if (pwm_types == NULL || pwm_types[0] == '\0')
-    {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_types failed \n");
-        return -1;
-    }
-
-    gpio_hal_in = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
-    gpio_hal_in_not = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
-    gpio_hal_out = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
-    gpio_hal_out_not = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
-    gpio_hal_pull = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_s32_t *));
-    gpio_hal_drive = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_u32_t *));
-
-    if (!gpio_hal_in || !gpio_hal_in_not || !gpio_hal_out || !gpio_hal_out_not || !gpio_hal_pull || !gpio_hal_drive) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_hal failed \n");
-        return -1;
-    }
-
-    char *in_pins_token = strtok(in_pins, ",");
-    while (in_pins_token != NULL)
-    {
-        in_pins_array[in_pins_count] = atoi(in_pins_token);
-        in_pins_count++;
-        in_pins_token = strtok(NULL, ",");
-    }
-
-    for (int in_pins_i = 0; in_pins_i < in_pins_count; in_pins_i++)
-    {
-        if (in_pins_array[in_pins_i] == 0) continue;
-
-        pinMode(in_pins_array[in_pins_i], OUTPUT);
-
-        retval = hal_pin_bit_newf(HAL_OUT, &gpio_hal_in[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "in");
-        if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_hal_in failed \n");
+        if (!gpio_hal[port] || !gpio_hal_not[port] || !gpio_hal_pull[port] || !gpio_hal_drive[port]) {
+            rtapi_print_msg(RTAPI_MSG_ERR, "[error]: drives_init() hal_malloc failed \n");
             return -1;
         }
 
-        retval = hal_pin_bit_newf(HAL_OUT, &gpio_hal_in_not[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s-not", component_name, in_pins_array[in_pins_i], "in");
-        if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_hal_in_not failed \n");
-            return -1;
-        }
-
-        retval = hal_pin_s32_newf(HAL_OUT, &gpio_hal_pull[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "pull");
-        if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_hal_pull failed \n");
-            return -1;
-        }
-
-        retval = hal_pin_u32_newf(HAL_OUT, &gpio_hal_drive[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "drive");
-        if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_hal_drive failed \n");
-            return -1;
-        }
-
-        pullUpDnControl(in_pins_array[in_pins_i], PUD_OFF);
-
-        *gpio_hal_in[in_pins_array[in_pins_i]] = digitalRead(in_pins_array[in_pins_i]) == HIGH ? 1 : 0;
-        *gpio_hal_in_not[in_pins_array[in_pins_i]] = *gpio_hal_in[in_pins_array[in_pins_i]] ? 0 : 1;
-        gpio_hal_in_prev[in_pins_array[in_pins_i]] = *gpio_hal_in[in_pins_array[in_pins_i]];
-        gpio_hal_in_not_prev[in_pins_array[in_pins_i]] = *gpio_hal_in_not[in_pins_array[in_pins_i]];
-
-        switch (armcnc_xj3_get_gpio_pull(getAlt(in_pins_array[in_pins_i]))) {
-            case PUD_UP:      *gpio_hal_pull[in_pins_array[in_pins_i]] = 1;
-            case PUD_DOWN:    *gpio_hal_pull[in_pins_array[in_pins_i]] = -1;
-            default:          *gpio_hal_pull[in_pins_array[in_pins_i]] = 0;
-        }
-        gpio_hal_pull_prev[in_pins_array[in_pins_i]] = *gpio_hal_pull[in_pins_array[in_pins_i]];
-
-        *gpio_hal_drive[in_pins_array[in_pins_i]] = armcnc_xj3_get_pin_drive(getAlt(in_pins_array[in_pins_i]));
-        gpio_hal_drive_prev[in_pins_array[in_pins_i]] = *gpio_hal_drive[in_pins_array[in_pins_i]];
-    }
-
-    char *out_pins_token = strtok(out_pins, ",");
-    while (out_pins_token != NULL)
-    {
-        out_pins_array[out_pins_count] = atoi(out_pins_token);
-        out_pins_count++;
-        out_pins_token = strtok(NULL, ",");
-    }
-
-    for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
-    {
-        if (out_pins_array[out_pins_i] == 0) continue;
-
-        pinMode(out_pins_array[out_pins_i], INPUT);
-
-        retval = hal_pin_bit_newf(HAL_IN, &gpio_hal_out[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, out_pins_array[out_pins_i], "out");
-        if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_hal_out failed \n");
-            return -1;
-        }
-
-        retval = hal_pin_bit_newf(HAL_IN, &gpio_hal_out_not[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-%s-not", component_name, out_pins_array[out_pins_i], "out");
-        if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_hal_out_not failed \n");
-            return -1;
-        }
-
-        *gpio_hal_out[out_pins_array[out_pins_i]] = digitalRead(out_pins_array[out_pins_i]) == HIGH ? 1 : 0;
-        *gpio_hal_out_not[out_pins_array[out_pins_i]] = *gpio_hal_out[out_pins_array[out_pins_i]] ? 0 : 1;
-        gpio_hal_out_prev[out_pins_array[out_pins_i]] = *gpio_hal_out[out_pins_array[out_pins_i]];
-        gpio_hal_out_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_out_not[out_pins_array[out_pins_i]];
-    }
-
-    char *pwm_types_token = strtok(pwm_types, ",");
-    while (pwm_types_token != NULL)
-    {
-        pwm_types_array[pwm_types_count] = atoi(pwm_types_token);
-        pwm_types_count++;
-        pwm_types_token = strtok(NULL, ",");
-    }
-
-    if (pwm_types_count > 0)
-    {
-        pwm_hal = hal_malloc(pwm_types_count * sizeof(pwm_hal_struct));
-        if (!pwm_hal) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal failed \n");
-            return -1;
-        }
-
-        for (int pwm_types_i = 0; pwm_types_i < pwm_types_count; pwm_types_i++)
+        // export GPIO HAL pins
+        for (n = 2; n--;)
         {
-            retval = hal_pin_bit_newf(HAL_IN, &pwm_hal[pwm_types_i].enable, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "enable");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal enable failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].enable = 0;
+            if (!arg_str[n]) continue;
 
-            retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].pwm_port, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pwm-port");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal pwm_port failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].pwm_port = UINT32_MAX;
-            retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].pwm_pin, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pwm-pin");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal pwm_pin failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].pwm_pin = UINT32_MAX;
-            retval = hal_pin_bit_newf(HAL_IN, &pwm_hal[pwm_types_i].pwm_invert, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pwm-invert");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal pwm_invert failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].pwm_invert = 0;
+            int8_t *data = arg_str[n], *token;
+            uint8_t pin, found;
+            int32_t retval;
+            int8_t* type_str = n ? "out" : "in";
 
-            retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].dir_port, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-port");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal dir_port failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dir_port = UINT32_MAX;
-            retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].dir_pin, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-pin");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal dir_pin failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dir_pin = UINT32_MAX;
-            retval = hal_pin_bit_newf(HAL_IN, &pwm_hal[pwm_types_i].dir_invert, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-invert");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal dir_invert failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dir_invert = 0;
-            retval = hal_pin_u32_newf(HAL_IO, &pwm_hal[pwm_types_i].dir_hold, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-hold");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal dir_hold failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dir_hold = 50000;
-            retval = hal_pin_u32_newf(HAL_IO, &pwm_hal[pwm_types_i].dir_setup, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-setup");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal dir_setup failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dir_setup = 50000;
+             while ((token = strtok(data, ",")) != NULL)
+             {
+                if (data != NULL) data = NULL;
 
-            retval = hal_pin_float_newf(HAL_IN, &pwm_hal[pwm_types_i].dc_cmd, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-cmd");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal dc_cmd failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dc_cmd = 0.0;
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_min, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-min");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal dc_min failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dc_min = -1.0;
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_max, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-max");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal dc_max failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dc_max = 1.0;
-            retval = hal_pin_u32_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_max_t, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-max-t");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal dc_max_t failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dc_max_t = 0;
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_offset, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-offset");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal dc_offset failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dc_offset = 0.0;
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_scale, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-scale");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal dc_scale failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dc_scale = 1.0;
-            
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].pos_scale, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pos-scale");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal pos_scale failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].pos_scale = 1.0;
-            retval = hal_pin_float_newf(HAL_IN, &pwm_hal[pwm_types_i].pos_cmd, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pos-cmd");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal pos_cmd failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].pos_cmd = 0.0;
+                if (strlen(token) < 4) continue;
 
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].vel_scale, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "vel-scale");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal vel_scale failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].vel_scale = 1.0;
-            retval = hal_pin_float_newf(HAL_IN, &pwm_hal[pwm_types_i].vel_cmd, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "vel-cmd");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal vel_cmd failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].vel_cmd = 0.0;
+                // trying to find a correct port name
+                for (found = 0, port = GPIO_PORTS_MAX_CNT; port--;) {
+                    if (0 == memcmp(token, gpio_name[port], 3)) {
+                        found = 1;
+                        break;
+                    }
+                }
 
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].freq_cmd, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "freq-cmd");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal freq_cmd failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].freq_cmd = 0.0;
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].freq_min, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "freq-min");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal freq_min failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].freq_min = 50.0;
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].freq_max, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "freq-max");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal freq_max failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].freq_max = 500000.0;
+                if (!found) continue;
 
-            retval = hal_pin_float_newf(HAL_OUT, &pwm_hal[pwm_types_i].dc_fb, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-fb");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal dc_fb failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dc_fb = 0.0;
-            retval = hal_pin_float_newf(HAL_OUT, &pwm_hal[pwm_types_i].pos_fb, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pos-fb");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal pos_fb failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].pos_fb = 0.0;
-            retval = hal_pin_float_newf(HAL_OUT, &pwm_hal[pwm_types_i].freq_fb, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "freq-fb");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal freq_fb failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].freq_fb = 0.0;
-            retval = hal_pin_float_newf(HAL_OUT, &pwm_hal[pwm_types_i].vel_fb, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "vel-fb");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal vel_fb failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].vel_fb = 0.0;
-            retval = hal_pin_s32_newf(HAL_OUT, &pwm_hal[pwm_types_i].counts, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "counts");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_hal vel_fb failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].counts = 0;
+                // trying to find a correct pin number
+                pin = (uint8_t) strtoul(&token[2], NULL, 10);
+                if ((pin == 0 && token[2] != '0') || pin >= GPIO_PINS_MAX_CNT) continue;
 
-            pwm_hal[pwm_types_i].freq_mHz = 0;
-            pwm_hal[pwm_types_i].freq_min_mHz = 50000;
-            pwm_hal[pwm_types_i].freq_max_mHz = 500000000;
-            pwm_hal[pwm_types_i].dc_s32 = 0;
+                // export pin function
+                retval = hal_pin_bit_newf((n ? HAL_IN : HAL_OUT), &gpio_hal[port][pin], component_id, "%s.gpio.%s-%s", component_name, token, type_str);
+
+                // export pin inverted function
+                retval += hal_pin_bit_newf((n ? HAL_IN : HAL_OUT), &gpio_hal_not[port][pin], component_id, "%s.gpio.%s-%s-not", component_name, token, type_str);
+
+                // export pin pull up/down function
+                retval += hal_pin_s32_newf(HAL_IN, &gpio_hal_pull[port][pin], component_id, "%s.gpio.%s-pull", component_name, token);
+                
+                // export pin multi-drive (open drain) function
+                retval += hal_pin_u32_newf(HAL_IN, &gpio_hal_drive[port][pin], component_id, "%s.gpio.%s-multi-drive-level", component_name, token);
+
+                if (retval < 0) {
+                    rtapi_print_msg(RTAPI_MSG_ERR, "[error]: drives_init() retval failed \n");
+                    return -1;
+                }
+
+                // configure GPIO pin
+                if (n) {
+                    gpio_out_cnt++;
+                    gpio_out_mask[port] |= pin_msk[pin];
+                    pinMode(pin, OUTPUT);
+                }else{
+                    gpio_in_cnt++;
+                    gpio_in_mask[port] |= pin_msk[pin];
+                    pinMode(pin, INPUT);
+                }
+
+                // disable pull up/down
+                pullUpDnControl(pin, PUD_OFF);
+
+                // get/set pin init state
+                *gpio_hal[port][pin] = digitalRead(pin, 0);
+                *gpio_hal_not[port][pin] = *gpio_hal[port][pin] ? 0 : 1;
+                gpio_hal_prev[port][pin] = *gpio_hal[port][pin];
+                gpio_hal_not_prev[port][pin] = *gpio_hal_not[port][pin];
+
+                // get pin pull up/down state
+                switch (armcnc_xj3_get_gpio_pull(getAlt(pin))) {
+                    case PUD_UP:      *gpio_hal_pull[port][pin] = 1;
+                    case PUD_DOWN:    *gpio_hal_pull[port][pin] = -1;
+                    default:          *gpio_hal_pull[port][pin] = 0;
+                }
+                gpio_hal_pull_prev[port][pin] = *gpio_hal_pull[port][pin];
+
+                // get pin multi-drive (open drain) state
+                *gpio_hal_drive[port][pin] = armcnc_xj3_get_pin_drive(getAlt(pin));
+                gpio_hal_drive_prev[port][pin] = *gpio_hal_drive[port][pin];
+
+                // used ports count update
+                if (port >= gpio_ports_cnt) gpio_ports_cnt = port + 1;
+                if (pin >= gpio_pins_cnt[port]) gpio_pins_cnt[port] = pin + 1;
+             }
         }
-    }
 
-    rtapi_snprintf(name, sizeof(name), "%s.gpio.write", component_name);
-    retval = hal_export_funct(name, gpio_write, 0, 0, 0, component_id);
-    if (retval < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_write failed \n");
-        return -1;
-    }
-
-    rtapi_snprintf(name, sizeof(name), "%s.gpio.read", component_name);
-    retval = hal_export_funct(name, gpio_read, 0, 0, 0, component_id);
-    if (retval < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_read failed \n");
-        return -1;
-    }
-
-    rtapi_snprintf(name, sizeof(name), "%s.pwm.write", component_name);
-    retval = hal_export_funct(name, pwm_write, 0, 1, 0, component_id);
-    if (retval < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_write failed \n");
-        return -1;
-    }
-
-    rtapi_snprintf(name, sizeof(name), "%s.pwm.read", component_name);
-    retval = hal_export_funct(name, pwm_read, 0, 1, 0, component_id);
-    if (retval < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_read failed \n");
-        return -1;
+        // export GPIO HAL functions
+        if (gpio_out_cnt || gpio_in_cnt)
+        {
+            r = 0;
+            rtapi_snprintf(name, sizeof(name), "%s.gpio.write", component_name);
+            r += hal_export_funct(name, gpio_write, 0, 0, 0, component_id);
+            rtapi_snprintf(name, sizeof(name), "%s.gpio.read", component_name);
+            r += hal_export_funct(name, gpio_read, 0, 0, 0, component_id);
+            if (r)
+            {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[error]: drives_init() gpio.write gpio.read failed \n");
+                return -1;
+            } 
+        }
     }
 
     return 0;
@@ -389,114 +162,95 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
 
 static void gpio_read(void *arg, long period)
 {
-    for (int in_pins_i = 0; in_pins_i < in_pins_count; in_pins_i++)
-    {
-        if (digitalRead(in_pins_array[in_pins_i]) == HIGH)
-        {
-            *gpio_hal_in[in_pins_array[in_pins_i]] = 1;
-            *gpio_hal_in_not[in_pins_array[in_pins_i]] = 0;
-        }else{
-            *gpio_hal_in[in_pins_array[in_pins_i]] = 0;
-            *gpio_hal_in_not[in_pins_array[in_pins_i]] = 1;
-        }
-    }
+    static uint32_t port, pin, port_state;
 
-    for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
+    if (!gpio_in_cnt) return;
+
+    for (port = gpio_ports_cnt; port--;)
     {
-        if (digitalRead(out_pins_array[out_pins_i]) == HIGH)
+        if (!gpio_in_mask[port]) continue;
+
+        port_state = digitalRead(port);
+
+        for (pin = gpio_pins_cnt[port]; pin--;)
         {
-            *gpio_hal_out[out_pins_array[out_pins_i]] = 1;
-            *gpio_hal_out_not[out_pins_array[out_pins_i]] = 0;
-        }else{
-            *gpio_hal_out[out_pins_array[out_pins_i]] = 0;
-            *gpio_hal_out_not[out_pins_array[out_pins_i]] = 1;
+            if (!(gpio_in_mask[port] & pin_msk[pin])) continue;
+
+            if (port_state & pin_msk[pin]) {
+                *gpio_hal[port][pin] = 1;
+                *gpio_hal_not[port][pin] = 0;
+            } else {
+                *gpio_hal[port][pin] = 0;
+                *gpio_hal_not[port][pin] = 1;
+            }
         }
     }
 }
 
 static void gpio_write(void *arg, long period)
 {
-    for (int in_pins_i = 0; in_pins_i < in_pins_count; in_pins_i++)
-    {
-        if(*gpio_hal_in[in_pins_array[in_pins_i]] != gpio_hal_in_prev[in_pins_array[in_pins_i]])
-        {
-            if (*gpio_hal_in[in_pins_array[in_pins_i]] == HIGH)
-            {
-                *gpio_hal_in_not[in_pins_array[in_pins_i]] = 0;
-                digitalWrite(in_pins_array[in_pins_i], HIGH);
-            }else{
-                *gpio_hal_in_not[in_pins_array[in_pins_i]] = 1;
-                digitalWrite(in_pins_array[in_pins_i], LOW);
-            }
-            gpio_hal_in_prev[in_pins_array[in_pins_i]] = *gpio_hal_in[in_pins_array[in_pins_i]];
-            gpio_hal_in_not_prev[in_pins_array[in_pins_i]] = *gpio_hal_in_not[in_pins_array[in_pins_i]];
-        }
+     static uint32_t port, pin, mask_0, mask_1;
 
-        if(*gpio_hal_in_not[in_pins_array[in_pins_i]] != gpio_hal_in_not_prev[in_pins_array[in_pins_i]])
-        {
-            if (*gpio_hal_in_not[in_pins_array[in_pins_i]] == HIGH)
-            {
-                *gpio_hal_in[in_pins_array[in_pins_i]] = 0;
-                digitalWrite(in_pins_array[in_pins_i], LOW);
-            }else{
-                *gpio_hal_in[in_pins_array[in_pins_i]] = 1;
-                digitalWrite(in_pins_array[in_pins_i], HIGH);
-            }
-            gpio_hal_in_prev[in_pins_array[in_pins_i]] = *gpio_hal_in[in_pins_array[in_pins_i]];
-            gpio_hal_in_not_prev[in_pins_array[in_pins_i]] = *gpio_hal_in_not[in_pins_array[in_pins_i]];
-        }
+     if (!gpio_in_cnt && !gpio_out_cnt) return;
 
-        if (*gpio_hal_pull[in_pins_array[in_pins_i]] != gpio_hal_pull_prev[in_pins_array[in_pins_i]])
-        {
-            if (*gpio_hal_pull[in_pins_array[in_pins_i]] == PUD_OFF)
-            {
-                *gpio_hal_pull[in_pins_array[in_pins_i]] = 0;
-                pullUpDnControl(in_pins_array[in_pins_i], PUD_OFF);
-            }
-            if (*gpio_hal_pull[in_pins_array[in_pins_i]] == PUD_UP)
-            {
-                *gpio_hal_pull[in_pins_array[in_pins_i]] = 1;
-                pullUpDnControl(in_pins_array[in_pins_i], PUD_UP);
-            }
-            if (*gpio_hal_pull[in_pins_array[in_pins_i]] == PUD_DOWN)
-            {
-                *gpio_hal_pull[in_pins_array[in_pins_i]] = -1;
-                pullUpDnControl(in_pins_array[in_pins_i], PUD_DOWN);
-            }
-            gpio_hal_pull_prev[in_pins_array[in_pins_i]] = *gpio_hal_pull[in_pins_array[in_pins_i]];
-        }
-    }
+     for (port = gpio_ports_cnt; port--;)
+     {
+        if (!gpio_in_mask[port] && !gpio_out_mask[port]) continue;
 
-    for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
-    {
-        if(*gpio_hal_out[out_pins_array[out_pins_i]] != gpio_hal_out_prev[out_pins_array[out_pins_i]])
-        {
-            if (*gpio_hal_out[out_pins_array[out_pins_i]] == HIGH)
-            {
-                *gpio_hal_out_not[out_pins_array[out_pins_i]] = 0;
-                digitalWrite(out_pins_array[out_pins_i], HIGH);
-            }else{
-                *gpio_hal_out_not[out_pins_array[out_pins_i]] = 1;
-                digitalWrite(out_pins_array[out_pins_i], LOW);
-            }
-            gpio_hal_out_prev[out_pins_array[out_pins_i]] = *gpio_hal_out[out_pins_array[out_pins_i]];
-            gpio_hal_out_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_out_not[out_pins_array[out_pins_i]];
-        }
+        mask_0 = 0;
+        mask_1 = 0;
 
-        if(*gpio_hal_out_not[out_pins_array[out_pins_i]] != gpio_hal_out_not_prev[out_pins_array[out_pins_i]])
+        for (pin = gpio_pins_cnt[port]; pin--;)
         {
-            if (*gpio_hal_out_not[out_pins_array[out_pins_i]] == HIGH)
+            if (!(gpio_in_mask[port] & pin_msk[pin]) && !(gpio_out_mask[port] & pin_msk[pin])) continue;
+
+            // set pin pull up/down state
+            if (gpio_hal_pull_prev[port][pin] != *gpio_hal_pull[port][pin])
             {
-                *gpio_hal_out[out_pins_array[out_pins_i]] = 0;
-                digitalWrite(out_pins_array[out_pins_i], LOW);
-            }else{
-                *gpio_hal_out[out_pins_array[out_pins_i]] = 1;
-                digitalWrite(out_pins_array[out_pins_i], HIGH);
+                if (*gpio_hal_pull[port][pin] > 0) {
+                    *gpio_hal_pull[port][pin] = 1;
+                    pullUpDnControl(pin, PUD_UP);
+                }else if(*gpio_hal_pull[port][pin] < 0) {
+                    *gpio_hal_pull[port][pin] = -1;
+                    pullUpDnControl(pin, PUD_DOWN);
+                }else{
+                    pullUpDnControl(pin, PUD_OFF);
+                }
+                gpio_hal_pull_prev[port][pin] = *gpio_hal_pull[port][pin];
             }
-            gpio_hal_out_prev[out_pins_array[out_pins_i]] = *gpio_hal_out[out_pins_array[out_pins_i]];
-            gpio_hal_out_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_out_not[out_pins_array[out_pins_i]];
+
+            if (!(gpio_out_mask[port] & pin_msk[pin])) continue;
+
+            if (*gpio_hal[port][pin] != gpio_hal_prev[port][pin])
+            {
+                if (*gpio_hal[port][pin]) {
+                    *gpio_hal_not[port][pin] = 0;
+                    mask_1 |= pin_msk[pin];
+                } else {
+                    *gpio_hal_not[port][pin] = 1;
+                    mask_0 |= pin_msk[pin];
+                }
+                gpio_hal_prev[port][pin] = *gpio_hal[port][pin];
+                gpio_hal_not_prev[port][pin] = *gpio_hal_not[port][pin];
+            }
+
+            if (*gpio_hal_not[port][pin] != gpio_hal_not_prev[port][pin])
+            {
+                if ( *gpio_hal_not[port][pin] ) {
+                    *gpio_hal[port][pin] = 0;
+                    mask_0 |= pin_msk[pin];
+                } else {
+                    *gpio_hal[port][pin] = 1;
+                    mask_1 |= pin_msk[pin];
+                }
+                gpio_hal_not_prev[port][pin] = *gpio_hal_not[port][pin];
+                gpio_hal_prev[port][pin] = *gpio_hal[port][pin];
+            }
+
+            if (mask_0) digitalWrite(port, LOW);
+            if (mask_1) digitalWrite(port, HIGH);
         }
-    }
+     }
 }
 
 static void pwm_read(void *arg, long period)
