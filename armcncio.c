@@ -167,8 +167,8 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
 
     if (pwm_ch_cnt)
     {
-            // export PWM HAL functions
-            r = 0;
+        // export PWM HAL functions
+        r = 0;
         rtapi_snprintf(name, sizeof(name), "%s.pwm.write", component_name);
         r += hal_export_funct(name, pwm_write, 0, 1, 0, component_id);
         rtapi_snprintf(name, sizeof(name), "%s.pwm.read", component_name);
