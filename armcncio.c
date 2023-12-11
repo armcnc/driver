@@ -119,7 +119,7 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
             pullUpDnControl(pin, PUD_OFF);
 
             // get/set pin init state
-            *gpio_hal[port][pin] = digitalRead(pin, 0);
+            *gpio_hal[port][pin] = digitalRead(pin);
             *gpio_hal_not[port][pin] = *gpio_hal[port][pin] ? 0 : 1;
             gpio_hal_prev[port][pin] = *gpio_hal[port][pin];
             gpio_hal_not_prev[port][pin] = *gpio_hal_not[port][pin];
