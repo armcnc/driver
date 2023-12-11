@@ -189,8 +189,8 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
         }
 
         #define EXPORT_PIN(IO_TYPE, VAR_TYPE, VAL, NAME, DEFAULT) \
-            r += hal_pin_##VAR_TYPE##_newf(IO_TYPE, &(pwmh[ch].VAL), comp_id,\
-            "%s.pwm.%d." NAME, comp_name, ch);\
+            r += hal_pin_##VAR_TYPE##_newf(IO_TYPE, &(pwmh[ch].VAL), component_id,\
+            "%s.pwm.%d." NAME, component_name, ch);\
             pwm_hal.VAL = DEFAULT;\
             pwm_private.VAL = DEFAULT;
 
