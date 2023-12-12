@@ -256,6 +256,7 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
 static void gpio_read(void *arg, long period)
 {
     static uint32_t port, pin, port_state;
+    static int port_state;
 
     if (!gpio_in_cnt) return;
 
@@ -267,11 +268,9 @@ static void gpio_read(void *arg, long period)
         {
             if (!(gpio_in_mask[port] & pin_msk[pin])) continue;
 
-            port_state = (uint32_t)digitalRead((int)pin);
+            port_state = digitalRead((int)pin);
 
-            rtapi_print_msg(RTAPI_MSG_ERR, "-> %u %u %d %u \n", port_state, pin, (int)pin, pin_msk[pin]);
-
-            if (port_state & pin_msk[pin]) {
+            if (port_state) {
                 *gpio_hal[port][pin] = 1;
                 *gpio_hal_not[port][pin] = 0;
             } else {
