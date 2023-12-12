@@ -11,7 +11,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 #include "./include/wiringPi/piHiPri_c.h"
 #include "./include/wiringPi/wiringPi.h"

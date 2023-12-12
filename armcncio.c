@@ -270,7 +270,7 @@ static void gpio_read(void *arg, long period)
             
             port_state = digitalRead((int)pin);
 
-            if (port_state) {
+            if (port_state == HIGH) {
                 *gpio_hal[port][pin] = 1;
                 *gpio_hal_not[port][pin] = 0;
             } else {
