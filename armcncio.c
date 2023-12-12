@@ -266,11 +266,11 @@ static void gpio_read(void *arg, long period)
 
         for (pin = gpio_pins_cnt[port]; pin--;)
         {
-            // if (!(gpio_in_mask[port] & pin_msk[pin])) continue;
-            
-            port_state = digitalRead((int)pin);
+            if (!(gpio_in_mask[port] & pin_msk[pin])) continue;
 
-            if (port_state == HIGH) {
+            port_state = digitalRead((int)pin);
+            
+            if (port_state) {
                 *gpio_hal[port][pin] = 1;
                 *gpio_hal_not[port][pin] = 0;
             } else {
