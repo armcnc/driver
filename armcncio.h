@@ -26,7 +26,7 @@
 #define GPIO_PINS_MAX_CNT 27
 #define PWM_CH_MAX_CNT 27
 
-static const char *gpio_name[GPIO_PORTS_MAX_CNT] = {"PIN"};
+static const char *gpio_name[GPIO_PORTS_MAX_CNT] = {"PI"};
 
 static hal_bit_t **gpio_hal[GPIO_PORTS_MAX_CNT];
 static hal_bit_t gpio_hal_prev[GPIO_PORTS_MAX_CNT][GPIO_PINS_MAX_CNT];
