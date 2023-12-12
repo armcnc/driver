@@ -268,7 +268,9 @@ static void gpio_read(void *arg, long period)
             if (!(gpio_in_mask[port] & pin_msk[pin])) continue;
 
             port_state = (uint32_t)digitalRead((int)pin);
-            
+
+            rtapi_print_msg(RTAPI_MSG_ERR, "-> %u %u %u \n", port_state, pin, pin_msk[pin]);
+
             if (port_state & pin_msk[pin]) {
                 *gpio_hal[port][pin] = 1;
                 *gpio_hal_not[port][pin] = 0;
