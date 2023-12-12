@@ -255,7 +255,7 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
 
 static void gpio_read(void *arg, long period)
 {
-    static uint32_t port, pin, port_state;
+    static uint32_t port, pin;
     static int port_state;
 
     if (!gpio_in_cnt) return;
