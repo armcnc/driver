@@ -108,24 +108,24 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
             if (n) {
                 gpio_out_cnt++;
                 gpio_out_mask[port] |= pin_msk[pin];
-                pinMode(pin, OUTPUT);
+                pinMode((int)pin, OUTPUT);
             }else{
                 gpio_in_cnt++;
                 gpio_in_mask[port] |= pin_msk[pin];
-                pinMode(pin, INPUT);
+                pinMode((int)pin, INPUT);
             }
 
             // disable pull up/down
-            pullUpDnControl(pin, PUD_OFF);
+            pullUpDnControl((int)pin, PUD_OFF);
 
             // get/set pin init state
-            *gpio_hal[port][pin] = digitalRead(pin);
+            *gpio_hal[port][pin] = digitalRead((int)pin);
             *gpio_hal_not[port][pin] = *gpio_hal[port][pin] ? 0 : 1;
             gpio_hal_prev[port][pin] = *gpio_hal[port][pin];
             gpio_hal_not_prev[port][pin] = *gpio_hal_not[port][pin];
 
             // get pin pull up/down state
-            switch (armcnc_xj3_get_gpio_pull(getAlt(pin))) {
+            switch (armcnc_xj3_get_gpio_pull(getAlt((int)pin))) {
                 case PUD_UP:      *gpio_hal_pull[port][pin] = 1;
                 case PUD_DOWN:    *gpio_hal_pull[port][pin] = -1;
                 default:          *gpio_hal_pull[port][pin] = 0;
@@ -133,7 +133,7 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
             gpio_hal_pull_prev[port][pin] = *gpio_hal_pull[port][pin];
 
             // get pin multi-drive (open drain) state
-            *gpio_hal_drive[port][pin] = armcnc_xj3_get_pin_drive(getAlt(pin));
+            *gpio_hal_drive[port][pin] = armcnc_xj3_get_pin_drive(getAlt((int)pin));
             gpio_hal_drive_prev[port][pin] = *gpio_hal_drive[port][pin];
 
             // used ports count update
@@ -262,7 +262,7 @@ static void gpio_read(void *arg, long period)
     {
         if (!gpio_in_mask[port]) continue;
 
-        port_state = digitalRead(port);
+        port_state = digitalRead((int)port);
 
         for (pin = gpio_pins_cnt[port]; pin--;)
         {
@@ -301,12 +301,12 @@ static void gpio_write(void *arg, long period)
             {
                 if (*gpio_hal_pull[port][pin] > 0) {
                     *gpio_hal_pull[port][pin] = 1;
-                    pullUpDnControl(pin, PUD_UP);
+                    pullUpDnControl((int)pin, PUD_UP);
                 }else if(*gpio_hal_pull[port][pin] < 0) {
                     *gpio_hal_pull[port][pin] = -1;
-                    pullUpDnControl(pin, PUD_DOWN);
+                    pullUpDnControl((int)pin, PUD_DOWN);
                 }else{
-                    pullUpDnControl(pin, PUD_OFF);
+                    pullUpDnControl((int)pin, PUD_OFF);
                 }
                 gpio_hal_pull_prev[port][pin] = *gpio_hal_pull[port][pin];
             }
@@ -339,8 +339,8 @@ static void gpio_write(void *arg, long period)
                 gpio_hal_prev[port][pin] = *gpio_hal[port][pin];
             }
 
-            if (mask_0) digitalWrite(port, LOW);
-            if (mask_1) digitalWrite(port, HIGH);
+            if (mask_0) digitalWrite((int)port, LOW);
+            if (mask_1) digitalWrite((int)port, HIGH);
         }
      }
 }
