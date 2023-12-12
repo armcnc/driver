@@ -270,7 +270,7 @@ static void gpio_read(void *arg, long period)
         {
             if (!(gpio_in_mask[port] & pin_msk[pin])) continue;
 
-            if (port_state & pin_msk[pin]) {
+            if (port_state) {
                 *gpio_hal[port][pin] = 1;
                 *gpio_hal_not[port][pin] = 0;
             } else {
