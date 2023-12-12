@@ -71,11 +71,11 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
             {
             if (data != NULL) data = NULL;
 
-            if (strlen(token) < 4) continue;
+            if (strlen(token) < 3) continue;
 
             // trying to find a correct port name
             for (found = 0, port = GPIO_PORTS_MAX_CNT; port--;) {
-                if (0 == memcmp(token, gpio_name[port], 3)) {
+                if (0 == memcmp(token, gpio_name[port], 2)) {
                     found = 1;
                     break;
                 }
@@ -84,8 +84,8 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
             if (!found) continue;
 
             // trying to find a correct pin number
-            pin = (uint8_t) strtoul(&token[3], NULL, 10);
-            if ((pin == 0 && token[3] != '0') || pin > GPIO_PINS_MAX_CNT) continue;
+            pin = (uint8_t) strtoul(&token[2], NULL, 10);
+            if ((pin == 0 && token[2] != '0') || pin > GPIO_PINS_MAX_CNT) continue;
 
             // export pin function
             retval = hal_pin_bit_newf((n ? HAL_IN : HAL_OUT), &gpio_hal[port][pin], component_id, "%s.gpio.%s-%s", component_name, token, type_str);
