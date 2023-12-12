@@ -23,8 +23,8 @@
 #include "hal.h"
 
 #define GPIO_PORTS_MAX_CNT 1
-#define GPIO_PINS_MAX_CNT 27
-#define PWM_CH_MAX_CNT 27
+#define GPIO_PINS_MAX_CNT 24
+#define PWM_CH_MAX_CNT 16
 
 static const char *gpio_name[GPIO_PORTS_MAX_CNT] = {"PIN"};
 
