@@ -266,7 +266,7 @@ static void gpio_read(void *arg, long period)
 
         for (pin = gpio_pins_cnt[port]; pin--;)
         {
-            // if (!(gpio_in_mask[port] & pin_msk[pin])) continue;
+            if (!*gpio_hal[port][pin]) continue;
 
             port_state = digitalRead((int)pin);
 
