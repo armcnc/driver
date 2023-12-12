@@ -5,6 +5,9 @@
  ******************************************************************************
  */
 
+#ifndef _ARMCNCIO_H
+#define _ARMCNCIO_H
+
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
@@ -148,3 +151,5 @@ static void gpio_write(void *arg, long period);
 static void gpio_read(void *arg, long period);
 static void pwm_write(void *arg, long period);
 static void pwm_read(void *arg, long period);
+
+#endif
