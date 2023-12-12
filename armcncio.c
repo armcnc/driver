@@ -108,12 +108,10 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
             if (n) {
                 gpio_out_cnt++;
                 gpio_out_mask[port] |= pin_msk[pin];
-                rtapi_print_msg(RTAPI_MSG_ERR, "---> %d \n", (int)pin);
                 pinMode((int)pin, OUTPUT);
             }else{
                 gpio_in_cnt++;
                 gpio_in_mask[port] |= pin_msk[pin];
-                rtapi_print_msg(RTAPI_MSG_ERR, "-------> %d \n", (int)pin);
                 pinMode((int)pin, INPUT);
             }
 
