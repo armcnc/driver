@@ -125,7 +125,7 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
             gpio_hal_not_prev[port][pin] = *gpio_hal_not[port][pin];
 
             // get pin pull up/down state
-            switch (armcnc_xj3_get_gpio_pull(getAlt((int)pin))) {
+            switch ((uint32_t)armcnc_xj3_get_gpio_pull(getAlt((int)pin))) {
                 case PUD_UP:      *gpio_hal_pull[port][pin] = 1;
                 case PUD_DOWN:    *gpio_hal_pull[port][pin] = -1;
                 default:          *gpio_hal_pull[port][pin] = 0;
