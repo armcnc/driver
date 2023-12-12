@@ -85,7 +85,7 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
 
             // trying to find a correct pin number
             pin = (uint8_t) strtoul(&token[2], NULL, 10);
-            if ((pin == 0 && token[2] != '0') || pin > GPIO_PINS_MAX_CNT) continue;
+            if ((pin == 0 && token[2] != '0') || pin >= GPIO_PINS_MAX_CNT) continue;
 
             // export pin function
             retval = hal_pin_bit_newf((n ? HAL_IN : HAL_OUT), &gpio_hal[port][pin], component_id, "%s.gpio.%s-%s", component_name, token, type_str);
