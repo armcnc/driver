@@ -5,11 +5,10 @@
  ******************************************************************************
  */
 
-#include <stdio.h>
-#include <ctype.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "./include/wiringPi/piHiPri_c.h"
 #include "./include/wiringPi/wiringPi.h"
@@ -22,11 +21,11 @@
 #include "rtapi_math.h"
 #include "hal.h"
 
-#define GPIO_PORTS_MAX_CNT 2
+#define GPIO_PORTS_MAX_CNT 1
 #define GPIO_PINS_MAX_CNT 28
 #define PWM_CH_MAX_CNT 28
 
-static const char *gpio_name[GPIO_PORTS_MAX_CNT] = {"PI", "PU"};
+static const char *gpio_name[GPIO_PORTS_MAX_CNT] = {"PI"};
 
 static hal_bit_t **gpio_hal[GPIO_PORTS_MAX_CNT];
 static hal_bit_t gpio_hal_prev[GPIO_PORTS_MAX_CNT][GPIO_PINS_MAX_CNT];
