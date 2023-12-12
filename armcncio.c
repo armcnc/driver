@@ -67,8 +67,8 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
         int32_t retval;
         int8_t* type_str = n ? "out" : "in";
 
-            while ((token = strtok(data, ",")) != NULL)
-            {
+        while ((token = strtok(data, ",")) != NULL)
+        {
             if (data != NULL) data = NULL;
 
             if (strlen(token) < 3) continue;
@@ -139,7 +139,7 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
             // used ports count update
             if (port >= gpio_ports_cnt) gpio_ports_cnt = port + 1;
             if (pin >= gpio_pins_cnt[port]) gpio_pins_cnt[port] = pin + 1;
-            }
+        }
     }
 
     // export GPIO HAL functions
@@ -258,7 +258,7 @@ static void gpio_read(void *arg, long period)
 
     if (!gpio_in_cnt) return;
 
-    rtapi_print_msg(RTAPI_MSG_ERR, "-> %d \n", gpio_in_cnt);
+    rtapi_print_msg(RTAPI_MSG_ERR, "-> %d %d \n", gpio_ports_cnt, gpio_in_cnt);
 
     for (port = gpio_ports_cnt; port--;)
     {
