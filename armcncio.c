@@ -259,19 +259,16 @@ static void gpio_read(void *arg, long period)
 
     if (!gpio_in_cnt) return;
 
-    rtapi_print_msg(RTAPI_MSG_ERR, "-> %d %d \n", gpio_ports_cnt, gpio_in_cnt);
-
     for (port = gpio_ports_cnt; port--;)
     {
         if (!gpio_in_mask[port]) continue;
 
-        rtapi_print_msg(RTAPI_MSG_ERR, "--> %u \n", port);
-
         for (pin = gpio_pins_cnt[port]; pin--;)
         {
             if (!(gpio_in_mask[port] & pin_msk[pin])) continue;
-            rtapi_print_msg(RTAPI_MSG_ERR, "---> %u %u %u \n", port_state, pin, pin_msk[pin]);
+
             port_state = (uint32_t)digitalRead((int)pin);
+            
             if (port_state & pin_msk[pin]) {
                 *gpio_hal[port][pin] = 1;
                 *gpio_hal_not[port][pin] = 0;
