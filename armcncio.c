@@ -125,7 +125,7 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
             gpio_hal_not_prev[port][pin] = *gpio_hal_not[port][pin];
 
             // get pin pull up/down state
-            switch ((uint32_t)armcnc_xj3_get_gpio_pull(getAlt((int)pin))) {
+            switch ((uint32_t)armcnc_xj3_get_gpio_pull((char)getAlt((int)pin))) {
                 case PUD_UP:      *gpio_hal_pull[port][pin] = 1;
                 case PUD_DOWN:    *gpio_hal_pull[port][pin] = -1;
                 default:          *gpio_hal_pull[port][pin] = 0;
@@ -133,7 +133,7 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
             gpio_hal_pull_prev[port][pin] = *gpio_hal_pull[port][pin];
 
             // get pin multi-drive (open drain) state
-            *gpio_hal_drive[port][pin] = armcnc_xj3_get_pin_drive(getAlt((int)pin));
+            *gpio_hal_drive[port][pin] = armcnc_xj3_get_pin_drive((char)getAlt((int)pin));
             gpio_hal_drive_prev[port][pin] = *gpio_hal_drive[port][pin];
 
             // used ports count update
@@ -267,7 +267,7 @@ static void gpio_read(void *arg, long period)
         for (pin = gpio_pins_cnt[port]; pin--;)
         {
             if (!(gpio_in_mask[port] & pin_msk[pin])) continue;
-
+            rtapi_print_msg(RTAPI_MSG_ERR, "------> %d %d \n", port_state, pin_msk[pin]);
             if (port_state & pin_msk[pin]) {
                 *gpio_hal[port][pin] = 1;
                 *gpio_hal_not[port][pin] = 0;
