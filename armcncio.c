@@ -85,7 +85,7 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
 
             // trying to find a correct pin number
             pin = (uint8_t) strtoul(&token[2], NULL, 10);
-            if ((pin == 0 && token[2] != '0') || pin >= GPIO_PINS_MAX_CNT) continue;
+            if ((pin == 0 && token[2] != '0') || pin > GPIO_PINS_MAX_CNT) continue;
 
             // export pin function
             retval = hal_pin_bit_newf((n ? HAL_IN : HAL_OUT), &gpio_hal[port][pin], component_id, "%s.gpio.%s-%s", component_name, token, type_str);
@@ -119,7 +119,7 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
             pullUpDnControl((int)pin, PUD_OFF);
 
             // get/set pin init state
-            *gpio_hal[port][pin] = digitalRead((int)pin);
+            *gpio_hal[port][pin] = (uint32_t)digitalRead((int)pin);
             *gpio_hal_not[port][pin] = *gpio_hal[port][pin] ? 0 : 1;
             gpio_hal_prev[port][pin] = *gpio_hal[port][pin];
             gpio_hal_not_prev[port][pin] = *gpio_hal_not[port][pin];
@@ -268,7 +268,7 @@ static void gpio_read(void *arg, long period)
         {
             if (!(gpio_in_mask[port] & pin_msk[pin])) continue;
 
-            if (port_state) {
+            if (port_state & pin_msk[pin]) {
                 *gpio_hal[port][pin] = 1;
                 *gpio_hal_not[port][pin] = 0;
             } else {
