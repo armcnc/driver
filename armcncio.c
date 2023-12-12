@@ -85,6 +85,7 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
 
             // trying to find a correct pin number
             pin = (uint8_t) strtoul(&token[2], NULL, 10);
+
             if ((pin == 0 && token[2] != '0') || pin >= GPIO_PINS_MAX_CNT) continue;
 
             // export pin function
@@ -271,7 +272,7 @@ static void gpio_read(void *arg, long period)
         for (pin = gpio_pins_cnt[port]; pin--;)
         {
             if (!(gpio_in_mask[port] & pin_msk[pin])) continue;
-            rtapi_print_msg(RTAPI_MSG_ERR, "---> %u %u \n", port_state, pin_msk[pin]);
+            rtapi_print_msg(RTAPI_MSG_ERR, "---> %u %u %u \n", port_state, pin, pin_msk[pin]);
             if (port_state & pin_msk[pin]) {
                 *gpio_hal[port][pin] = 1;
                 *gpio_hal_not[port][pin] = 0;
