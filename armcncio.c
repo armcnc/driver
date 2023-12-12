@@ -256,7 +256,6 @@ static int32_t drives_init(const char *component_name, int32_t component_id)
 static void gpio_read(void *arg, long period)
 {
     static uint32_t port, pin, port_state;
-    static int port_state;
 
     if (!gpio_in_cnt) return;
 
@@ -264,11 +263,11 @@ static void gpio_read(void *arg, long period)
     {
         if (!gpio_in_mask[port]) continue;
 
+        port_state = (uint32_t)digitalRead((int)pin);
+
         for (pin = gpio_pins_cnt[port]; pin--;)
         {
             if (!(gpio_in_mask[port] & pin_msk[pin])) continue;
-
-            port_state = digitalRead((int)pin);
 
             if (port_state & pin_msk[pin]) {
                 *gpio_hal[port][pin] = 1;
