@@ -78,12 +78,6 @@ static hal_bit_t gpio_hal_out_not_prev[GPIO_BCM_MAX_COUNT];
 static int out_pins_array[GPIO_BCM_MAX_COUNT];
 static int out_pins_count = 0;
 
-static hal_s32_t **gpio_hal_pull;
-static hal_s32_t gpio_hal_pull_prev[GPIO_BCM_MAX_COUNT];
-
-static hal_u32_t **gpio_hal_drive;
-static hal_u32_t gpio_hal_drive_prev[GPIO_BCM_MAX_COUNT];
-
 static pwm_hal_struct *pwm_hal;
 static int pwm_types_array[GPIO_BCM_MAX_COUNT];
 static int pwm_types_count = 0;
