@@ -31,7 +31,7 @@ RTAPI_MP_STRING(pwm_types, "channels control type, comma separated");
 static int32_t component_id;
 static const uint8_t * component_name = "armcncio";
 
-static int32_t isInArray(int arr[], int size, int number)
+static int isInArray(int arr[], int size, int number)
 {
     for (int i = 0; i < size; i++)
     {
@@ -84,10 +84,8 @@ static int32_t gpio_hal_init(void)
     {
         int check = 0;
 
-        if (isInArray(gpio_in_array, gpio_count, gpio_in_out_array[gpio_hal_i]))
+        if (isInArray(gpio_in_array, gpio_count, gpio_in_out_array[gpio_hal_i]) == 1)
         {
-            rtapi_print_msg(RTAPI_MSG_ERR, "gpio_in_array \n");
-
             pinMode(gpio_in_out_array[gpio_hal_i], OUTPUT);
 
             retval = hal_pin_bit_newf(HAL_OUT, &gpio_in_out[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s", component_name, gpio_in_out_array[gpio_hal_i], "in");
@@ -111,10 +109,8 @@ static int32_t gpio_hal_init(void)
             check = 1;
         }
 
-        if (isInArray(gpio_out_array, gpio_count, gpio_in_out_array[gpio_hal_i]))
+        if (isInArray(gpio_out_array, gpio_count, gpio_in_out_array[gpio_hal_i]) == 1)
         {
-            rtapi_print_msg(RTAPI_MSG_ERR, "gpio_out_array \n");
-
             pinMode(gpio_in_out_array[gpio_hal_i], INPUT);
 
             retval = hal_pin_bit_newf(HAL_IN, &gpio_in_out[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s", component_name, gpio_in_out_array[gpio_hal_i], "out");
@@ -443,14 +439,26 @@ static void gpio_read(void *arg, long period)
 
 static void gpio_write(void *arg, long period)
 {
+    for (int gpio_hal_i = 0; gpio_hal_i < gpio_count; gpio_hal_i++)
+    {
+
+    }
 }
 
 static void pwm_read(void *arg, long period)
 {
+    for (int pwm_i = 0; pwm_i < pwm_count; pwm_i++)
+    {
+        
+    }
 }
 
 static void pwm_write(void *arg, long period)
 {
+    for (int pwm_i = 0; pwm_i < pwm_count; pwm_i++)
+    {
+        
+    }
 }
 
 int rtapi_app_main(void)
