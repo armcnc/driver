@@ -123,7 +123,7 @@ static int32_t gpio_hal_init(void)
 
         *gpio_in_out[gpio_in_out_array[gpio_hal_i]] = digitalRead(gpio_in_out_array[gpio_hal_i]) == HIGH ? 1 : 0;
         *gpio_in_out_not[gpio_in_out_array[gpio_hal_i]] = *gpio_in_out[gpio_in_out_array[gpio_hal_i]] ? 0 : 1;
-        gpio_hal_in_prev[gpio_in_out_array[gpio_hal_i]] = *gpio_in_out[gpio_in_out_array[gpio_hal_i]];
+        gpio_in_out_prev[gpio_in_out_array[gpio_hal_i]] = *gpio_in_out[gpio_in_out_array[gpio_hal_i]];
         gpio_in_out_not_prev[gpio_in_out_array[gpio_hal_i]] = *gpio_in_out_not[gpio_in_out_array[gpio_hal_i]];
 
         switch (armcnc_xj3_get_gpio_pull((char)getAlt(gpio_in_out_array[gpio_hal_i]))) {
@@ -141,7 +141,7 @@ static int32_t gpio_hal_init(void)
 static int32_t start_init(const char *component_name, int32_t component_id)
 {
     int retval;
-    
+
     char name[HAL_NAME_LEN + 1];
 
     if (in_pins == NULL || in_pins[0] == '\0')
