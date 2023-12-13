@@ -51,19 +51,19 @@ static int32_t start_init(const char *component_name, int32_t component_id)
 
     if (in_pins == NULL || in_pins[0] == '\0')
     {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() in_pins failed \n");
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() in_pins failed \n");
         return -1;
     }
 
     if (out_pins == NULL || out_pins[0] == '\0')
     {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() out_pins failed \n");
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() out_pins failed \n");
         return -1;
     }
 
     if (pwm_types == NULL || pwm_types[0] == '\0')
     {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_types failed \n");
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() pwm_types failed \n");
         return -1;
     }
 
@@ -73,7 +73,7 @@ static int32_t start_init(const char *component_name, int32_t component_id)
     pwm_hal = hal_malloc(pwm_count * sizeof(pwm_hal_struct));
 
     if (!gpio_in_out || !gpio_in_out_not || !gpio_pull || !pwm_hal) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_malloc_init() failed \n");
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() failed \n");
         return -1;
     }
 
@@ -105,19 +105,19 @@ static int32_t start_init(const char *component_name, int32_t component_id)
 
             retval = hal_pin_bit_newf(HAL_OUT, &gpio_in_out[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s", component_name, gpio_in_out_array[gpio_hal_i], "in");
             if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: gpio_hal_init() in %d failed \n", gpio_in_out_array[gpio_hal_i]);
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() in %d failed \n", gpio_in_out_array[gpio_hal_i]);
                 return -1;
             }
 
             retval = hal_pin_bit_newf(HAL_OUT, &gpio_in_out_not[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s-not", component_name, gpio_in_out_array[gpio_hal_i], "in");
             if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: gpio_hal_init() in-not %d failed \n", gpio_in_out_array[gpio_hal_i]);
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() in-not %d failed \n", gpio_in_out_array[gpio_hal_i]);
                 return -1;
             }
 
             retval = hal_pin_s32_newf(HAL_IN, &gpio_pull[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s", component_name, gpio_in_out_array[gpio_hal_i], "pull");
             if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: gpio_hal_init() pull %d failed \n", gpio_in_out_array[gpio_hal_i]);
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() pull %d failed \n", gpio_in_out_array[gpio_hal_i]);
                 return -1;
             }
 
@@ -130,13 +130,13 @@ static int32_t start_init(const char *component_name, int32_t component_id)
 
             retval = hal_pin_bit_newf(HAL_IN, &gpio_in_out[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s", component_name, gpio_in_out_array[gpio_hal_i], "out");
             if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: gpio_hal_init() out %d failed \n", gpio_in_out_array[gpio_hal_i]);
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() out %d failed \n", gpio_in_out_array[gpio_hal_i]);
                 return -1;
             }
 
             retval = hal_pin_bit_newf(HAL_IN, &gpio_in_out_not[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s-not", component_name, gpio_in_out_array[gpio_hal_i], "out");
             if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: gpio_hal_init() out-not %d failed \n", gpio_in_out_array[gpio_hal_i]);
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() out-not %d failed \n", gpio_in_out_array[gpio_hal_i]);
                 return -1;
             }
 
@@ -176,170 +176,170 @@ static int32_t start_init(const char *component_name, int32_t component_id)
     {
         retval = hal_pin_bit_newf(HAL_IN, &pwm_hal[pwm_i].enable, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "enable");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: pwm_hal_init() enable failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() enable failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].enable = 0;
 
         retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_i].pwm_port, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "pwm-port");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: pwm_hal_init() pwm_port failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() pwm_port failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].pwm_port = UINT32_MAX;
         retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_i].pwm_pin, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "pwm-pin");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: pwm_hal_init() pwm_pin failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() pwm_pin failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].pwm_pin = UINT32_MAX;
         retval = hal_pin_bit_newf(HAL_IN, &pwm_hal[pwm_i].pwm_invert, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "pwm-invert");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_invert failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() pwm_invert failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].pwm_invert = 0;
 
         retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_i].dir_port, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "dir-port");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() dir_port failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() dir_port failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].dir_port = UINT32_MAX;
         retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_i].dir_pin, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "dir-pin");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() dir_pin failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() dir_pin failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].dir_pin = UINT32_MAX;
         retval = hal_pin_bit_newf(HAL_IN, &pwm_hal[pwm_i].dir_invert, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "dir-invert");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() dir_invert failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() dir_invert failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].dir_invert = 0;
         retval = hal_pin_u32_newf(HAL_IO, &pwm_hal[pwm_i].dir_hold, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "dir-hold");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() dir_hold failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() dir_hold failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].dir_hold = 50000;
         retval = hal_pin_u32_newf(HAL_IO, &pwm_hal[pwm_i].dir_setup, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "dir-setup");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() dir_setup failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() dir_setup failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].dir_setup = 50000;
 
         retval = hal_pin_float_newf(HAL_IN, &pwm_hal[pwm_i].dc_cmd, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "dc-cmd");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() dc_cmd failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() dc_cmd failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].dc_cmd = 0.0;
         retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_i].dc_min, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "dc-min");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() dc_min failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() dc_min failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].dc_min = -1.0;
         retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_i].dc_max, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "dc-max");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() dc_max failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() dc_max failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].dc_max = 1.0;
         retval = hal_pin_u32_newf(HAL_IO, &pwm_hal[pwm_i].dc_max_t, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "dc-max-t");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() dc_max_t failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() dc_max_t failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].dc_max_t = 0;
         retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_i].dc_offset, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "dc-offset");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() dc_offset failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() dc_offset failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].dc_offset = 0.0;
         retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_i].dc_scale, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "dc-scale");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() dc_scale failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() dc_scale failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].dc_scale = 1.0;
 
         retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_i].pos_scale, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "pos-scale");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pos_scale failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() pos_scale failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].pos_scale = 1.0;
         retval = hal_pin_float_newf(HAL_IN, &pwm_hal[pwm_i].pos_cmd, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "pos-cmd");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pos_cmd failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() pos_cmd failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].pos_cmd = 0.0;
 
         retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_i].vel_scale, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "vel-scale");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() vel_scale failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() vel_scale failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].vel_scale = 1.0;
         retval = hal_pin_float_newf(HAL_IN, &pwm_hal[pwm_i].vel_cmd, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "vel-cmd");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() vel_cmd failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() vel_cmd failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].vel_cmd = 0.0;
 
         retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_i].freq_cmd, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "freq-cmd");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() freq_cmd failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() freq_cmd failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].freq_cmd = 0.0;
         retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_i].freq_min, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "freq-min");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() freq_min failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() freq_min failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].freq_min = 50.0;
         retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_i].freq_max, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "freq-max");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() freq_max failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() freq_max failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].freq_max = 500000.0;
 
         retval = hal_pin_float_newf(HAL_OUT, &pwm_hal[pwm_i].dc_fb, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "dc-fb");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() dc_fb failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() dc_fb failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].dc_fb = 0.0;
         retval = hal_pin_float_newf(HAL_OUT, &pwm_hal[pwm_i].pos_fb, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "pos-fb");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pos_fb failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() pos_fb failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].pos_fb = 0.0;
         retval = hal_pin_float_newf(HAL_OUT, &pwm_hal[pwm_i].freq_fb, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "freq-fb");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() freq_fb failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() freq_fb failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].freq_fb = 0.0;
         retval = hal_pin_float_newf(HAL_OUT, &pwm_hal[pwm_i].vel_fb, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "vel-fb");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() vel_fb failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() vel_fb failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].vel_fb = 0.0;
         retval = hal_pin_s32_newf(HAL_OUT, &pwm_hal[pwm_i].counts, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "counts");
         if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() vel_fb failed \n");
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() vel_fb failed \n");
             return -1;
         }
         *pwm_hal[pwm_i].counts = 0;
@@ -348,28 +348,28 @@ static int32_t start_init(const char *component_name, int32_t component_id)
     rtapi_snprintf(name, sizeof(name), "%s.gpio.write", component_name);
     retval = hal_export_funct(name, gpio_write, 0, 0, 0, component_id);
     if (retval < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_write failed \n");
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() gpio_write failed \n");
         return -1;
     }
 
     rtapi_snprintf(name, sizeof(name), "%s.gpio.read", component_name);
     retval = hal_export_funct(name, gpio_read, 0, 0, 0, component_id);
     if (retval < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() gpio_read failed \n");
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() gpio_read failed \n");
         return -1;
     }
 
     rtapi_snprintf(name, sizeof(name), "%s.pwm.write", component_name);
     retval = hal_export_funct(name, pwm_write, 0, 1, 0, component_id);
     if (retval < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_write failed \n");
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() pwm_write failed \n");
         return -1;
     }
 
     rtapi_snprintf(name, sizeof(name), "%s.pwm.read", component_name);
     retval = hal_export_funct(name, pwm_read, 0, 1, 0, component_id);
     if (retval < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_read failed \n");
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: start_init() pwm_read failed \n");
         return -1;
     }
 
