@@ -55,10 +55,10 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         return -1;
     }
 
-    gpio_hal_in = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_bit_t *));
-    gpio_hal_out = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_bit_t *));
+    gpio_hal = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_bit_t *));
+    gpio_hal_not = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_bit_t *));
 
-    if (!gpio_hal_in || !gpio_hal_in_not) {
+    if (!gpio_hal || !gpio_hal_not) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_hal failed \n");
         return -1;
     }
@@ -83,13 +83,13 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
     {
         pinMode(in_pins_array[in_pins_i], OUTPUT);
 
-        retval = hal_pin_bit_newf(HAL_OUT, &gpio_hal_in[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "in");
+        retval = hal_pin_bit_newf(HAL_OUT, &gpio_hal[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "in");
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_hal_in failed \n");
             return -1;
         }
 
-        retval = hal_pin_bit_newf(HAL_OUT, &gpio_hal_in[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s-not", component_name, in_pins_array[in_pins_i], "in");
+        retval = hal_pin_bit_newf(HAL_OUT, &gpio_hal_not[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s-not", component_name, in_pins_array[in_pins_i], "in");
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_hal_in_not failed \n");
             return -1;
@@ -97,32 +97,32 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
 
         pullUpDnControl(in_pins_array[in_pins_i], PUD_OFF);
 
-        *gpio_hal_in[in_pins_array[in_pins_i]] = digitalRead(in_pins_array[in_pins_i]) == HIGH ? 1 : 0;
-        *gpio_hal_out[in_pins_array[in_pins_i]] = *gpio_hal_in[in_pins_array[in_pins_i]] ? 0 : 1;
-        gpio_hal_in_prev[in_pins_array[in_pins_i]] = *gpio_hal_in[in_pins_array[in_pins_i]];
-        gpio_hal_out_prev[in_pins_array[in_pins_i]] = *gpio_hal_out[in_pins_array[in_pins_i]];
+        *gpio_hal[in_pins_array[in_pins_i]] = digitalRead(in_pins_array[in_pins_i]) == HIGH ? 1 : 0;
+        *gpio_hal_not[in_pins_array[in_pins_i]] = *gpio_hal[in_pins_array[in_pins_i]] ? 0 : 1;
+        gpio_hal_prev[in_pins_array[in_pins_i]] = *gpio_hal[in_pins_array[in_pins_i]];
+        gpio_hal_not_prev[in_pins_array[in_pins_i]] = *gpio_hal_not[in_pins_array[in_pins_i]];
     }
 
     for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
     {
         pinMode(out_pins_array[out_pins_i], INPUT);
 
-        retval = hal_pin_bit_newf(HAL_IN, &gpio_hal_out[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, out_pins_array[out_pins_i], "out");
+        retval = hal_pin_bit_newf(HAL_IN, &gpio_hal[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, out_pins_array[out_pins_i], "out");
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_hal_out failed \n");
             return -1;
         }
 
-        retval = hal_pin_bit_newf(HAL_IN, &gpio_hal_out[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-%s-not", component_name, out_pins_array[out_pins_i], "out");
+        retval = hal_pin_bit_newf(HAL_IN, &gpio_hal_not[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-%s-not", component_name, out_pins_array[out_pins_i], "out");
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_hal_out_not failed \n");
             return -1;
         }
 
-        *gpio_hal_out[out_pins_array[out_pins_i]] = digitalRead(out_pins_array[out_pins_i]) == HIGH ? 1 : 0;
-        *gpio_hal_in[out_pins_array[out_pins_i]] = *gpio_hal_out[out_pins_array[out_pins_i]] ? 0 : 1;
-        gpio_hal_out_prev[out_pins_array[out_pins_i]] = *gpio_hal_out[out_pins_array[out_pins_i]];
-        gpio_hal_in_prev[out_pins_array[out_pins_i]] = *gpio_hal_in[out_pins_array[out_pins_i]];
+        *gpio_hal[in_pins_array[out_pins_i]] = digitalRead(in_pins_array[out_pins_i]) == HIGH ? 1 : 0;
+        *gpio_hal_not[in_pins_array[out_pins_i]] = *gpio_hal[in_pins_array[out_pins_i]] ? 0 : 1;
+        gpio_hal_prev[in_pins_array[out_pins_i]] = *gpio_hal[in_pins_array[out_pins_i]];
+        gpio_hal_not_prev[in_pins_array[out_pins_i]] = *gpio_hal_not[in_pins_array[out_pins_i]];
     }
 
     char *pwm_types_token = strtok(pwm_types, ",");
@@ -352,11 +352,11 @@ static void gpio_read(void *arg, long period)
     {
         if (digitalRead(in_pins_array[in_pins_i]) == HIGH)
         {
-            *gpio_hal_in[in_pins_array[in_pins_i]] = 1;
-            *gpio_hal_out[in_pins_array[in_pins_i]] = 0;
+            *gpio_hal[in_pins_array[in_pins_i]] = 1;
+            *gpio_hal_not[in_pins_array[in_pins_i]] = 0;
         }else{
-            *gpio_hal_in[in_pins_array[in_pins_i]] = 0;
-            *gpio_hal_out[in_pins_array[in_pins_i]] = 1;
+            *gpio_hal[in_pins_array[in_pins_i]] = 0;
+            *gpio_hal_not[in_pins_array[in_pins_i]] = 1;
         }
     }
 
@@ -364,11 +364,11 @@ static void gpio_read(void *arg, long period)
     {
         if (digitalRead(out_pins_array[out_pins_i]) == HIGH)
         {
-            *gpio_hal_out[out_pins_array[out_pins_i]] = 1;
-            *gpio_hal_in[out_pins_array[out_pins_i]] = 0;
+            *gpio_hal_not[out_pins_array[out_pins_i]] = 1;
+            *gpio_hal[out_pins_array[out_pins_i]] = 0;
         }else{
-            *gpio_hal_out[out_pins_array[out_pins_i]] = 0;
-            *gpio_hal_in[out_pins_array[out_pins_i]] = 1;
+            *gpio_hal_not[out_pins_array[out_pins_i]] = 0;
+            *gpio_hal[out_pins_array[out_pins_i]] = 1;
         }
     }
 }
@@ -377,35 +377,63 @@ static void gpio_write(void *arg, long period)
 {
     for (int in_pins_i = 0; in_pins_i < in_pins_count; in_pins_i++)
     {
-        if(*gpio_hal_in[in_pins_array[in_pins_i]] != gpio_hal_in_prev[in_pins_array[in_pins_i]])
+        if(*gpio_hal[in_pins_array[in_pins_i]] != gpio_hal_prev[in_pins_array[in_pins_i]])
         {
-            if (*gpio_hal_in[in_pins_array[in_pins_i]] == HIGH)
+            if (*gpio_hal[in_pins_array[in_pins_i]] == HIGH)
             {
-                *gpio_hal_out[in_pins_array[in_pins_i]] = 0;
+                *gpio_hal_not[in_pins_array[in_pins_i]] = 0;
                 digitalWrite(in_pins_array[in_pins_i], HIGH);
             }else{
-                *gpio_hal_out[in_pins_array[in_pins_i]] = 1;
+                *gpio_hal_not[in_pins_array[in_pins_i]] = 1;
                 digitalWrite(in_pins_array[in_pins_i], LOW);
             }
-            gpio_hal_in_prev[in_pins_array[in_pins_i]] = *gpio_hal_in[in_pins_array[in_pins_i]];
-            gpio_hal_out_prev[in_pins_array[in_pins_i]] = *gpio_hal_out[in_pins_array[in_pins_i]];
+            gpio_hal_prev[in_pins_array[in_pins_i]] = *gpio_hal[in_pins_array[in_pins_i]];
+            gpio_hal_not_prev[in_pins_array[in_pins_i]] = *gpio_hal_not[in_pins_array[in_pins_i]];
+        }
+
+        if(*gpio_hal_not[in_pins_array[in_pins_i]] != gpio_hal_not_prev[in_pins_array[in_pins_i]])
+        {
+            if (*gpio_hal_not[in_pins_array[in_pins_i]] == HIGH)
+            {
+                *gpio_hal[in_pins_array[in_pins_i]] = 0;
+                digitalWrite(in_pins_array[in_pins_i], HIGH);
+            }else{
+                *gpio_hal[in_pins_array[in_pins_i]] = 1;
+                digitalWrite(in_pins_array[in_pins_i], LOW);
+            }
+            gpio_hal_not_prev[in_pins_array[in_pins_i]] = *gpio_hal_not[in_pins_array[in_pins_i]];
+            gpio_hal_prev[in_pins_array[in_pins_i]] = *gpio_hal[in_pins_array[in_pins_i]];
         }
     }
 
     for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
     {
-        if(*gpio_hal_out[out_pins_array[out_pins_i]] != gpio_hal_out_prev[out_pins_array[out_pins_i]])
+        if(*gpio_hal[out_pins_array[out_pins_i]] != gpio_hal_prev[out_pins_array[out_pins_i]])
         {
-            if (*gpio_hal_out[out_pins_array[out_pins_i]] == HIGH)
+            if (*gpio_hal[in_pinsout_pins_array_array[out_pins_i]] == HIGH)
             {
-                *gpio_hal_in[out_pins_array[out_pins_i]] = 0;
+                *gpio_hal_not[out_pins_array[out_pins_i]] = 0;
                 digitalWrite(out_pins_array[out_pins_i], HIGH);
             }else{
-                *gpio_hal_in[out_pins_array[out_pins_i]] = 1;
+                *gpio_hal_not[out_pins_array[out_pins_i]] = 1;
                 digitalWrite(out_pins_array[out_pins_i], LOW);
             }
-            gpio_hal_out_prev[out_pins_array[out_pins_i]] = *gpio_hal_out[out_pins_array[out_pins_i]];
-            gpio_hal_in_prev[out_pins_array[out_pins_i]] = *gpio_hal_in[out_pins_array[out_pins_i]];
+            gpio_hal_prev[out_pins_array[out_pins_i]] = *gpio_hal[out_pins_array[out_pins_i]];
+            gpio_hal_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_not[out_pins_array[out_pins_i]];
+        }
+
+        if(*gpio_hal_not[out_pins_array[out_pins_i]] != gpio_hal_not_prev[out_pins_array[out_pins_i]])
+        {
+            if (*gpio_hal_not[out_pins_array[out_pins_i]] == HIGH)
+            {
+                *gpio_hal[out_pins_array[out_pins_i]] = 0;
+                digitalWrite(out_pins_array[out_pins_i], HIGH);
+            }else{
+                *gpio_hal[out_pins_array[out_pins_i]] = 1;
+                digitalWrite(out_pins_array[out_pins_i], LOW);
+            }
+            gpio_hal_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_not[out_pins_array[out_pins_i]];
+            gpio_hal_prev[out_pins_array[out_pins_i]] = *gpio_hal[out_pins_array[out_pins_i]];
         }
     }
 }
