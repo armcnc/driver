@@ -106,7 +106,7 @@ static int32_t gpio_hal_init(void)
             return -1;
         }
 
-        retval = hal_pin_s32_newf(HAL_IN, &gpio_pull[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s", component_name, gpio_in_out_array[gpio_hal_i], "out");
+        retval = hal_pin_s32_newf(HAL_IN, &gpio_pull[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s", component_name, gpio_in_out_array[gpio_hal_i], "pull");
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: gpio_hal_init() pull %d failed \n", gpio_in_out_array[gpio_hal_i]);
             return -1;
