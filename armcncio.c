@@ -149,6 +149,8 @@ static int32_t gpio_hal_init(void)
             }
 
             gpio_pull_prev[gpio_in_out_array[gpio_hal_i]] = *gpio_pull[gpio_in_out_array[gpio_hal_i]];
+        }else{
+            continue;
         }
     }
 
