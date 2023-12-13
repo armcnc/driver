@@ -33,34 +33,49 @@ static const uint8_t * component_name = "armcncio";
 
 static int isInArray(int arr[], int size, int number)
 {
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i <= size; i++)
     {
         if (arr[i] == number)
         {
             return 1;
         }
     }
-
     return 0;
 }
 
-static int32_t hal_malloc_init(void)
+static int32_t start_init(const char *component_name, int32_t component_id)
 {
-    gpio_in_out = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_bit_t *));
-    gpio_in_out_not = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_bit_t *));
-    gpio_pull = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_s32_t *));
+    int retval;
 
-    if (!gpio_in_out || !gpio_in_out_not || !gpio_pull) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_malloc_init() failed \n");
+    char name[HAL_NAME_LEN + 1];
+
+    if (in_pins == NULL || in_pins[0] == '\0')
+    {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() in_pins failed \n");
         return -1;
     }
 
-    return 0;
-}
+    if (out_pins == NULL || out_pins[0] == '\0')
+    {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() out_pins failed \n");
+        return -1;
+    }
 
-static int32_t gpio_hal_init(const char *component_name, int32_t component_id)
-{
-    int retval;
+    if (pwm_types == NULL || pwm_types[0] == '\0')
+    {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_types failed \n");
+        return -1;
+    }
+
+    gpio_in_out = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_bit_t *));
+    gpio_in_out_not = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_bit_t *));
+    gpio_pull = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_s32_t *));
+    pwm_hal = hal_malloc(pwm_count * sizeof(pwm_hal_struct));
+
+    if (!gpio_in_out || !gpio_in_out_not || !gpio_pull || !pwm_hal) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_malloc_init() failed \n");
+        return -1;
+    }
 
     char *in_pins_token = strtok(in_pins, ",");
     while (in_pins_token != NULL)
@@ -149,13 +164,6 @@ static int32_t gpio_hal_init(const char *component_name, int32_t component_id)
         }
     }
 
-    return 0;
-}
-
-static int32_t pwm_hal_init(const char *component_name, int32_t component_id)
-{
-    int retval;
-
     char *pwm_types_token = strtok(pwm_types, ",");
     while (pwm_types_token != NULL)
     {
@@ -164,16 +172,8 @@ static int32_t pwm_hal_init(const char *component_name, int32_t component_id)
         pwm_types_token = strtok(NULL, ",");
     }
 
-    pwm_hal = hal_malloc(pwm_count * sizeof(pwm_hal_struct));
-    if (!pwm_hal) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: pwm_hal_init() pwm_hal failed \n");
-        return -1;
-    }
-
     for (int pwm_i = 0; pwm_i < pwm_count; pwm_i++)
     {
-        rtapi_print_msg(RTAPI_MSG_ERR, "pwm_hal_init \n");
-
         retval = hal_pin_bit_newf(HAL_IN, &pwm_hal[pwm_i].enable, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "enable");
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: pwm_hal_init() enable failed \n");
@@ -344,37 +344,6 @@ static int32_t pwm_hal_init(const char *component_name, int32_t component_id)
         }
         *pwm_hal[pwm_i].counts = 0;
     }
-}
-
-static int32_t start_init(const char *component_name, int32_t component_id)
-{
-    int retval;
-
-    char name[HAL_NAME_LEN + 1];
-
-    if (in_pins == NULL || in_pins[0] == '\0')
-    {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() in_pins failed \n");
-        return -1;
-    }
-
-    if (out_pins == NULL || out_pins[0] == '\0')
-    {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() out_pins failed \n");
-        return -1;
-    }
-
-    if (pwm_types == NULL || pwm_types[0] == '\0')
-    {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: drives_init() pwm_types failed \n");
-        return -1;
-    }
-
-    hal_malloc_init();
-
-    gpio_hal_init(component_name, component_id);
-
-    pwm_hal_init(component_name, component_id);
 
     rtapi_snprintf(name, sizeof(name), "%s.gpio.write", component_name);
     retval = hal_export_funct(name, gpio_write, 0, 0, 0, component_id);
@@ -411,7 +380,7 @@ static void gpio_read(void *arg, long period)
 {
     for (int gpio_hal_i = 0; gpio_hal_i < gpio_count; gpio_hal_i++)
     {
-        if (isInArray(gpio_in_array, sizeof(gpio_in_array) / sizeof(gpio_in_array[0]), gpio_in_out_array[gpio_hal_i]))
+        if (isInArray(gpio_in_array, gpio_count, gpio_in_out_array[gpio_hal_i]))
         {
             if (digitalRead(gpio_in_out_array[gpio_hal_i]) == HIGH)
             {
@@ -423,7 +392,7 @@ static void gpio_read(void *arg, long period)
             }
         }
 
-        if (isInArray(gpio_out_array, sizeof(gpio_out_array) / sizeof(gpio_out_array[0]), gpio_in_out_array[gpio_hal_i]))
+        if (isInArray(gpio_out_array, gpio_count, gpio_in_out_array[gpio_hal_i]))
         {
             if (digitalRead(gpio_in_out_array[gpio_hal_i]) == HIGH)
             {
