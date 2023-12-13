@@ -4,6 +4,8 @@
  * @author  ARMCNC site:www.armcnc.net github:armcnc.github.io
  ******************************************************************************
  */
+#ifndef __ARMCNCIO__
+#define __ARMCNCIO__
 
 #include <stdio.h>
 #include <ctype.h>
@@ -82,3 +84,5 @@ static void gpio_write(void *arg, long period);
 static void gpio_read(void *arg, long period);
 static void pwm_write(void *arg, long period);
 static void pwm_read(void *arg, long period);
+
+#endif
