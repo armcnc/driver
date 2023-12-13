@@ -158,7 +158,7 @@ static int32_t pwm_hal_init(void)
     char *pwm_types_token = strtok(pwm_types, ",");
     while (pwm_types_token != NULL)
     {
-        pwm_array[pwm_count] = pwm_types_token;
+        pwm_array[pwm_count] = pwm_types_token == "p" ? 1 : 2;
         pwm_count++;
         pwm_types_token = strtok(NULL, ",");
     }

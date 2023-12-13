@@ -78,7 +78,7 @@ static hal_s32_t **gpio_pull;
 static hal_s32_t gpio_pull_prev[GPIO_BCM_MAX_COUNT];
 
 static pwm_hal_struct *pwm_hal;
-static char pwm_array[GPIO_BCM_MAX_COUNT];
+static int pwm_array[GPIO_BCM_MAX_COUNT];
 static int pwm_count = 0;
 
 static void gpio_write(void *arg, long period);
