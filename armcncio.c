@@ -31,7 +31,7 @@ RTAPI_MP_STRING(pwm_types, "channels control type, comma separated");
 static int32_t component_id;
 static const uint8_t * component_name = "armcncio";
 
-static int isInArray(int arr[], int size, int number)
+static int32_t isInArray(int arr[], int size, int number)
 {
     for (int i = 0; i < size; i++)
     {
@@ -107,7 +107,9 @@ static int32_t start_init(const char *component_name, int32_t component_id)
     {
         int check = 0;
 
-        if (isInArray(gpio_in_array, gpio_count, gpio_in_out_array[gpio_hal_i]) == 1)
+        if (!isInArray(gpio_in_array, gpio_count, gpio_in_out_array[gpio_hal_i]) || !isInArray(gpio_out_array, gpio_count, gpio_in_out_array[gpio_hal_i])) continue;
+
+        if (isInArray(gpio_in_array, gpio_count, gpio_in_out_array[gpio_hal_i]))
         {
             pinMode(gpio_in_out_array[gpio_hal_i], OUTPUT);
 
@@ -132,7 +134,7 @@ static int32_t start_init(const char *component_name, int32_t component_id)
             check = 1;
         }
 
-        if (isInArray(gpio_out_array, gpio_count, gpio_in_out_array[gpio_hal_i]) == 1)
+        if (isInArray(gpio_out_array, gpio_count, gpio_in_out_array[gpio_hal_i]))
         {
             pinMode(gpio_in_out_array[gpio_hal_i], INPUT);
 
@@ -380,7 +382,9 @@ static void gpio_read(void *arg, long period)
 {
     for (int gpio_hal_i = 0; gpio_hal_i < gpio_count; gpio_hal_i++)
     {
-        if (isInArray(gpio_in_array, gpio_count, gpio_in_out_array[gpio_hal_i]) == 1)
+        if (!isInArray(gpio_in_array, gpio_count, gpio_in_out_array[gpio_hal_i]) || !isInArray(gpio_out_array, gpio_count, gpio_in_out_array[gpio_hal_i])) continue;
+        
+        if (isInArray(gpio_in_array, gpio_count, gpio_in_out_array[gpio_hal_i]))
         {
             if (digitalRead(gpio_in_out_array[gpio_hal_i]) == HIGH)
             {
@@ -392,7 +396,7 @@ static void gpio_read(void *arg, long period)
             }
         }
 
-        if (isInArray(gpio_out_array, gpio_count, gpio_in_out_array[gpio_hal_i]) == 1)
+        if (isInArray(gpio_out_array, gpio_count, gpio_in_out_array[gpio_hal_i]))
         {
             if (digitalRead(gpio_in_out_array[gpio_hal_i]) == HIGH)
             {
