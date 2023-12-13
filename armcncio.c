@@ -82,44 +82,45 @@ static int32_t gpio_hal_init(void)
 
     for (int gpio_hal_i = 0; gpio_hal_i < gpio_in_out_count; gpio_hal_i++)
     {
-        retval = hal_pin_bit_newf(HAL_OUT, &gpio_in_out[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s", component_name, gpio_in_out_array[gpio_hal_i], "in");
-        if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: gpio_hal_init() in %d failed \n", gpio_in_out_array[gpio_hal_i]);
-            return -1;
-        }
-
-        retval = hal_pin_bit_newf(HAL_OUT, &gpio_in_out_not[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s-not", component_name, gpio_in_out_array[gpio_hal_i], "in");
-        if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: gpio_hal_init() in-not %d failed \n", gpio_in_out_array[gpio_hal_i]);
-            return -1;
-        }
-
-        retval = hal_pin_bit_newf(HAL_IN, &gpio_in_out[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s", component_name, gpio_in_out_array[gpio_hal_i], "out");
-        if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: gpio_hal_init() out %d failed \n", gpio_in_out_array[gpio_hal_i]);
-            return -1;
-        }
-
-        retval = hal_pin_bit_newf(HAL_IN, &gpio_in_out_not[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s-not", component_name, gpio_in_out_array[gpio_hal_i], "out");
-        if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: gpio_hal_init() out-not %d failed \n", gpio_in_out_array[gpio_hal_i]);
-            return -1;
-        }
-
-        retval = hal_pin_s32_newf(HAL_IN, &gpio_pull[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s", component_name, gpio_in_out_array[gpio_hal_i], "pull");
-        if (retval < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: gpio_hal_init() pull %d failed \n", gpio_in_out_array[gpio_hal_i]);
-            return -1;
-        }
-
-        pullUpDnControl(gpio_in_out_array[gpio_hal_i], PUD_OFF);
 
         if (isInArray(gpio_in_array, sizeof(gpio_in_array) / sizeof(gpio_in_array[0]), gpio_in_out_array[gpio_hal_i]) < 0)
         {
             pinMode(gpio_in_out_array[gpio_hal_i], INPUT);
+
+            retval = hal_pin_bit_newf(HAL_IN, &gpio_in_out[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s", component_name, gpio_in_out_array[gpio_hal_i], "out");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: gpio_hal_init() out %d failed \n", gpio_in_out_array[gpio_hal_i]);
+                return -1;
+            }
+
+            retval = hal_pin_bit_newf(HAL_IN, &gpio_in_out_not[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s-not", component_name, gpio_in_out_array[gpio_hal_i], "out");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: gpio_hal_init() out-not %d failed \n", gpio_in_out_array[gpio_hal_i]);
+                return -1;
+            }
         }else{
             pinMode(gpio_in_out_array[gpio_hal_i], OUTPUT);
+
+            retval = hal_pin_bit_newf(HAL_OUT, &gpio_in_out[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s", component_name, gpio_in_out_array[gpio_hal_i], "in");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: gpio_hal_init() in %d failed \n", gpio_in_out_array[gpio_hal_i]);
+                return -1;
+            }
+
+            retval = hal_pin_bit_newf(HAL_OUT, &gpio_in_out_not[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s-not", component_name, gpio_in_out_array[gpio_hal_i], "in");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: gpio_hal_init() in-not %d failed \n", gpio_in_out_array[gpio_hal_i]);
+                return -1;
+            }
+
+            retval = hal_pin_s32_newf(HAL_IN, &gpio_pull[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s", component_name, gpio_in_out_array[gpio_hal_i], "pull");
+            if (retval < 0) {
+                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: gpio_hal_init() pull %d failed \n", gpio_in_out_array[gpio_hal_i]);
+                return -1;
+            }
         }
+
+        pullUpDnControl(gpio_in_out_array[gpio_hal_i], PUD_OFF);
 
         *gpio_in_out[gpio_in_out_array[gpio_hal_i]] = digitalRead(gpio_in_out_array[gpio_hal_i]) == HIGH ? 1 : 0;
         *gpio_in_out_not[gpio_in_out_array[gpio_hal_i]] = *gpio_in_out[gpio_in_out_array[gpio_hal_i]] ? 0 : 1;
