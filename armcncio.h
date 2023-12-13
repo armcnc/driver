@@ -9,6 +9,7 @@
 #define __ARMCNCIO__
 
 #include <stdio.h>
+#include <ctype.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
