@@ -390,28 +390,13 @@ static void gpio_read(void *arg, long period)
     {
         if (!in_pins_count || !out_pins_count) continue;
         
-        if (isInArray(in_pins_array, in_pins_count, pins_i))
+        if (digitalRead(in_pins_array[pins_i]) == HIGH)
         {
-            if (digitalRead(in_pins_array[pins_i]) == HIGH)
-            {
-                *gpio_hal_in[in_pins_array[pins_i]] = 1;
-                *gpio_hal_in_not[in_pins_array[pins_i]] = 0;
-            }else{
-                *gpio_hal_in[in_pins_array[pins_i]] = 0;
-                *gpio_hal_in_not[in_pins_array[pins_i]] = 1;
-            }
-        }
-
-        if (isInArray(out_pins_array, out_pins_count, pins_i))
-        {
-            if (digitalRead(in_pins_array[pins_i]) == HIGH)
-            {
-                *gpio_hal_in[in_pins_array[pins_i]] = 1;
-                *gpio_hal_in_not[in_pins_array[pins_i]] = 0;
-            }else{
-                *gpio_hal_in[in_pins_array[pins_i]] = 0;
-                *gpio_hal_in_not[in_pins_array[pins_i]] = 1;
-            }
+            *gpio_hal_in[in_pins_array[pins_i]] = 1;
+            *gpio_hal_in_not[in_pins_array[pins_i]] = 0;
+        }else{
+            *gpio_hal_in[in_pins_array[pins_i]] = 0;
+            *gpio_hal_in_not[in_pins_array[pins_i]] = 1;
         }
     }
 }
