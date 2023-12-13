@@ -393,19 +393,19 @@ static void gpio_write(void *arg, long period)
             gpio_hal_not_prev[in_pins_array[in_pins_i]] = *gpio_hal_not[in_pins_array[in_pins_i]];
         }
 
-        // if(*gpio_hal_not[in_pins_array[in_pins_i]] != gpio_hal_not_prev[in_pins_array[in_pins_i]])
-        // {
-        //     if (*gpio_hal_not[in_pins_array[in_pins_i]] == HIGH)
-        //     {
-        //         *gpio_hal[in_pins_array[in_pins_i]] = 0;
-        //         digitalWrite(in_pins_array[in_pins_i], LOW);
-        //     }else{
-        //         *gpio_hal[in_pins_array[in_pins_i]] = 1;
-        //         digitalWrite(in_pins_array[in_pins_i], HIGH);
-        //     }
-        //     gpio_hal_not_prev[in_pins_array[in_pins_i]] = *gpio_hal_not[in_pins_array[in_pins_i]];
-        //     gpio_hal_prev[in_pins_array[in_pins_i]] = *gpio_hal[in_pins_array[in_pins_i]];
-        // }
+        if(*gpio_hal_not[in_pins_array[in_pins_i]] != gpio_hal_not_prev[in_pins_array[in_pins_i]])
+        {
+            if (*gpio_hal_not[in_pins_array[in_pins_i]] == HIGH)
+            {
+                *gpio_hal[in_pins_array[in_pins_i]] = 0;
+                digitalWrite(in_pins_array[in_pins_i], LOW);
+            }else{
+                *gpio_hal[in_pins_array[in_pins_i]] = 1;
+                digitalWrite(in_pins_array[in_pins_i], HIGH);
+            }
+            gpio_hal_not_prev[in_pins_array[in_pins_i]] = *gpio_hal_not[in_pins_array[in_pins_i]];
+            gpio_hal_prev[in_pins_array[in_pins_i]] = *gpio_hal[in_pins_array[in_pins_i]];
+        }
     }
 
     for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
@@ -424,19 +424,19 @@ static void gpio_write(void *arg, long period)
             gpio_hal_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_not[out_pins_array[out_pins_i]];
         }
 
-        // if(*gpio_hal_not[out_pins_array[out_pins_i]] != gpio_hal_not_prev[out_pins_array[out_pins_i]])
-        // {
-        //     if (*gpio_hal_not[out_pins_array[out_pins_i]] == HIGH)
-        //     {
-        //         *gpio_hal[out_pins_array[out_pins_i]] = 0;
-        //         digitalWrite(out_pins_array[out_pins_i], LOW);
-        //     }else{
-        //         *gpio_hal[out_pins_array[out_pins_i]] = 1;
-        //         digitalWrite(out_pins_array[out_pins_i], HIGH);
-        //     }
-        //     gpio_hal_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_not[out_pins_array[out_pins_i]];
-        //     gpio_hal_prev[out_pins_array[out_pins_i]] = *gpio_hal[out_pins_array[out_pins_i]];
-        // }
+        if(*gpio_hal_not[out_pins_array[out_pins_i]] != gpio_hal_not_prev[out_pins_array[out_pins_i]])
+        {
+            if (*gpio_hal_not[out_pins_array[out_pins_i]] == HIGH)
+            {
+                *gpio_hal[out_pins_array[out_pins_i]] = 0;
+                digitalWrite(out_pins_array[out_pins_i], LOW);
+            }else{
+                *gpio_hal[out_pins_array[out_pins_i]] = 1;
+                digitalWrite(out_pins_array[out_pins_i], HIGH);
+            }
+            gpio_hal_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_not[out_pins_array[out_pins_i]];
+            gpio_hal_prev[out_pins_array[out_pins_i]] = *gpio_hal[out_pins_array[out_pins_i]];
+        }
     }
 }
 
