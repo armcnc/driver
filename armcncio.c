@@ -87,6 +87,9 @@ static int32_t gpio_hal_init(void)
 
         if (isInArray(gpio_in_array, sizeof(gpio_in_array) / sizeof(gpio_in_array[0]), gpio_in_out_array[gpio_hal_i]))
         {
+
+            rtapi_print_msg(RTAPI_MSG_ERR, "gpio_in_array \n");
+
             pinMode(gpio_in_out_array[gpio_hal_i], OUTPUT);
 
             retval = hal_pin_bit_newf(HAL_OUT, &gpio_in_out[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s", component_name, gpio_in_out_array[gpio_hal_i], "in");
@@ -112,6 +115,9 @@ static int32_t gpio_hal_init(void)
 
         if (isInArray(gpio_out_array, sizeof(gpio_out_array) / sizeof(gpio_out_array[0]), gpio_in_out_array[gpio_hal_i]))
         {
+
+            rtapi_print_msg(RTAPI_MSG_ERR, "gpio_out_array \n");
+
             pinMode(gpio_in_out_array[gpio_hal_i], INPUT);
 
             retval = hal_pin_bit_newf(HAL_IN, &gpio_in_out[gpio_in_out_array[gpio_hal_i]], component_id, "%s.gpio.pin%d-%s", component_name, gpio_in_out_array[gpio_hal_i], "out");
