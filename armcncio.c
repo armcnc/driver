@@ -382,7 +382,7 @@ static void gpio_write(void *arg, long period)
 
             if (in_pins_array[in_pins_i] == 16)
             {
-                rtapi_print_msg(RTAPI_MSG_ERR, "gpio_write gpio_hal --> %d \n", *gpio_hal[out_pins_array[out_pins_i]]);
+                rtapi_print_msg(RTAPI_MSG_ERR, "gpio_write in gpio_hal --> %d \n", *gpio_hal[out_pins_array[out_pins_i]]);
             }
 
             if (*gpio_hal[in_pins_array[in_pins_i]] == HIGH)
@@ -402,7 +402,7 @@ static void gpio_write(void *arg, long period)
 
             if (in_pins_array[in_pins_i] == 16)
             {
-                rtapi_print_msg(RTAPI_MSG_ERR, "gpio_write gpio_hal_not --> %d \n", *gpio_hal[in_pins_array[in_pins_i]]);
+                rtapi_print_msg(RTAPI_MSG_ERR, "gpio_write in gpio_hal_not --> %d \n", *gpio_hal[in_pins_array[in_pins_i]]);
             }
 
             if (*gpio_hal_not[in_pins_array[in_pins_i]] == HIGH)
