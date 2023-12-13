@@ -82,6 +82,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
     char *in_pins_token = strtok(in_pins, ",");
     while (in_pins_token != NULL)
     {
+        in_pins_array = realloc(in_pins_array, (in_pins_count + 1) * sizeof(int));
         in_pins_array[in_pins_count] = atoi(in_pins_token);
         in_pins_count++;
         in_pins_token = strtok(NULL, ",");
@@ -136,6 +137,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
     char *out_pins_token = strtok(out_pins, ",");
     while (out_pins_token != NULL)
     {
+        out_pins_array = realloc(out_pins_array, (out_pins_count + 1) * sizeof(int));
         out_pins_array[out_pins_count] = atoi(out_pins_token);
         out_pins_count++;
         out_pins_token = strtok(NULL, ",");
@@ -389,27 +391,30 @@ static void gpio_read(void *arg, long period)
     for (int pins_i = 0; pins_i < GPIO_BCM_MAX_COUNT; pins_i++)
     {
         if (!in_pins_count || !out_pins_count) continue;
-
-        if (digitalRead(in_pins_array[pins_i]) == HIGH)
+        
+        if (isInArray(in_pins_array, in_pins_count, pins_i))
         {
-            *gpio_hal_in[in_pins_array[pins_i]] = 1;
-            *gpio_hal_in_not[in_pins_array[pins_i]] = 0;
-        }else{
-            *gpio_hal_in[in_pins_array[pins_i]] = 0;
-            *gpio_hal_in_not[in_pins_array[pins_i]] = 1;
+            if (digitalRead(in_pins_array[pins_i]) == HIGH)
+            {
+                *gpio_hal_in[in_pins_array[pins_i]] = 1;
+                *gpio_hal_in_not[in_pins_array[pins_i]] = 0;
+            }else{
+                *gpio_hal_in[in_pins_array[pins_i]] = 0;
+                *gpio_hal_in_not[in_pins_array[pins_i]] = 1;
+            }
         }
 
-        // if (isInArray(out_pins_array, out_pins_count, pins_i))
-        // {
-        //     if (digitalRead(in_pins_array[pins_i]) == HIGH)
-        //     {
-        //         *gpio_hal_in[in_pins_array[pins_i]] = 1;
-        //         *gpio_hal_in_not[in_pins_array[pins_i]] = 0;
-        //     }else{
-        //         *gpio_hal_in[in_pins_array[pins_i]] = 0;
-        //         *gpio_hal_in_not[in_pins_array[pins_i]] = 1;
-        //     }
-        // }
+        if (isInArray(out_pins_array, out_pins_count, pins_i))
+        {
+            if (digitalRead(in_pins_array[pins_i]) == HIGH)
+            {
+                *gpio_hal_in[in_pins_array[pins_i]] = 1;
+                *gpio_hal_in_not[in_pins_array[pins_i]] = 0;
+            }else{
+                *gpio_hal_in[in_pins_array[pins_i]] = 0;
+                *gpio_hal_in_not[in_pins_array[pins_i]] = 1;
+            }
+        }
     }
 }
 
@@ -537,6 +542,8 @@ int rtapi_app_main(void)
 }
 
 void rtapi_app_exit(void)
-{
+{   
+    free(out_pins_array);
+    free(in_pins_array);
     hal_exit(component_id);
 }
