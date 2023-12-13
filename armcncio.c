@@ -31,18 +31,6 @@ RTAPI_MP_STRING(pwm_types, "channels control type, comma separated");
 static int32_t component_id;
 static const uint8_t * component_name = "armcncio";
 
-static int32_t isInArray(int arr[], int size, int number)
-{
-    for (int i = 0; i < size; i++)
-    {
-        if (arr[i] == number)
-        {
-            return 1;
-        }
-    }
-    return 0;
-}
-
 static int32_t hal_start(const char *component_name, int32_t component_id)
 {
     int port, retval;
@@ -388,7 +376,7 @@ static void gpio_read(void *arg, long period)
 {
     for (int pins_i = 0; pins_i < GPIO_BCM_MAX_COUNT; pins_i++)
     {
-        if (!in_pins_count || !out_pins_count) continue;
+        if (in_pins_count == 0|| out_pins_count == 0) continue;
         
         if (digitalRead(in_pins_array[pins_i]) == HIGH)
         {
