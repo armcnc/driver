@@ -95,6 +95,14 @@ static int32_t start_init(const char *component_name, int32_t component_id)
         out_pins_token = strtok(NULL, ",");
     }
 
+    char *pwm_types_token = strtok(pwm_types, ",");
+    while (pwm_types_token != NULL)
+    {
+        pwm_array[pwm_count] = pwm_types_token == "p" ? 1 : 2;
+        pwm_count++;
+        pwm_types_token = strtok(NULL, ",");
+    }
+
     for (int gpio_hal_i = 0; gpio_hal_i < gpio_count; gpio_hal_i++)
     {
         int check = 0;
@@ -162,14 +170,6 @@ static int32_t start_init(const char *component_name, int32_t component_id)
         }else{
             continue;
         }
-    }
-
-    char *pwm_types_token = strtok(pwm_types, ",");
-    while (pwm_types_token != NULL)
-    {
-        pwm_array[pwm_count] = pwm_types_token == "p" ? 1 : 2;
-        pwm_count++;
-        pwm_types_token = strtok(NULL, ",");
     }
 
     for (int pwm_i = 0; pwm_i < pwm_count; pwm_i++)
