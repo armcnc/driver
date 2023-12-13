@@ -469,8 +469,8 @@ static void gpio_write(void *arg, long period)
             gpio_hal_prev[out_pins_array[out_pins_i]] = *gpio_hal[out_pins_array[out_pins_i]];
         }
 
-        if (mask_0) digitalWrite(in_pins_array[in_pins_i], LOW);
-        if (mask_1) digitalWrite(in_pins_array[in_pins_i], HIGH);
+        if (mask_0) digitalWrite(out_pins_array[out_pins_i], LOW);
+        if (mask_1) digitalWrite(out_pins_array[out_pins_i], HIGH);
     }
 }
 
