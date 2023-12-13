@@ -66,15 +66,19 @@ typedef struct
     hal_s32_t   *counts; // out
 }pwm_hal_struct;
 
+static uint32_t pin_msk[GPIO_BCM_MAX_COUNT] = {0};
+
 static hal_bit_t **gpio_hal;
 static hal_bit_t gpio_hal_prev[GPIO_BCM_MAX_COUNT];
 static int in_pins_array[GPIO_BCM_MAX_COUNT];
 static int in_pins_count = 0;
+static uint32_t gpio_in_mask[GPIO_BCM_MAX_COUNT] = {0};
 
 static hal_bit_t **gpio_hal_not;
 static hal_bit_t gpio_hal_not_prev[GPIO_BCM_MAX_COUNT];
 static int out_pins_array[GPIO_BCM_MAX_COUNT];
 static int out_pins_count = 0;
+static uint32_t gpio_out_mask[GPIO_BCM_MAX_COUNT] = {0};
 
 static pwm_hal_struct *pwm_hal;
 static int pwm_types_array[GPIO_BCM_MAX_COUNT];
