@@ -82,7 +82,6 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
     char *in_pins_token = strtok(in_pins, ",");
     while (in_pins_token != NULL)
     {
-        in_pins_array = realloc(in_pins_array, (in_pins_count + 1) * sizeof(int));
         in_pins_array[in_pins_count] = atoi(in_pins_token);
         in_pins_count++;
         in_pins_token = strtok(NULL, ",");
@@ -137,7 +136,6 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
     char *out_pins_token = strtok(out_pins, ",");
     while (out_pins_token != NULL)
     {
-        out_pins_array = realloc(out_pins_array, (out_pins_count + 1) * sizeof(int));
         out_pins_array[out_pins_count] = atoi(out_pins_token);
         out_pins_count++;
         out_pins_token = strtok(NULL, ",");
@@ -168,7 +166,6 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
     char *pwm_types_token = strtok(pwm_types, ",");
     while (pwm_types_token != NULL)
     {
-        pwm_types_array = realloc(pwm_types_array, (pwm_types_count + 1) * sizeof(int));
         pwm_types_array[pwm_types_count] = (strcmp(pwm_types_token, "p") == 0) ? 1 : 2;
         pwm_types_count++;
         pwm_types_token = strtok(NULL, ",");
@@ -544,8 +541,5 @@ int rtapi_app_main(void)
 
 void rtapi_app_exit(void)
 {   
-    free(out_pins_array);
-    free(in_pins_array);
-    free(pwm_types_array);
     hal_exit(component_id);
 }
