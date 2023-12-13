@@ -177,6 +177,8 @@ static int32_t pwm_hal_init(void)
 
     for (int pwm_i = 0; pwm_i < pwm_count; pwm_i++)
     {
+        rtapi_print_msg(RTAPI_MSG_ERR, "pwm_hal_init \n");
+
         retval = hal_pin_bit_newf(HAL_IN, &pwm_hal[pwm_i].enable, component_id, "%s.pwm.%d.%s", component_name, pwm_i, "enable");
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: pwm_hal_init() enable failed \n");
