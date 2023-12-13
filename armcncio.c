@@ -430,7 +430,7 @@ static void pwm_write(void *arg, long period)
     }
 }
 
-int rtapi_app_main(void)
+int32_t rtapi_app_main(void)
 {
     if (wiringPiSetup() == -1){
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: wiringPiSetup() failed \n");
