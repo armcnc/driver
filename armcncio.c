@@ -33,7 +33,7 @@ static const uint8_t * component_name = "armcncio";
 
 static int isInArray(int arr[], int size, int number)
 {
-    for (int i = 0; i <= size; i++)
+    for (int i = 0; i < size; i++)
     {
         if (arr[i] == number)
         {
