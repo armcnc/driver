@@ -58,7 +58,7 @@ static int32_t hal_malloc_init(void)
     return 0;
 }
 
-static int32_t gpio_hal_init(void)
+static int32_t gpio_hal_init(const char *component_name, int32_t component_id)
 {
     int retval;
 
@@ -152,7 +152,7 @@ static int32_t gpio_hal_init(void)
     return 0;
 }
 
-static int32_t pwm_hal_init(void)
+static int32_t pwm_hal_init(const char *component_name, int32_t component_id)
 {
     int retval;
 
@@ -346,7 +346,7 @@ static int32_t pwm_hal_init(void)
     }
 }
 
-static int32_t start_init(void)
+static int32_t start_init(const char *component_name, int32_t component_id)
 {
     int retval;
 
@@ -372,9 +372,9 @@ static int32_t start_init(void)
 
     hal_malloc_init();
 
-    gpio_hal_init();
+    gpio_hal_init(component_name, component_id);
 
-    pwm_hal_init();
+    pwm_hal_init(component_name, component_id);
 
     rtapi_snprintf(name, sizeof(name), "%s.gpio.write", component_name);
     retval = hal_export_funct(name, gpio_write, 0, 0, 0, component_id);
@@ -473,7 +473,7 @@ int rtapi_app_main(void)
         return -1;
     }
 
-    if (start_init()) {
+    if (start_init(component_name, component_id)) {
         hal_exit(component_id);
         return -1;
     }
