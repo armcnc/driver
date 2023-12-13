@@ -67,12 +67,12 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         return -1;
     }
 
-    gpio_hal_in = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
-    gpio_hal_in_not = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
-    gpio_hal_out = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
-    gpio_hal_out_not = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_bit_t *));
-    gpio_hal_pull = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_s32_t *));
-    gpio_hal_drive = hal_malloc(GPIO_MAX_COUNT * sizeof(hal_u32_t *));
+    gpio_hal_in = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_bit_t *));
+    gpio_hal_in_not = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_bit_t *));
+    gpio_hal_out = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_bit_t *));
+    gpio_hal_out_not = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_bit_t *));
+    gpio_hal_pull = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_s32_t *));
+    gpio_hal_drive = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_u32_t *));
 
     if (!gpio_hal_in || !gpio_hal_in_not || !gpio_hal_out || !gpio_hal_out_not || !gpio_hal_pull || !gpio_hal_drive) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_hal failed \n");
