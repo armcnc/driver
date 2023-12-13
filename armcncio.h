@@ -72,7 +72,7 @@ static hal_bit_t gpio_in_out_not_prev[GPIO_BCM_MAX_COUNT];
 static int gpio_in_out_array[GPIO_BCM_MAX_COUNT];
 static int gpio_in_array[] = {0};
 static int gpio_out_array[] = {0};
-static int gpio_in_out_count = 0;
+static int gpio_count = 0;
 
 static hal_s32_t **gpio_pull;
 static hal_s32_t gpio_pull_prev[GPIO_BCM_MAX_COUNT];

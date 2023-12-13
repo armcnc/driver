@@ -65,22 +65,22 @@ static int32_t gpio_hal_init(void)
     char *in_pins_token = strtok(in_pins, ",");
     while (in_pins_token != NULL)
     {
-        gpio_in_out_array[gpio_in_out_count] = atoi(in_pins_token);
-        gpio_in_array[gpio_in_out_count] = atoi(in_pins_token);
-        gpio_in_out_count++;
+        gpio_in_out_array[gpio_count] = atoi(in_pins_token);
+        gpio_in_array[gpio_count] = atoi(in_pins_token);
+        gpio_count++;
         in_pins_token = strtok(NULL, ",");
     }
 
     char *out_pins_token = strtok(out_pins, ",");
     while (out_pins_token != NULL)
     {
-        gpio_in_out_array[gpio_in_out_count] = atoi(out_pins_token);
-        gpio_out_array[gpio_in_out_count] = atoi(out_pins_token);
-        gpio_in_out_count++;
+        gpio_in_out_array[gpio_count] = atoi(out_pins_token);
+        gpio_out_array[gpio_count] = atoi(out_pins_token);
+        gpio_count++;
         out_pins_token = strtok(NULL, ",");
     }
 
-    for (int gpio_hal_i = 0; gpio_hal_i < gpio_in_out_count; gpio_hal_i++)
+    for (int gpio_hal_i = 0; gpio_hal_i < gpio_count; gpio_hal_i++)
     {
 
         int check = 0;
@@ -405,7 +405,33 @@ static int32_t start_init(void)
 }
 
 static void gpio_read(void *arg, long period)
-{  
+{
+    for (int gpio_hal_i = 0; gpio_hal_i < gpio_count; gpio_hal_i++)
+    {
+        if (isInArray(gpio_in_array, sizeof(gpio_in_array) / sizeof(gpio_in_array[0]), gpio_in_out_array[gpio_hal_i]))
+        {
+            if (digitalRead(gpio_in_out_array[gpio_hal_i]) == HIGH)
+            {
+                *gpio_in_out[gpio_in_out_array[gpio_hal_i]] = 1;
+                *gpio_in_out_not[gpio_in_out_array[gpio_hal_i]] = 0;
+            }else{
+                *gpio_in_out[gpio_in_out_array[gpio_hal_i]] = 0;
+                *gpio_in_out_not[gpio_in_out_array[gpio_hal_i]] = 1;
+            }
+        }
+
+        if (isInArray(gpio_out_array, sizeof(gpio_out_array) / sizeof(gpio_out_array[0]), gpio_in_out_array[gpio_hal_i]))
+        {
+            if (digitalRead(gpio_in_out_array[gpio_hal_i]) == HIGH)
+            {
+                *gpio_in_out[gpio_in_out_array[gpio_hal_i]] = 1;
+                *gpio_in_out_not[gpio_in_out_array[gpio_hal_i]] = 0;
+            }else{
+                *gpio_in_out[gpio_in_out_array[gpio_hal_i]] = 0;
+                *gpio_in_out_not[gpio_in_out_array[gpio_hal_i]] = 1;
+            }
+        }
+    }
 }
 
 static void gpio_write(void *arg, long period)
