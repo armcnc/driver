@@ -5,8 +5,8 @@
  ******************************************************************************
  */
 
-#ifndef ARMCNCIO
-#define ARMCNCIO
+#ifndef __ARMCNCIO__
+#define __ARMCNCIO__
 
 #include <stdio.h>
 #include <stdint.h>
