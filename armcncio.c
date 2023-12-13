@@ -82,10 +82,9 @@ static int32_t gpio_hal_init(void)
 
     for (int gpio_hal_i = 0; gpio_hal_i < gpio_count; gpio_hal_i++)
     {
-
         int check = 0;
 
-        if (isInArray(gpio_in_array, sizeof(gpio_in_array) / sizeof(gpio_in_array[0]), gpio_in_out_array[gpio_hal_i]))
+        if (isInArray(gpio_in_array, gpio_count, gpio_in_out_array[gpio_hal_i]))
         {
             rtapi_print_msg(RTAPI_MSG_ERR, "gpio_in_array \n");
 
@@ -112,7 +111,7 @@ static int32_t gpio_hal_init(void)
             check = 1;
         }
 
-        if (isInArray(gpio_out_array, sizeof(gpio_out_array) / sizeof(gpio_out_array[0]), gpio_in_out_array[gpio_hal_i]))
+        if (isInArray(gpio_out_array, gpio_count, gpio_in_out_array[gpio_hal_i]))
         {
             rtapi_print_msg(RTAPI_MSG_ERR, "gpio_out_array \n");
 
@@ -133,7 +132,7 @@ static int32_t gpio_hal_init(void)
             check = 1;
         }
 
-        if (check)
+        if (check > 0)
         {
             pullUpDnControl(gpio_in_out_array[gpio_hal_i], PUD_OFF);
 
