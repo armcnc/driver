@@ -122,6 +122,7 @@ static int32_t gpio_hal_init(void)
 
         pullUpDnControl(gpio_in_out_array[gpio_hal_i], PUD_OFF);
 
+
         *gpio_in_out[gpio_in_out_array[gpio_hal_i]] = digitalRead(gpio_in_out_array[gpio_hal_i]) == HIGH ? 1 : 0;
         *gpio_in_out_not[gpio_in_out_array[gpio_hal_i]] = *gpio_in_out[gpio_in_out_array[gpio_hal_i]] ? 0 : 1;
         gpio_in_out_prev[gpio_in_out_array[gpio_hal_i]] = *gpio_in_out[gpio_in_out_array[gpio_hal_i]];
