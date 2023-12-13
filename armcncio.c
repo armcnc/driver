@@ -63,13 +63,10 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         return -1;
     }
 
-    for (int8_t n = GPIO_BCM_MAX_COUNT; n--;) pin_msk[n] = 1UL << n;
-
     char *in_pins_token = strtok(in_pins, ",");
     while (in_pins_token != NULL)
     {
         in_pins_array[in_pins_count] = atoi(in_pins_token);
-        gpio_in_mask[atoi(in_pins_token)] |= pin_msk[atoi(in_pins_token)];
         in_pins_count++;
         in_pins_token = strtok(NULL, ",");
     }
@@ -78,7 +75,6 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
     while (out_pins_token != NULL)
     {
         out_pins_array[out_pins_count] = atoi(out_pins_token);
-        gpio_out_mask[atoi(out_pins_token)] |= pin_msk[atoi(out_pins_token)];
         out_pins_count++;
         out_pins_token = strtok(NULL, ",");
     }
@@ -356,8 +352,6 @@ static void gpio_read(void *arg, long period)
 {
     for (int in_pins_i = 0; in_pins_i < in_pins_count; in_pins_i++)
     {
-        if (!(gpio_in_mask[in_pins_array[in_pins_i]] & pin_msk[in_pins_array[in_pins_i]])) continue;
-
         if (digitalRead(in_pins_array[in_pins_i]) == HIGH)
         {
             *gpio_hal[in_pins_array[in_pins_i]] = 1;
@@ -370,8 +364,6 @@ static void gpio_read(void *arg, long period)
 
     for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
     {
-        if (!(gpio_out_mask[out_pins_array[out_pins_i]] & pin_msk[out_pins_array[out_pins_i]])) continue;
-
         if (digitalRead(out_pins_array[out_pins_i]) == HIGH)
         {
             *gpio_hal_not[out_pins_array[out_pins_i]] = 1;
@@ -385,26 +377,17 @@ static void gpio_read(void *arg, long period)
 
 static void gpio_write(void *arg, long period)
 {
-    static uint32_t mask_0, mask_1;
-
     for (int in_pins_i = 0; in_pins_i < in_pins_count; in_pins_i++)
     {
-        mask_0 = 0;
-        mask_1 = 0;
-
-        if (!(gpio_in_mask[in_pins_array[in_pins_i]] & pin_msk[in_pins_array[in_pins_i]])) continue;
-
         if(*gpio_hal[in_pins_array[in_pins_i]] != gpio_hal_prev[in_pins_array[in_pins_i]])
         {
             if (*gpio_hal[in_pins_array[in_pins_i]] == HIGH)
             {
                 *gpio_hal_not[in_pins_array[in_pins_i]] = 0;
-                mask_1 |= pin_msk[in_pins_array[in_pins_i]];
-                // digitalWrite(in_pins_array[in_pins_i], HIGH);
+                digitalWrite(in_pins_array[in_pins_i], HIGH);
             }else{
                 *gpio_hal_not[in_pins_array[in_pins_i]] = 1;
-                mask_0 |= pin_msk[in_pins_array[in_pins_i]];
-                // digitalWrite(in_pins_array[in_pins_i], LOW);
+                digitalWrite(in_pins_array[in_pins_i], LOW);
             }
             gpio_hal_prev[in_pins_array[in_pins_i]] = *gpio_hal[in_pins_array[in_pins_i]];
             gpio_hal_not_prev[in_pins_array[in_pins_i]] = *gpio_hal_not[in_pins_array[in_pins_i]];
@@ -415,39 +398,27 @@ static void gpio_write(void *arg, long period)
             if (*gpio_hal_not[in_pins_array[in_pins_i]] == HIGH)
             {
                 *gpio_hal[in_pins_array[in_pins_i]] = 0;
-                mask_0 |= pin_msk[in_pins_array[in_pins_i]];
-                // digitalWrite(in_pins_array[in_pins_i], LOW);
+                digitalWrite(in_pins_array[in_pins_i], LOW);
             }else{
                 *gpio_hal[in_pins_array[in_pins_i]] = 1;
-                mask_1 |= pin_msk[in_pins_array[in_pins_i]];
-                // digitalWrite(in_pins_array[in_pins_i], HIGH);
+                digitalWrite(in_pins_array[in_pins_i], HIGH);
             }
             gpio_hal_not_prev[in_pins_array[in_pins_i]] = *gpio_hal_not[in_pins_array[in_pins_i]];
             gpio_hal_prev[in_pins_array[in_pins_i]] = *gpio_hal[in_pins_array[in_pins_i]];
         }
-
-        if (mask_0) digitalWrite(in_pins_array[in_pins_i], LOW);
-        if (mask_1) digitalWrite(in_pins_array[in_pins_i], HIGH);
     }
 
     for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
     {
-        mask_0 = 0;
-        mask_1 = 0;
-
-        if (!(gpio_out_mask[out_pins_array[out_pins_i]] & pin_msk[out_pins_array[out_pins_i]])) continue;
-
         if(*gpio_hal[out_pins_array[out_pins_i]] != gpio_hal_prev[out_pins_array[out_pins_i]])
         {
             if (*gpio_hal[out_pins_array[out_pins_i]] == HIGH)
             {
                 *gpio_hal_not[out_pins_array[out_pins_i]] = 0;
-                mask_1 |= pin_msk[out_pins_array[out_pins_i]];
-                // digitalWrite(out_pins_array[out_pins_i], HIGH);
+                digitalWrite(out_pins_array[out_pins_i], HIGH);
             }else{
                 *gpio_hal_not[out_pins_array[out_pins_i]] = 1;
-                mask_0 |= pin_msk[out_pins_array[out_pins_i]];
-                // digitalWrite(out_pins_array[out_pins_i], LOW);
+                digitalWrite(out_pins_array[out_pins_i], LOW);
             }
             gpio_hal_prev[out_pins_array[out_pins_i]] = *gpio_hal[out_pins_array[out_pins_i]];
             gpio_hal_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_not[out_pins_array[out_pins_i]];
@@ -458,19 +429,14 @@ static void gpio_write(void *arg, long period)
             if (*gpio_hal_not[out_pins_array[out_pins_i]] == HIGH)
             {
                 *gpio_hal[out_pins_array[out_pins_i]] = 0;
-                mask_0 |= pin_msk[out_pins_array[out_pins_i]];
-                // digitalWrite(out_pins_array[out_pins_i], LOW);
+                digitalWrite(out_pins_array[out_pins_i], LOW);
             }else{
                 *gpio_hal[out_pins_array[out_pins_i]] = 1;
-                mask_1 |= pin_msk[out_pins_array[out_pins_i]];
-                // digitalWrite(out_pins_array[out_pins_i], HIGH);
+                digitalWrite(out_pins_array[out_pins_i], HIGH);
             }
             gpio_hal_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_not[out_pins_array[out_pins_i]];
             gpio_hal_prev[out_pins_array[out_pins_i]] = *gpio_hal[out_pins_array[out_pins_i]];
         }
-
-        if (mask_0) digitalWrite(out_pins_array[out_pins_i], LOW);
-        if (mask_1) digitalWrite(out_pins_array[out_pins_i], HIGH);
     }
 }
 
