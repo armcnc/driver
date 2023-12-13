@@ -5,9 +5,6 @@
  ******************************************************************************
  */
 
-#ifndef __ARMCNCIO__
-#define __ARMCNCIO__
-
 #include <stdio.h>
 #include <ctype.h>
 #include <stdint.h>
@@ -25,7 +22,8 @@
 #include "rtapi_math.h"
 #include "hal.h"
 
-#define GPIO_BCM_MAX_COUNT 28
+#define GPIO_MAX_COUNT 40
+
 #define RTAPI_BIT(nr) (1UL << (nr))
 
 typedef struct
@@ -64,27 +62,33 @@ typedef struct
     hal_float_t *vel_fb; // out
     hal_float_t *freq_fb; // out
     hal_s32_t   *counts; // out
+
+    hal_u32_t ctrl_type;
+    hal_s32_t freq_mHz;
+    hal_u32_t freq_min_mHz;
+    hal_u32_t freq_max_mHz;
+    hal_s32_t dc_s32;
 }pwm_hal_struct;
 
-static hal_bit_t **gpio_in_out;
-static hal_bit_t **gpio_in_out_not;
-static hal_bit_t gpio_in_out_prev[GPIO_BCM_MAX_COUNT];
-static hal_bit_t gpio_in_out_not_prev[GPIO_BCM_MAX_COUNT];
-static int gpio_in_out_array[GPIO_BCM_MAX_COUNT];
-static int gpio_in_array[] = {0};
-static int gpio_out_array[] = {0};
-static int gpio_count = 0;
+static hal_bit_t **gpio_hal_in;
+static hal_bit_t **gpio_hal_in_not;
+static hal_bit_t gpio_hal_in_prev[GPIO_MAX_COUNT];
+static hal_bit_t gpio_hal_in_not_prev[GPIO_MAX_COUNT];
 
-static hal_s32_t **gpio_pull;
-static hal_s32_t gpio_pull_prev[GPIO_BCM_MAX_COUNT];
+static hal_bit_t **gpio_hal_out;
+static hal_bit_t **gpio_hal_out_not;
+static hal_bit_t gpio_hal_out_prev[GPIO_MAX_COUNT];
+static hal_bit_t gpio_hal_out_not_prev[GPIO_MAX_COUNT];
+
+static hal_s32_t **gpio_hal_pull;
+static hal_s32_t gpio_hal_pull_prev[GPIO_MAX_COUNT];
+
+static hal_u32_t **gpio_hal_drive;
+static hal_u32_t gpio_hal_drive_prev[GPIO_MAX_COUNT];
 
 static pwm_hal_struct *pwm_hal;
-static int pwm_array[GPIO_BCM_MAX_COUNT];
-static int pwm_count = 0;
 
 static void gpio_write(void *arg, long period);
 static void gpio_read(void *arg, long period);
 static void pwm_write(void *arg, long period);
 static void pwm_read(void *arg, long period);
-
-#endif
