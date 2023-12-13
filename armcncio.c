@@ -119,10 +119,12 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
             return -1;
         }
 
-        *gpio_hal[in_pins_array[out_pins_i]] = digitalRead(in_pins_array[out_pins_i]) == HIGH ? 1 : 0;
-        *gpio_hal_not[in_pins_array[out_pins_i]] = *gpio_hal[in_pins_array[out_pins_i]] ? 0 : 1;
-        gpio_hal_prev[in_pins_array[out_pins_i]] = *gpio_hal[in_pins_array[out_pins_i]];
-        gpio_hal_not_prev[in_pins_array[out_pins_i]] = *gpio_hal_not[in_pins_array[out_pins_i]];
+        pullUpDnControl(out_pins_array[out_pins_i], PUD_OFF);
+
+        *gpio_hal[out_pins_array[out_pins_i]] = digitalRead(out_pins_array[out_pins_i]) == HIGH ? 1 : 0;
+        *gpio_hal_not[out_pins_array[out_pins_i]] = *gpio_hal[out_pins_array[out_pins_i]] ? 0 : 1;
+        gpio_hal_prev[out_pins_array[out_pins_i]] = *gpio_hal[out_pins_array[out_pins_i]];
+        gpio_hal_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_not[out_pins_array[out_pins_i]];
     }
 
     char *pwm_types_token = strtok(pwm_types, ",");
