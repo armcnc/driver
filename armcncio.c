@@ -63,7 +63,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         return -1;
     }
 
-    for (n = GPIO_BCM_MAX_COUNT; n--;) gpio_mask[n] = 1UL << n;
+    for (int n = GPIO_BCM_MAX_COUNT; n--;) gpio_mask[n] = 1UL << n;
 
     char *in_pins_token = strtok(in_pins, ",");
     while (in_pins_token != NULL)
@@ -356,9 +356,9 @@ static void gpio_read(void *arg, long period)
 {
     for (int in_pins_i = 0; in_pins_i < in_pins_count; in_pins_i++)
     {
-        if (!(gpio_in_mask[in_pins_array[in_pins_i]] & pin_msk[in_pins_array[in_pins_i]])) continue;
+        if (!(gpio_in_mask[in_pins_array[in_pins_i]] & gpio_mask[in_pins_array[in_pins_i]])) continue;
 
-        if (digitalRead(in_pins_array[in_pins_i]) & pin_msk[in_pins_array[in_pins_i]])
+        if (digitalRead(in_pins_array[in_pins_i]) & gpio_mask[in_pins_array[in_pins_i]])
         {
             *gpio_hal[in_pins_array[in_pins_i]] = 1;
             *gpio_hal_not[in_pins_array[in_pins_i]] = 0;
@@ -370,9 +370,9 @@ static void gpio_read(void *arg, long period)
 
     for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
     {
-        if (!(gpio_out_mask[out_pins_array[out_pins_i]] & pin_msk[out_pins_array[out_pins_i]])) continue;
+        if (!(gpio_out_mask[out_pins_array[out_pins_i]] & gpio_mask[out_pins_array[out_pins_i]])) continue;
 
-        if (digitalRead(out_pins_array[out_pins_i]) & pin_msk[out_pins_array[out_pins_i]])
+        if (digitalRead(out_pins_array[out_pins_i]) & gpio_mask[out_pins_array[out_pins_i]])
         {
             *gpio_hal_not[out_pins_array[out_pins_i]] = 1;
             *gpio_hal[out_pins_array[out_pins_i]] = 0;
