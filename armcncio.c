@@ -390,19 +390,19 @@ static void gpio_write(void *arg, long period)
         mask_0 = 0;
         mask_1 = 0;
 
-        if (!(gpio_in_mask[pin] & pin_msk[pin]) && !(gpio_out_mask[pin] & pin_msk[pin])) continue;
+        if (!(gpio_in_mask[pin] & gpio_mask[pin]) && !(gpio_out_mask[pin] & gpio_mask[pin])) continue;
 
-        if (!(gpio_out_mask[pin] & pin_msk[pin])) continue;
+        if (!(gpio_out_mask[pin] & gpio_mask[pin])) continue;
 
         if(*gpio_hal[pin] != gpio_hal_prev[pin])
         {
             if (*gpio_hal[pin] == HIGH)
             {
                 *gpio_hal_not[pin] = 0;
-                mask_1 |= pin_msk[pin];
+                mask_1 |= gpio_mask[pin];
             }else{
                 *gpio_hal_not[pin] = 1;
-                mask_0 |= pin_msk[pin];
+                mask_0 |= gpio_mask[pin];
             }
 
             gpio_hal_prev[pin] = *gpio_hal[pin];
@@ -414,10 +414,10 @@ static void gpio_write(void *arg, long period)
             if (*gpio_hal_not[pin] == HIGH)
             {
                 *gpio_hal[pin] = 0;
-                mask_0 |= pin_msk[pin];
+                mask_0 |= gpio_mask[pin];
             }else{
                 *gpio_hal[pin] = 1;
-                mask_1 |= pin_msk[pin];
+                mask_1 |= gpio_mask[pin];
             }
 
             gpio_hal_not_prev[pin] = *gpio_hal_not[pin];
