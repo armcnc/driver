@@ -354,6 +354,9 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
 
 static void gpio_read(void *arg, long period)
 {
+
+    if (!in_pins_count && !out_pins_count) return;
+
     for (int in_pins_i = 0; in_pins_i < in_pins_count; in_pins_i++)
     {
         if (!(gpio_in_mask[in_pins_array[in_pins_i]] & gpio_mask[in_pins_array[in_pins_i]])) continue;
