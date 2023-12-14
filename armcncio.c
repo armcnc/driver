@@ -342,11 +342,11 @@ static void pwm_write(void *arg, long period)
 
         // int32_t dc = pwm_get_new_dc(ch);
 
-        float sValue = pwm_hal_var.dc_cmd;
-        float dcScale = pwm_hal_var.dc_scale / 2;
-        int pwmValue = (int)(500.0 * sValue / dcScale);
-        pwmValue = pwmValue < 0 ? 0 : (pwmValue > 500 ? 500 : pwmValue);
-        softPwmWrite(pwm_hal_var.pwm_pin, pwmValue);
+        // float sValue = pwm_hal_var.dc_cmd;
+        // float dcScale = pwm_hal_var.dc_scale / 2;
+        // int pwmValue = (int)(500.0 * sValue / dcScale);
+        // pwmValue = pwmValue < 0 ? 0 : (pwmValue > 500 ? 500 : pwmValue);
+        softPwmWrite(pwm_hal_var.pwm_pin, 200);
     }
 }
 
