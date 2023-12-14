@@ -63,10 +63,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         return -1;
     }
 
-    for (int n = 0; n < GPIO_BCM_MAX_COUNT; n++) {
-        gpio_mask[n] = 1UL << n;
-        rtapi_print_msg(RTAPI_MSG_ERR, "Pin %d: gpio_mask = %u", n, gpio_mask[n]);
-    }
+    for (int n = 0; n < GPIO_BCM_MAX_COUNT; n++) gpio_mask[n] = 1UL << n;
 
     char *in_pins_token = strtok(in_pins, ",");
     while (in_pins_token != NULL)
@@ -89,8 +86,6 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         pinMode(in_pins_array[in_pins_i], INPUT);
 
         gpio_in_mask[in_pins_array[in_pins_i]] |= gpio_mask[in_pins_array[in_pins_i]];
-
-        rtapi_print_msg(RTAPI_MSG_ERR, "Pin %d: gpio_in_mask = %u", in_pins_array[in_pins_i], gpio_in_mask[in_pins_array[in_pins_i]]);
 
         retval = hal_pin_bit_newf(HAL_OUT, &gpio_hal[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "in");
         if (retval < 0) {
@@ -117,8 +112,6 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         pinMode(out_pins_array[out_pins_i], OUTPUT);
 
         gpio_out_mask[out_pins_array[out_pins_i]] |= gpio_mask[out_pins_array[out_pins_i]];
-
-        rtapi_print_msg(RTAPI_MSG_ERR, "Pin %d: gpio_in_mask = %u", out_pins_array[out_pins_i], gpio_out_mask[out_pins_array[out_pins_i]]);
 
         retval = hal_pin_bit_newf(HAL_IN, &gpio_hal[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, out_pins_array[out_pins_i], "out");
         if (retval < 0) {
