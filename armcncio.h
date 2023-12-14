@@ -150,7 +150,6 @@ static void pwm_pins_update(uint8_t ch)
 
     if (upd > 0)
     {
-        pinMode(pwm_hal_var.pwm_pin, OUTPUT);
         softPwmCreate(pwm_hal_var.pwm_pin, 0, 1000);
     }
 }
