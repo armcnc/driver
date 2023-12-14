@@ -65,7 +65,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
 
     for (int n = 0; n < GPIO_BCM_MAX_COUNT; n++) {
         gpio_mask[n] = 1UL << n;
-        printf("Pin %d: gpio_mask = %u", n, gpio_mask[i]);
+        printf("Pin %d: gpio_mask = %u", n, gpio_mask[n]);
     }
 
     char *in_pins_token = strtok(in_pins, ",");
