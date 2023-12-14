@@ -150,12 +150,11 @@ static void pwm_pins_update(int ch)
 
     if (upd)
     {
-        rtapi_print_msg(RTAPI_MSG_ERR, "softPwmCreate \n");
-        softPwmCreate((int)pwm_hal_var.pwm_pin, 0, 500);
+        softPwmCreate((int)pwm_hal_var.pwm_pin, 0, 1000);
     }
 }
 
-static int32_t pwm_get_new_dc(uint8_t ch)
+static int32_t pwm_get_new_dc(int ch)
 {
     if (pwm_hal_var.dc_cmd == pwm_private_var.dc_cmd &&
         pwm_hal_var.dc_scale == pwm_private_var.dc_scale && 
@@ -180,6 +179,48 @@ static int32_t pwm_get_new_dc(uint8_t ch)
     pwm_private_var.dc_scale = pwm_hal_var.dc_scale;
 
     return (int32_t) (pwm_hal_var.dc_fb * INT32_MAX);
+}
+
+static int32_t pwm_get_new_freq(int ch, long period)
+{
+    int32_t freq = 0;
+
+    if (pwm_private_var.freq_min != pwm_hal_var.freq_min)
+    {
+        pwm_private_var.freq_min_mHz = (hal_u32_t) round(pwm_hal_var.freq_min * 1000);
+        pwm_private_var.freq_min = pwm_hal_var.freq_min;
+    }
+
+    if (pwm_private_var.freq_max != pwm_hal_var.freq_max)
+    {
+        pwm_private_var.freq_max_mHz = (hal_u32_t) round(pwm_hal_var.freq_max * 1000);
+        pwm_private_var.freq_max = pwm_hal_var.freq_max;
+    }
+
+    switch (pwm_private_var.ctrl_type)
+    {
+        case 1: {
+
+            break;
+        }
+        case 2: {
+            if (pwm_private_var.freq_cmd == pwm_hal_var.freq_cmd)
+            {
+                freq = pwm_private_var.freq_mHz;
+                break;
+            }
+            pwm_private_var.freq_cmd = pwm_hal_var.freq_cmd;
+            if (pwm_hal_var.freq_cmd < 1e-20 && pwm_hal_var.freq_cmd > -1e-20) break;
+            freq = (int32_t)round(pwm_hal_var.freq_cmd * 1000);
+            if (abs(freq) < pwm_private_var.freq_min_mHz) freq = 0;
+            else if ( abs(freq) > pwm_private_var.freq_max_mHz ) freq = pwm_private_var.freq_max_mHz * (freq < 0 ? -1 : 1);
+            break;
+        }
+    }
+
+    pwm_hal_var.freq_fb = freq ? ((hal_float_t) freq) / 1000 : 0.0;
+
+    return freq;
 }
 
 #endif

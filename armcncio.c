@@ -331,22 +331,17 @@ static void pwm_write(void *arg, long period)
             pwm_private_var.enable = pwm_hal_var.enable;
             if (!pwm_hal_var.enable)
             {
-                rtapi_print_msg(RTAPI_MSG_ERR, "enable \n");
                 softPwmWrite((int)pwm_hal_var.pwm_pin, 0);
-                softPwmStop((int)pwm_hal_var.pwm_pin);
                 continue;
             }
         }
 
         pwm_pins_update(ch);
 
-        // int32_t dc = pwm_get_new_dc(ch);
-
-        // float sValue = pwm_hal_var.dc_cmd;
-        // float dcScale = pwm_hal_var.dc_scale / 2;
-        // int pwmValue = (int)(500.0 * sValue / dcScale);
-        // pwmValue = pwmValue < 0 ? 0 : (pwmValue > 500 ? 500 : pwmValue);
-        softPwmWrite(pwm_hal_var.pwm_pin, 1200);
+        int32_t dc = pwm_get_new_dc(ch);
+        int32_t freq = pwm_get_new_freq(ch, period);
+        
+        softPwmWrite(pwm_hal_var.pwm_pin, (int)(freq && dc ? 1000 : 0));
     }
 }
 
