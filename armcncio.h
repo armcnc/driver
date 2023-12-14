@@ -150,7 +150,7 @@ static void pwm_pins_update(int ch)
 
     if (upd)
     {
-        softPwmCreate((int)pwm_hal_var.pwm_pin, 0, 1000);
+        softPwmCreate((int)pwm_hal_var.pwm_pin, 0, 100);
     }
 }
 
@@ -200,7 +200,6 @@ static int32_t pwm_get_new_freq(int ch, long period)
     switch (pwm_private_var.ctrl_type)
     {
         case 1: {
-
             break;
         }
         case 2: {
