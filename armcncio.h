@@ -146,7 +146,7 @@ static void pwm_pins_update(uint8_t ch)
     if (pwm_private_var.dir_port != pwm_hal_var.dir_port) {pwm_private_var.dir_port = pwm_hal_var.dir_port; upd++;}
     if (pwm_private_var.dir_pin  != pwm_hal_var.dir_pin) {pwm_private_var.dir_pin = pwm_hal_var.dir_pin; upd++;}
 
-    if (pwm_private_var.dir_inv  != pwm_hal_var.dir_inv) {pwm_private_var.dir_inv = pwm_hal_var.dir_inv; upd++;}
+    if (pwm_private_var.dir_invert  != pwm_hal_var.dir_invert) {pwm_private_var.dir_invert = pwm_hal_var.dir_invert; upd++;}
 
     if (upd)
     {
