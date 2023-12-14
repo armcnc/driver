@@ -82,7 +82,7 @@ typedef struct
     hal_float_t dc_scale; // io
     hal_float_t dc_min; // io
     hal_float_t dc_max; // io
-    hal_u32_t *dc_max_t; // io
+    hal_u32_t dc_max_t; // io
     hal_float_t dc_offset; // io
 
     hal_float_t pos_cmd; // in
@@ -135,7 +135,7 @@ static void gpio_read(void *arg, long period);
 static void pwm_write(void *arg, long period);
 static void pwm_read(void *arg, long period);
 
-static void pwm_pins_update(uint8_t ch)
+static void pwm_pins_update(int ch)
 {
     uint32_t upd = 0;
 
@@ -148,7 +148,7 @@ static void pwm_pins_update(uint8_t ch)
 
     if (pwm_private_var.dir_invert != pwm_hal_var.dir_invert) {pwm_private_var.dir_invert = pwm_hal_var.dir_invert; upd++;}
 
-    if (upd > 0)
+    if (upd)
     {
         softPwmCreate(pwm_hal_var.pwm_pin, 0, 1000);
     }
