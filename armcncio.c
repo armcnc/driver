@@ -331,7 +331,7 @@ static void pwm_write(void *arg, long period)
             pwm_private_var.enable = pwm_hal_var.enable;
             if (!pwm_hal_var.enable)
             {
-                rtapi_print_msg(RTAPI_MSG_DBG, "enable \n");
+                rtapi_print_msg(RTAPI_MSG_ERR, "enable \n");
                 softPwmWrite((int)pwm_hal_var.pwm_pin, 0);
                 softPwmStop((int)pwm_hal_var.pwm_pin);
                 continue;

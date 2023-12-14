@@ -150,7 +150,7 @@ static void pwm_pins_update(int ch)
 
     if (upd)
     {
-        rtapi_print_msg(RTAPI_MSG_DBG, "softPwmCreate \n");
+        rtapi_print_msg(RTAPI_MSG_ERR, "softPwmCreate \n");
         softPwmCreate((int)pwm_hal_var.pwm_pin, 0, 500);
     }
 }
