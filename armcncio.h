@@ -26,8 +26,6 @@
 
 #define GPIO_BCM_MAX_COUNT 28
 
-#define RTAPI_BIT(nr) (1UL << (nr))
-
 typedef struct
 {
     hal_bit_t *enable; // in
@@ -65,6 +63,10 @@ typedef struct
     hal_float_t *freq_fb; // out
     hal_s32_t   *counts; // out
 }pwm_hal_struct;
+
+static uint32_t gpio_mask[GPIO_BCM_MAX_COUNT] = {0};
+static uint32_t gpio_out_mask[GPIO_BCM_MAX_COUNT] = {0};
+static uint32_t gpio_in_mask[GPIO_BCM_MAX_COUNT] = {0};
 
 static hal_bit_t **gpio_hal;
 static hal_bit_t gpio_hal_prev[GPIO_BCM_MAX_COUNT];
