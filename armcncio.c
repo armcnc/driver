@@ -331,6 +331,7 @@ static void pwm_write(void *arg, long period)
             pwm_private_var.enable = pwm_hal_var.enable;
             if (!pwm_hal_var.enable)
             {
+                rtapi_print_msg(RTAPI_MSG_DBG, "enable \n");
                 softPwmWrite((int)pwm_hal_var.pwm_pin, 0);
                 softPwmStop((int)pwm_hal_var.pwm_pin);
                 continue;
@@ -343,8 +344,8 @@ static void pwm_write(void *arg, long period)
 
         float sValue = pwm_hal_var.dc_cmd;
         float dcScale = pwm_hal_var.dc_scale / 2;
-        int pwmValue = (int)(100.0 * sValue / dcScale);
-        pwmValue = pwmValue < 0 ? 0 : (pwmValue > 100 ? 100 : pwmValue);
+        int pwmValue = (int)(500.0 * sValue / dcScale);
+        pwmValue = pwmValue < 0 ? 0 : (pwmValue > 500 ? 500 : pwmValue);
         softPwmWrite(pwm_hal_var.pwm_pin, pwmValue);
     }
 }
