@@ -74,7 +74,6 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
     while (in_pins_token != NULL)
     {
         in_pins_array[in_pins_count] = atoi(in_pins_token);
-        gpio_in_mask[atoi(in_pins_token)] |= gpio_mask[atoi(in_pins_token)];
         in_pins_count++;
         in_pins_token = strtok(NULL, ",");
     }
@@ -83,7 +82,6 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
     while (out_pins_token != NULL)
     {
         out_pins_array[out_pins_count] = atoi(out_pins_token);
-        gpio_out_mask[atoi(out_pins_token)] |= gpio_mask[atoi(out_pins_token)];
         out_pins_count++;
         out_pins_token = strtok(NULL, ",");
     }
@@ -91,6 +89,8 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
     for (int in_pins_i = 0; in_pins_i < in_pins_count; in_pins_i++)
     {
         pinMode(in_pins_array[in_pins_i], INPUT);
+
+        gpio_in_mask[in_pins_array[in_pins_i]] |= gpio_mask[in_pins_array[in_pins_i]];
 
         retval = hal_pin_bit_newf(HAL_OUT, &gpio_hal[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, in_pins_array[in_pins_i], "in");
         if (retval < 0) {
@@ -115,6 +115,8 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
     for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
     {
         pinMode(out_pins_array[out_pins_i], OUTPUT);
+
+        gpio_out_mask[out_pins_array[out_pins_i]] |= gpio_mask[out_pins_array[out_pins_i]];
 
         retval = hal_pin_bit_newf(HAL_IN, &gpio_hal[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, out_pins_array[out_pins_i], "out");
         if (retval < 0) {
@@ -361,29 +363,37 @@ static void gpio_read(void *arg, long period)
 {
     for (int in_pins_i = 0; in_pins_i < in_pins_count; in_pins_i++)
     {
-        if (!(gpio_in_mask[in_pins_array[in_pins_i]] & gpio_mask[in_pins_array[in_pins_i]])) continue;
+        int pin = in_pins_array[in_pins_i];
 
-        if ((uint32_t)digitalRead(in_pins_array[in_pins_i]) & gpio_mask[in_pins_array[in_pins_i]])
+        if (!(gpio_in_mask[pin] & gpio_mask[pin])) continue;
+
+        uint32_t pin_state = (uint32_t)digitalRead(pin);
+
+        if (pin_state & gpio_mask[pin])
         {
-            *gpio_hal[in_pins_array[in_pins_i]] = 1;
-            *gpio_hal_not[in_pins_array[in_pins_i]] = 0;
+            *gpio_hal[pin] = 1;
+            *gpio_hal_not[pin] = 0;
         }else{
-            *gpio_hal[in_pins_array[in_pins_i]] = 0;
-            *gpio_hal_not[in_pins_array[in_pins_i]] = 1;
+            *gpio_hal[pin] = 0;
+            *gpio_hal_not[pin] = 1;
         }
     }
 
     for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
     {
-        if (!(gpio_out_mask[out_pins_array[out_pins_i]] & gpio_mask[out_pins_array[out_pins_i]])) continue;
+        int pin = out_pins_array[out_pins_i];
 
-        if ((uint32_t)digitalRead(out_pins_array[out_pins_i]) & gpio_mask[out_pins_array[out_pins_i]])
+        if (!(gpio_out_mask[pin] & gpio_mask[pin])) continue;
+
+        uint32_t pin_state = (uint32_t)digitalRead(pin);
+
+        if (pin_state & gpio_mask[pin])
         {
-            *gpio_hal_not[out_pins_array[out_pins_i]] = 1;
-            *gpio_hal[out_pins_array[out_pins_i]] = 0;
+            *gpio_hal_not[pin] = 1;
+            *gpio_hal[pin] = 0;
         }else{
-            *gpio_hal_not[out_pins_array[out_pins_i]] = 0;
-            *gpio_hal[out_pins_array[out_pins_i]] = 1;
+            *gpio_hal_not[pin] = 0;
+            *gpio_hal[pin] = 1;
         }
     }
 }
