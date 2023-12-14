@@ -371,9 +371,9 @@ static void gpio_read(void *arg, long period)
 
         if (!(gpio_in_mask[pin] & gpio_mask[pin])) continue;
 
-        uint32_t pin_state = (uint32_t)digitalRead(pin);
+        uint32_t pin_state = digitalRead(pin) == HIGH ? gpio_mask[pin] : 0;
 
-        if (pin_state)
+        if (pin_state & gpio_mask[pin])
         {
             *gpio_hal[pin] = 1;
             *gpio_hal_not[pin] = 0;
