@@ -144,14 +144,14 @@ static void pwm_pins_update(uint8_t ch)
     if (pwm_private_var.pwm_invert != pwm_hal_var.pwm_invert) {pwm_private_var.pwm_invert = pwm_hal_var.pwm_invert; upd++;}
 
     if (pwm_private_var.dir_port != pwm_hal_var.dir_port) {pwm_private_var.dir_port = pwm_hal_var.dir_port; upd++;}
-    if (pwm_private_var.dir_pin  != pwm_hal_var.dir_pin) {pwm_private_var.dir_pin = pwm_hal_var.dir_pin; upd++;}
+    if (pwm_private_var.dir_pin != pwm_hal_var.dir_pin) {pwm_private_var.dir_pin = pwm_hal_var.dir_pin; upd++;}
 
-    if (pwm_private_var.dir_invert  != pwm_hal_var.dir_invert) {pwm_private_var.dir_invert = pwm_hal_var.dir_invert; upd++;}
+    if (pwm_private_var.dir_invert != pwm_hal_var.dir_invert) {pwm_private_var.dir_invert = pwm_hal_var.dir_invert; upd++;}
 
-    if (upd)
+    if (upd > 0)
     {
         pinMode(pwm_hal_var.pwm_pin, OUTPUT);
-        softPwmCreate(pwm_hal_var.pwm_pin, 0, 100);
+        softPwmCreate(pwm_hal_var.pwm_pin, 0, 1000);
     }
 }
 
