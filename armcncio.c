@@ -371,7 +371,7 @@ static void gpio_read(void *arg, long period)
 
         uint32_t pin_state = (uint32_t)digitalRead(pin);
 
-        if (pin_state & gpio_mask[pin])
+        if (pin_state)
         {
             *gpio_hal[pin] = 1;
             *gpio_hal_not[pin] = 0;
@@ -389,7 +389,7 @@ static void gpio_read(void *arg, long period)
 
         uint32_t pin_state = (uint32_t)digitalRead(pin);
 
-        if (pin_state & gpio_mask[pin])
+        if (pin_state)
         {
             *gpio_hal_not[pin] = 1;
             *gpio_hal[pin] = 0;
