@@ -150,7 +150,7 @@ static void pwm_pins_update(int ch)
 
     if (upd)
     {
-        softPwmCreate((int)pwm_hal_var.pwm_pin, 0, 100);
+        softPwmCreate((int)pwm_hal_var.pwm_pin, 0, 500);
     }
 }
 
