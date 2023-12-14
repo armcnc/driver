@@ -63,7 +63,12 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         return -1;
     }
 
-    for (int n = 0; n < GPIO_BCM_MAX_COUNT; n++) gpio_mask[n] = 1UL << n;
+    for (int n = 0; n < GPIO_BCM_MAX_COUNT; n++)
+    {
+        gpio_mask[n] = 1UL << n;
+        gpio_in_mask[n] = 0;
+        gpio_out_mask[n] = 0;
+    }
 
     char *in_pins_token = strtok(in_pins, ",");
     while (in_pins_token != NULL)
