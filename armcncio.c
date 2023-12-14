@@ -361,7 +361,7 @@ static void gpio_read(void *arg, long period)
     {
         if (!(gpio_in_mask[in_pins_array[in_pins_i]] & gpio_mask[in_pins_array[in_pins_i]])) continue;
 
-        if (digitalRead(in_pins_array[in_pins_i]) & gpio_mask[in_pins_array[in_pins_i]])
+        if ((uint32_t)digitalRead(in_pins_array[in_pins_i]) & gpio_mask[in_pins_array[in_pins_i]])
         {
             *gpio_hal[in_pins_array[in_pins_i]] = 1;
             *gpio_hal_not[in_pins_array[in_pins_i]] = 0;
@@ -375,7 +375,7 @@ static void gpio_read(void *arg, long period)
     {
         if (!(gpio_out_mask[out_pins_array[out_pins_i]] & gpio_mask[out_pins_array[out_pins_i]])) continue;
 
-        if (digitalRead(out_pins_array[out_pins_i]) & gpio_mask[out_pins_array[out_pins_i]])
+        if ((uint32_t)digitalRead(out_pins_array[out_pins_i]) & gpio_mask[out_pins_array[out_pins_i]])
         {
             *gpio_hal_not[out_pins_array[out_pins_i]] = 1;
             *gpio_hal[out_pins_array[out_pins_i]] = 0;
