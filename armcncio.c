@@ -363,12 +363,10 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
 
 static void gpio_read(void *arg, long period)
 {
-
     if (!in_pins_count) return;
 
     for (int pin = 0; pin < GPIO_BCM_MAX_COUNT; pin++)
     {
-
         if (!gpio_in_mask[pin]) continue;
 
         if (!(gpio_in_mask[pin] & gpio_mask[pin])) continue;
