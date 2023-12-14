@@ -33,7 +33,7 @@ static const uint8_t * component_name = "armcncio";
 
 static int32_t hal_start(const char *component_name, int32_t component_id)
 {
-    int port, retval;
+    int retval;
 
     char name[HAL_NAME_LEN + 1];
 
@@ -63,12 +63,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         return -1;
     }
 
-    for (int n = 0; n < GPIO_BCM_MAX_COUNT; n++)
-    {
-        gpio_mask[n] = 1UL << n;
-        gpio_in_mask[n] = 0;
-        gpio_out_mask[n] = 0;
-    }
+    for (int n = 0; n < GPIO_BCM_MAX_COUNT; n++) gpio_mask[n] = 1UL << n;
 
     char *in_pins_token = strtok(in_pins, ",");
     while (in_pins_token != NULL)
@@ -365,11 +360,11 @@ static void gpio_read(void *arg, long period)
     {
         int pin = in_pins_array[in_pins_i];
 
-        if (!(gpio_in_mask[pin] & gpio_mask[pin])) continue;
+        if (!(gpio_in_mask[(int8_t)pin] & gpio_mask[(int8_t)pin])) continue;
 
         uint32_t pin_state = (uint32_t)digitalRead(pin);
 
-        if (pin_state & gpio_mask[pin])
+        if (pin_state & gpio_mask[(int8_t)pin])
         {
             *gpio_hal[pin] = 1;
             *gpio_hal_not[pin] = 0;
@@ -383,11 +378,11 @@ static void gpio_read(void *arg, long period)
     {
         int pin = out_pins_array[out_pins_i];
 
-        if (!(gpio_out_mask[pin] & gpio_mask[pin])) continue;
+        if (!(gpio_out_mask[(int8_t)pin] & gpio_mask[(int8_t)pin])) continue;
 
         uint32_t pin_state = (uint32_t)digitalRead(pin);
 
-        if (pin_state & gpio_mask[pin])
+        if (pin_state & gpio_mask[(int8_t)pin])
         {
             *gpio_hal_not[pin] = 1;
             *gpio_hal[pin] = 0;
