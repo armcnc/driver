@@ -331,8 +331,8 @@ static void pwm_write(void *arg, long period)
             pwm_private_var.enable = pwm_hal_var.enable;
             if (!pwm_hal_var.enable)
             {
-                softPwmWrite(pwm_hal_var.pwm_pin, 0);
-                softPwmStop(pwm_hal_var.pwm_pin);
+                softPwmWrite((int)pwm_hal_var.pwm_pin, 0);
+                softPwmStop((int)pwm_hal_var.pwm_pin);
                 continue;
             }
         }
