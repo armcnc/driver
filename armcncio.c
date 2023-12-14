@@ -149,178 +149,63 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
             return -1;
         }
 
-        for (int pwm_types_i = 0; pwm_types_i < pwm_types_count; pwm_types_i++)
+        retval = 0;
+        #define EXPORT_PIN(IO_TYPE,VAR_TYPE,VAL,NAME,DEFAULT) \
+            retval += hal_pin_##VAR_TYPE##_newf(IO_TYPE, &(pwm_hal[ch].VAL), component_id,\
+            "%s.pwm.%d." NAME, component_name, ch);\
+            pwm_hal_var.VAL = DEFAULT;\
+            pwm_private_var.VAL = DEFAULT;
+
+        for (int ch = 0; ch < pwm_types_count; ch++)
         {
-            retval = hal_pin_bit_newf(HAL_IN, &pwm_hal[pwm_types_i].enable, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "enable");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal enable failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].enable = 0;
+            EXPORT_PIN(HAL_IN, bit, enable, "enable", 0);
 
-            retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].pwm_port, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pwm-port");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal pwm_port failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].pwm_port = UINT32_MAX;
-            retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].pwm_pin, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pwm-pin");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal pwm_pin failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].pwm_pin = UINT32_MAX;
-            retval = hal_pin_bit_newf(HAL_IN, &pwm_hal[pwm_types_i].pwm_invert, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pwm-invert");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal pwm_invert failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].pwm_invert = 0;
+            EXPORT_PIN(HAL_IN, u32, pwm_port, "pwm-port", UINT32_MAX);
+            EXPORT_PIN(HAL_IN, u32, pwm_pin, "pwm-pin", UINT32_MAX);
+            EXPORT_PIN(HAL_IN, bit, pwm_invert, "pwm-invert", 0);
 
-            retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].dir_port, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-port");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal dir_port failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dir_port = UINT32_MAX;
-            retval = hal_pin_u32_newf(HAL_IN, &pwm_hal[pwm_types_i].dir_pin, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-pin");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal dir_pin failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dir_pin = UINT32_MAX;
-            retval = hal_pin_bit_newf(HAL_IN, &pwm_hal[pwm_types_i].dir_invert, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-invert");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal dir_invert failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dir_invert = 0;
-            retval = hal_pin_u32_newf(HAL_IO, &pwm_hal[pwm_types_i].dir_hold, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-hold");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal dir_hold failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dir_hold = 50000;
-            retval = hal_pin_u32_newf(HAL_IO, &pwm_hal[pwm_types_i].dir_setup, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dir-setup");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal dir_setup failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dir_setup = 50000;
+            EXPORT_PIN(HAL_IN, u32, dir_port ,"dir-port", UINT32_MAX);
+            EXPORT_PIN(HAL_IN, u32, dir_pin, "dir-pin", UINT32_MAX);
+            EXPORT_PIN(HAL_IN, bit, dir_invert, "dir-invert", 0);
+            EXPORT_PIN(HAL_IO, u32, dir_hold, "dir-hold", 50000);
+            EXPORT_PIN(HAL_IO, u32, dir_setup, "dir-setup", 50000);
 
-            retval = hal_pin_float_newf(HAL_IN, &pwm_hal[pwm_types_i].dc_cmd, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-cmd");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal dc_cmd failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dc_cmd = 0.0;
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_min, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-min");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal dc_min failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dc_min = -1.0;
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_max, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-max");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal dc_max failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dc_max = 1.0;
-            retval = hal_pin_u32_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_max_t, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-max-t");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal dc_max_t failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dc_max_t = 0;
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_offset, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-offset");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal dc_offset failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dc_offset = 0.0;
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].dc_scale, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-scale");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal dc_scale failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dc_scale = 1.0;
-            
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].pos_scale, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pos-scale");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal pos_scale failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].pos_scale = 1.0;
-            retval = hal_pin_float_newf(HAL_IN, &pwm_hal[pwm_types_i].pos_cmd, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pos-cmd");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal pos_cmd failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].pos_cmd = 0.0;
+            EXPORT_PIN(HAL_IN, float, dc_cmd, "dc-cmd", 0.0);
+            EXPORT_PIN(HAL_IO, float, dc_min, "dc-min", -1.0);
+            EXPORT_PIN(HAL_IO, float, dc_max, "dc-max", 1.0);
+            EXPORT_PIN(HAL_IO, u32, dc_max_t, "dc-max-t", 0);
+            EXPORT_PIN(HAL_IO, float, dc_offset, "dc-offset", 0.0);
+            EXPORT_PIN(HAL_IO, float, dc_scale, "dc-scale", 1.0);
 
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].vel_scale, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "vel-scale");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal vel_scale failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].vel_scale = 1.0;
-            retval = hal_pin_float_newf(HAL_IN, &pwm_hal[pwm_types_i].vel_cmd, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "vel-cmd");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal vel_cmd failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].vel_cmd = 0.0;
+            EXPORT_PIN(HAL_IO, float, pos_scale, "pos-scale", 1.0);
+            EXPORT_PIN(HAL_IN, float, pos_cmd, "pos-cmd", 0.0);
 
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].freq_cmd, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "freq-cmd");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal freq_cmd failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].freq_cmd = 0.0;
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].freq_min, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "freq-min");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal freq_min failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].freq_min = 50.0;
-            retval = hal_pin_float_newf(HAL_IO, &pwm_hal[pwm_types_i].freq_max, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "freq-max");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal freq_max failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].freq_max = 500000.0;
+            EXPORT_PIN(HAL_IO, float, vel_scale, "vel-scale", 1.0);
+            EXPORT_PIN(HAL_IN, float, vel_cmd, "vel-cmd", 0.0);
 
-            retval = hal_pin_float_newf(HAL_OUT, &pwm_hal[pwm_types_i].dc_fb, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "dc-fb");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal dc_fb failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].dc_fb = 0.0;
-            retval = hal_pin_float_newf(HAL_OUT, &pwm_hal[pwm_types_i].pos_fb, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "pos-fb");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal pos_fb failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].pos_fb = 0.0;
-            retval = hal_pin_float_newf(HAL_OUT, &pwm_hal[pwm_types_i].freq_fb, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "freq-fb");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal freq_fb failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].freq_fb = 0.0;
-            retval = hal_pin_float_newf(HAL_OUT, &pwm_hal[pwm_types_i].vel_fb, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "vel-fb");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal vel_fb failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].vel_fb = 0.0;
-            retval = hal_pin_s32_newf(HAL_OUT, &pwm_hal[pwm_types_i].counts, component_id, "%s.pwm.%d.%s", component_name, pwm_types_i, "counts");
-            if (retval < 0) {
-                rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal vel_fb failed \n");
-                return -1;
-            }
-            *pwm_hal[pwm_types_i].counts = 0;
+            EXPORT_PIN(HAL_IO, float, freq_cmd, "freq-cmd", 0.0);
+            EXPORT_PIN(HAL_IO, float, freq_min, "freq-min", 50.0);
+            EXPORT_PIN(HAL_IO, float, freq_max, "freq-max", 500000.0);
+
+            EXPORT_PIN(HAL_OUT, float, dc_fb, "dc-fb", 0.0);
+            EXPORT_PIN(HAL_OUT, float, pos_fb, "pos-fb", 0.0);
+            EXPORT_PIN(HAL_OUT, float, freq_fb, "freq-fb", 0.0);
+            EXPORT_PIN(HAL_OUT, float, vel_fb, "vel-fb", 0.0);
+            EXPORT_PIN(HAL_OUT, s32, counts, "counts", 0);
+
+            pwm_private_var.ctrl_type = pwm_types_array[ch];
+            pwm_private_var.freq_mHz = 0;
+            pwm_private_var.freq_min_mHz = 50000;
+            pwm_private_var.freq_max_mHz = 500000000;
+            pwm_private_var.dc_s32 = 0;
         }
+
+        if (retval < 0) {
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() EXPORT_PIN failed \n");
+            return -1;
+        }
+
+        #undef EXPORT_PIN
     }
 
     rtapi_snprintf(name, sizeof(name), "%s.gpio.write", component_name);
@@ -431,7 +316,7 @@ static void gpio_write(void *arg, long period)
 
 static void pwm_read(void *arg, long period)
 {
-    for (int pwm_types_i = 0; pwm_types_i < pwm_types_count; pwm_types_i++)
+    for (int ch = 0; ch < pwm_types_count; ch++)
     {
         
     }
@@ -439,9 +324,28 @@ static void pwm_read(void *arg, long period)
 
 static void pwm_write(void *arg, long period)
 {
-    for (int pwm_types_i = 0; pwm_types_i < pwm_types_count; pwm_types_i++)
+    for (int ch = 0; ch < pwm_types_count; ch++)
     {
-        
+        if (pwm_private_var.enable != pwm_hal_var.enable)
+        {
+            pwm_private_var.enable = pwm_hal_var.enable;
+            if (!pwm_hal_var.enable)
+            {
+                softPwmWrite(pwm_hal_var.pwm_pin, 0);
+                softPwmStop(pwm_hal_var.pwm_pin);
+                continue;
+            }
+        }
+
+        pwm_pins_update((uint8_t)ch);
+
+        // int32_t dc = pwm_get_new_dc(ch);
+
+        float sValue = pwm_hal_var.dc_cmd;
+        float dcScale = pwm_hal_var.dc_scale;
+        int pwmValue = (int)(100.0 * sValue / dcScale);
+        pwmValue = pwmValue < 0 ? 0 : (pwmValue > 100 ? 100 : pwmValue);
+        softPwmWrite(pwm_hal_var.pwm_pin, pwmValue);
     }
 }
 
