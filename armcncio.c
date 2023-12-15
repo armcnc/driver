@@ -133,71 +133,71 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         gpio_hal_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_not[out_pins_array[out_pins_i]];
     }
 
-    char *pwm_types_token = strtok(pwm_types, ",");
-    while (pwm_types_token != NULL)
+    char *pwm_hal_token = strtok(pwm_types, ",");
+    while (pwm_hal_token != NULL)
     {
-        pwm_types_array[pwm_types_count] = (strcmp(pwm_types_token, "p") == 0) ? 1 : 2;
-        pwm_types_count++;
-        pwm_types_token = strtok(NULL, ",");
+        pwm_hal_array[pwm_hal_count] = (strcmp(pwm_hal_token, "p") == 0) ? 1 : 2;
+        pwm_hal_count++;
+        pwm_hal_token = strtok(NULL, ",");
     }
 
-    if (pwm_types_count > 0)
+    if (pwm_hal_count > 0)
     {
-        pwm_hal = hal_malloc(pwm_types_count * sizeof(pwm_hal_struct));
+        pwm_hal = hal_malloc(pwm_hal_count * sizeof(pwm_hal_struct));
         if (!pwm_hal) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal failed \n");
             return -1;
         }
 
         retval = 0;
-        #define EXPORT_PIN(IO_TYPE,VAR_TYPE,VAL,NAME,DEFAULT) \
-            retval += hal_pin_##VAR_TYPE##_newf(IO_TYPE, &(pwm_hal[ch].VAL), component_id,\
-            "%s.pwm.%d." NAME, component_name, ch);\
-            pwm_hal_var.VAL = DEFAULT;\
-            pwm_private_var.VAL = DEFAULT;
+        #define EXPORT_PIN(CH,IO_TYPE,VAR_TYPE,VAL,NAME,DEFAULT) \
+            retval += hal_pin_##VAR_TYPE##_newf(IO_TYPE, &(pwm_hal[CH].VAL), component_id,\
+            "%s.pwm.%d." NAME, component_name, CH);\
+            *pwm_hal[CH].VAL = DEFAULT;\
+            pwm_hal_prev[CH].VAL = DEFAULT;
 
-        for (int ch = 0; ch < pwm_types_count; ch++)
+        for (int ch = 0; ch < pwm_hal_count; ch++)
         {
-            EXPORT_PIN(HAL_IN, bit, enable, "enable", 0);
+            EXPORT_PIN(ch, HAL_IN, bit, enable, "enable", 0);
 
-            EXPORT_PIN(HAL_IN, u32, pwm_port, "pwm-port", UINT32_MAX);
-            EXPORT_PIN(HAL_IN, u32, pwm_pin, "pwm-pin", UINT32_MAX);
-            EXPORT_PIN(HAL_IN, bit, pwm_invert, "pwm-invert", 0);
+            EXPORT_PIN(ch, HAL_IN, u32, pwm_port, "pwm-port", UINT32_MAX);
+            EXPORT_PIN(ch, HAL_IN, u32, pwm_pin, "pwm-pin", UINT32_MAX);
+            EXPORT_PIN(ch, HAL_IN, bit, pwm_invert, "pwm-invert", 0);
 
-            EXPORT_PIN(HAL_IN, u32, dir_port ,"dir-port", UINT32_MAX);
-            EXPORT_PIN(HAL_IN, u32, dir_pin, "dir-pin", UINT32_MAX);
-            EXPORT_PIN(HAL_IN, bit, dir_invert, "dir-invert", 0);
-            EXPORT_PIN(HAL_IO, u32, dir_hold, "dir-hold", 50000);
-            EXPORT_PIN(HAL_IO, u32, dir_setup, "dir-setup", 50000);
+            EXPORT_PIN(ch, HAL_IN, u32, dir_port ,"dir-port", UINT32_MAX);
+            EXPORT_PIN(ch, HAL_IN, u32, dir_pin, "dir-pin", UINT32_MAX);
+            EXPORT_PIN(ch, HAL_IN, bit, dir_invert, "dir-invert", 0);
+            EXPORT_PIN(ch, HAL_IO, u32, dir_hold, "dir-hold", 50000);
+            EXPORT_PIN(ch, HAL_IO, u32, dir_setup, "dir-setup", 50000);
 
-            EXPORT_PIN(HAL_IN, float, dc_cmd, "dc-cmd", 0.0);
-            EXPORT_PIN(HAL_IO, float, dc_min, "dc-min", -1.0);
-            EXPORT_PIN(HAL_IO, float, dc_max, "dc-max", 1.0);
-            EXPORT_PIN(HAL_IO, u32, dc_max_t, "dc-max-t", 0);
-            EXPORT_PIN(HAL_IO, float, dc_offset, "dc-offset", 0.0);
-            EXPORT_PIN(HAL_IO, float, dc_scale, "dc-scale", 1.0);
+            EXPORT_PIN(ch, HAL_IN, float, dc_cmd, "dc-cmd", 0.0);
+            EXPORT_PIN(ch, HAL_IO, float, dc_min, "dc-min", -1.0);
+            EXPORT_PIN(ch, HAL_IO, float, dc_max, "dc-max", 1.0);
+            EXPORT_PIN(ch, HAL_IO, u32, dc_max_t, "dc-max-t", 0);
+            EXPORT_PIN(ch, HAL_IO, float, dc_offset, "dc-offset", 0.0);
+            EXPORT_PIN(ch, HAL_IO, float, dc_scale, "dc-scale", 1.0);
 
-            EXPORT_PIN(HAL_IO, float, pos_scale, "pos-scale", 1.0);
-            EXPORT_PIN(HAL_IN, float, pos_cmd, "pos-cmd", 0.0);
+            EXPORT_PIN(ch, HAL_IO, float, pos_scale, "pos-scale", 1.0);
+            EXPORT_PIN(ch, HAL_IN, float, pos_cmd, "pos-cmd", 0.0);
 
-            EXPORT_PIN(HAL_IO, float, vel_scale, "vel-scale", 1.0);
-            EXPORT_PIN(HAL_IN, float, vel_cmd, "vel-cmd", 0.0);
+            EXPORT_PIN(ch, HAL_IO, float, vel_scale, "vel-scale", 1.0);
+            EXPORT_PIN(ch, HAL_IN, float, vel_cmd, "vel-cmd", 0.0);
 
-            EXPORT_PIN(HAL_IO, float, freq_cmd, "freq-cmd", 0.0);
-            EXPORT_PIN(HAL_IO, float, freq_min, "freq-min", 50.0);
-            EXPORT_PIN(HAL_IO, float, freq_max, "freq-max", 500000.0);
+            EXPORT_PIN(ch, HAL_IO, float, freq_cmd, "freq-cmd", 0.0);
+            EXPORT_PIN(ch, HAL_IO, float, freq_min, "freq-min", 50.0);
+            EXPORT_PIN(ch, HAL_IO, float, freq_max, "freq-max", 500000.0);
 
-            EXPORT_PIN(HAL_OUT, float, dc_fb, "dc-fb", 0.0);
-            EXPORT_PIN(HAL_OUT, float, pos_fb, "pos-fb", 0.0);
-            EXPORT_PIN(HAL_OUT, float, freq_fb, "freq-fb", 0.0);
-            EXPORT_PIN(HAL_OUT, float, vel_fb, "vel-fb", 0.0);
-            EXPORT_PIN(HAL_OUT, s32, counts, "counts", 0);
+            EXPORT_PIN(ch, HAL_OUT, float, dc_fb, "dc-fb", 0.0);
+            EXPORT_PIN(ch, HAL_OUT, float, pos_fb, "pos-fb", 0.0);
+            EXPORT_PIN(ch, HAL_OUT, float, freq_fb, "freq-fb", 0.0);
+            EXPORT_PIN(ch, HAL_OUT, float, vel_fb, "vel-fb", 0.0);
+            EXPORT_PIN(ch, HAL_OUT, s32, counts, "counts", 0);
 
-            pwm_private_var.ctrl_type = pwm_types_array[ch];
-            pwm_private_var.freq_mHz = 0;
-            pwm_private_var.freq_min_mHz = 50000;
-            pwm_private_var.freq_max_mHz = 500000000;
-            pwm_private_var.dc_s32 = 0;
+            pwm_hal_prev[ch].ctrl_type = pwm_hal_array[ch];
+            pwm_hal_prev[ch].freq_mHz = 0;
+            pwm_hal_prev[ch].freq_min_mHz = 50000;
+            pwm_hal_prev[ch].freq_max_mHz = 500000000;
+            pwm_hal_prev[ch].dc_s32 = 0;
         }
 
         if (retval < 0) {
@@ -316,22 +316,22 @@ static void gpio_write(void *arg, long period)
 
 static void pwm_read(void *arg, long period)
 {
-    for (int ch = 0; ch < pwm_types_count; ch++)
+    for (int ch = 0; ch < pwm_hal_count; ch++)
     {
-        if (!pwm_hal_var.enable) continue;
+        if (!(*pwm_hal[ch].enable)) continue;
     }
 }
 
 static void pwm_write(void *arg, long period)
 {
-    for (int ch = 0; ch < pwm_types_count; ch++)
+    for (int ch = 0; ch < pwm_hal_count; ch++)
     {
-        if (pwm_private_var.enable != pwm_hal_var.enable)
+        if (pwm_hal_prev[ch].enable != *pwm_hal[ch].enable)
         {
-            pwm_private_var.enable = pwm_hal_var.enable;
-            if (!pwm_hal_var.enable)
+            pwm_hal_prev[ch].enable = *pwm_hal[ch].enable;
+            if (!*pwm_hal[ch].enable)
             {
-                softPwmWrite((int)pwm_hal_var.pwm_pin, 0);
+                softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
                 continue;
             }
         }

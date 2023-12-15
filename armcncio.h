@@ -123,12 +123,9 @@ static int out_pins_array[GPIO_BCM_MAX_COUNT];
 static int out_pins_count = 0;
 
 static pwm_hal_struct *pwm_hal;
-static pwm_hal_priv_struct pwm_hal_priv[GPIO_BCM_MAX_COUNT] = {0};
-static int pwm_types_array[GPIO_BCM_MAX_COUNT];
-static int pwm_types_count = 0;
-
-#define pwm_hal_var *pwm_hal[ch]
-#define pwm_private_var pwm_hal_priv[ch]
+static pwm_hal_priv_struct pwm_hal_prev[GPIO_BCM_MAX_COUNT];
+static int pwm_hal_array[GPIO_BCM_MAX_COUNT];
+static int pwm_hal_count = 0;
 
 static void gpio_write(void *arg, long period);
 static void gpio_read(void *arg, long period);
@@ -139,85 +136,85 @@ static void pwm_pins_update(int ch)
 {
     uint32_t upd = 0;
 
-    if (pwm_private_var.pwm_port != pwm_hal_var.pwm_port) {pwm_private_var.pwm_port = pwm_hal_var.pwm_port; upd++;}
-    if (pwm_private_var.pwm_pin != pwm_hal_var.pwm_pin) {pwm_private_var.pwm_pin = pwm_hal_var.pwm_pin; upd++;}
-    if (pwm_private_var.pwm_invert != pwm_hal_var.pwm_invert) {pwm_private_var.pwm_invert = pwm_hal_var.pwm_invert; upd++;}
+    if (pwm_hal_prev[ch].pwm_port != *pwm_hal[ch].pwm_port) {pwm_hal_prev[ch].pwm_port = *pwm_hal[ch].pwm_port; upd++;}
+    if (pwm_hal_prev[ch].pwm_pin != *pwm_hal[ch].pwm_pin) {pwm_hal_prev[ch].pwm_pin = *pwm_hal[ch].pwm_pin; upd++;}
+    if (pwm_hal_prev[ch].pwm_invert != *pwm_hal[ch].pwm_invert) {pwm_hal_prev[ch].pwm_invert = *pwm_hal[ch].pwm_invert; upd++;}
 
-    if (pwm_private_var.dir_port != pwm_hal_var.dir_port) {pwm_private_var.dir_port = pwm_hal_var.dir_port; upd++;}
-    if (pwm_private_var.dir_pin != pwm_hal_var.dir_pin) {pwm_private_var.dir_pin = pwm_hal_var.dir_pin; upd++;}
+    if (pwm_hal_prev[ch].dir_port != *pwm_hal[ch].dir_port) {pwm_hal_prev[ch].dir_port = *pwm_hal[ch].dir_port; upd++;}
+    if (pwm_hal_prev[ch].dir_pin != *pwm_hal[ch].dir_pin) {pwm_hal_prev[ch].dir_pin = *pwm_hal[ch].dir_pin; upd++;}
 
-    if (pwm_private_var.dir_invert != pwm_hal_var.dir_invert) {pwm_private_var.dir_invert = pwm_hal_var.dir_invert; upd++;}
+    if (pwm_hal_prev[ch].dir_invert != *pwm_hal[ch].dir_invert) {pwm_hal_prev[ch].dir_invert = *pwm_hal[ch].dir_invert; upd++;}
 
     if (upd)
     {
-        softPwmCreate((int)pwm_hal_var.pwm_pin, 0, 400);
+        softPwmCreate((int)(*pwm_hal[ch].pwm_pin), 0, (int)(10000 / (*pwm_hal[ch].freq_cmd)));
     }
 }
 
 static int32_t pwm_get_new_dc(int ch)
 {
-    if (pwm_hal_var.dc_cmd == pwm_private_var.dc_cmd &&
-        pwm_hal_var.dc_scale == pwm_private_var.dc_scale && 
-        pwm_hal_var.dc_offset == pwm_private_var.dc_offset && 
-        pwm_hal_var.dc_min == pwm_private_var.dc_min && 
-        pwm_hal_var.dc_max == pwm_private_var.dc_max ) return pwm_private_var.dc_s32;
+    if (*pwm_hal[ch].dc_cmd == pwm_hal_prev[ch].dc_cmd &&
+        *pwm_hal[ch].dc_scale == pwm_hal_prev[ch].dc_scale && 
+        *pwm_hal[ch].dc_offset == pwm_hal_prev[ch].dc_offset && 
+        *pwm_hal[ch].dc_min == pwm_hal_prev[ch].dc_min && 
+        *pwm_hal[ch].dc_max == pwm_hal_prev[ch].dc_max ) return pwm_hal_prev[ch].dc_s32;
     
-    if (pwm_hal_var.dc_min < -1.0) pwm_hal_var.dc_min = -1.0;
-    if (pwm_hal_var.dc_max > 1.0) pwm_hal_var.dc_max = 1.0;
-    if (pwm_hal_var.dc_max < pwm_hal_var.dc_min) pwm_hal_var.dc_max = pwm_hal_var.dc_min;
-    if (pwm_hal_var.dc_scale < 1e-20 && pwm_hal_var.dc_scale > -1e-20) pwm_hal_var.dc_scale = 1.0;
+    if (*pwm_hal[ch].dc_min < -1.0) *pwm_hal[ch].dc_min = -1.0;
+    if (*pwm_hal[ch].dc_max > 1.0) *pwm_hal[ch].dc_max = 1.0;
+    if (*pwm_hal[ch].dc_max < *pwm_hal[ch].dc_min) *pwm_hal[ch].dc_max = *pwm_hal[ch].dc_min;
+    if (*pwm_hal[ch].dc_scale < 1e-20 && *pwm_hal[ch].dc_scale > -1e-20) *pwm_hal[ch].dc_scale = 1.0;
 
-    pwm_hal_var.dc_fb = pwm_hal_var.dc_cmd / pwm_hal_var.dc_scale + pwm_hal_var.dc_offset;
+    *pwm_hal[ch].dc_fb = *pwm_hal[ch].dc_cmd / *pwm_hal[ch].dc_scale + *pwm_hal[ch].dc_offset;
 
-    if (pwm_hal_var.dc_fb < pwm_hal_var.dc_min) pwm_hal_var.dc_fb = pwm_hal_var.dc_min;
-    if (pwm_hal_var.dc_fb > pwm_hal_var.dc_max) pwm_hal_var.dc_fb = pwm_hal_var.dc_max;
+    if (*pwm_hal[ch].dc_fb < *pwm_hal[ch].dc_min) *pwm_hal[ch].dc_fb = *pwm_hal[ch].dc_min;
+    if (*pwm_hal[ch].dc_fb > *pwm_hal[ch].dc_max) *pwm_hal[ch].dc_fb = *pwm_hal[ch].dc_max;
 
-    pwm_private_var.dc_cmd = pwm_hal_var.dc_cmd;
-    pwm_private_var.dc_min = pwm_hal_var.dc_min;
-    pwm_private_var.dc_max = pwm_hal_var.dc_max;
-    pwm_private_var.dc_offset = pwm_hal_var.dc_offset;
-    pwm_private_var.dc_scale = pwm_hal_var.dc_scale;
+    pwm_hal_prev[ch].dc_cmd = *pwm_hal[ch].dc_cmd;
+    pwm_hal_prev[ch].dc_min = *pwm_hal[ch].dc_min;
+    pwm_hal_prev[ch].dc_max = *pwm_hal[ch].dc_max;
+    pwm_hal_prev[ch].dc_offset = *pwm_hal[ch].dc_offset;
+    pwm_hal_prev[ch].dc_scale = *pwm_hal[ch].dc_scale;
 
-    return (int32_t) (pwm_hal_var.dc_fb * INT32_MAX);
+    return (int32_t) (*pwm_hal[ch].dc_fb * INT32_MAX);
 }
 
 static int32_t pwm_get_new_freq(int ch, long period)
 {
     int32_t freq = 0;
 
-    if (pwm_private_var.freq_min != pwm_hal_var.freq_min)
+    if (pwm_hal_prev[ch].freq_min != *pwm_hal[ch].freq_min)
     {
-        pwm_private_var.freq_min_mHz = (hal_u32_t) round(pwm_hal_var.freq_min * 1000);
-        pwm_private_var.freq_min = pwm_hal_var.freq_min;
+        pwm_hal_prev[ch].freq_min_mHz = (hal_u32_t) round(*pwm_hal[ch].freq_min * 1000);
+        pwm_hal_prev[ch].freq_min = *pwm_hal[ch].freq_min;
     }
 
-    if (pwm_private_var.freq_max != pwm_hal_var.freq_max)
+    if (pwm_hal_prev[ch].freq_max != *pwm_hal[ch].freq_max)
     {
-        pwm_private_var.freq_max_mHz = (hal_u32_t) round(pwm_hal_var.freq_max * 1000);
-        pwm_private_var.freq_max = pwm_hal_var.freq_max;
+        pwm_hal_prev[ch].freq_max_mHz = (hal_u32_t) round(*pwm_hal[ch].freq_max * 1000);
+        pwm_hal_prev[ch].freq_max = *pwm_hal[ch].freq_max;
     }
 
-    switch (pwm_private_var.ctrl_type)
+    switch (pwm_hal_prev[ch].ctrl_type)
     {
         case 1: {
             break;
         }
         case 2: {
-            if (pwm_private_var.freq_cmd == pwm_hal_var.freq_cmd)
+            if (pwm_hal_prev[ch].freq_cmd == *pwm_hal[ch].freq_cmd)
             {
-                freq = pwm_private_var.freq_mHz;
+                freq = pwm_hal_prev[ch].freq_mHz;
                 break;
             }
-            pwm_private_var.freq_cmd = pwm_hal_var.freq_cmd;
-            if (pwm_hal_var.freq_cmd < 1e-20 && pwm_hal_var.freq_cmd > -1e-20) break;
-            freq = (int32_t)round(pwm_hal_var.freq_cmd * 1000);
-            if (abs(freq) < pwm_private_var.freq_min_mHz) freq = 0;
-            else if ( abs(freq) > pwm_private_var.freq_max_mHz ) freq = pwm_private_var.freq_max_mHz * (freq < 0 ? -1 : 1);
+            pwm_hal_prev[ch].freq_cmd = *pwm_hal[ch].freq_cmd;
+            if (*pwm_hal[ch].freq_cmd < 1e-20 && *pwm_hal[ch].freq_cmd > -1e-20) break;
+            freq = (int32_t)round(*pwm_hal[ch].freq_cmd * 1000);
+            if (abs(freq) < pwm_hal_prev[ch].freq_min_mHz) freq = 0;
+            else if ( abs(freq) > pwm_hal_prev[ch].freq_max_mHz ) freq = pwm_hal_prev[ch].freq_max_mHz * (freq < 0 ? -1 : 1);
             break;
         }
     }
 
-    pwm_hal_var.freq_fb = freq ? ((hal_float_t) freq) / 1000 : 0.0;
+    *pwm_hal[ch].freq_fb = freq ? ((hal_float_t) freq) / 1000 : 0.0;
 
     return freq;
 }
