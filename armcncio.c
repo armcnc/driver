@@ -338,15 +338,14 @@ static void pwm_write(void *arg, long period)
 
         pwm_pins_update(ch);
 
-        // 临时处理，后续需要深入优化
         int32_t dc = pwm_get_new_dc(ch);
         int32_t freq = pwm_get_new_freq(ch, period);
 
-        softPwmWrite(pwm_hal_var.pwm_pin, (int)(freq && dc ? 1000 : 0));
+        softPwmWrite((int)(*pwm_hal[ch].pwm_pin), (int)(freq && dc ? 1000 : 0));
 
-        if (pwm_private_var.freq_mHz != freq || pwm_private_var.dc_s32 != dc) {
-            pwm_private_var.dc_s32 = dc;
-            pwm_private_var.freq_mHz = freq;
+        if (pwm_hal_prev[ch].freq_mHz != freq || pwm_hal_prev[ch].dc_s32 != dc) {
+            pwm_hal_prev[ch].dc_s32 = dc;
+            pwm_hal_prev[ch].freq_mHz = freq;
         }
     }
 }
