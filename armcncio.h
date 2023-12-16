@@ -147,7 +147,7 @@ static void pwm_pins_update(int ch)
 
     if (upd)
     {
-        softPwmCreate((int)(*pwm_hal[ch].pwm_pin), 0, (int)(10000 / (*pwm_hal[ch].freq_cmd)));
+        softPwmCreate((int)(*pwm_hal[ch].pwm_pin), 0, 100);
     }
 }
 

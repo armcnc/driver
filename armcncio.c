@@ -338,15 +338,19 @@ static void pwm_write(void *arg, long period)
 
         pwm_pins_update(ch);
 
-        int32_t dc = pwm_get_new_dc(ch);
-        int32_t freq = pwm_get_new_freq(ch, period);
+        int maxRPM = (int)(*pwm_hal[ch].dc_scale);
+        int targetRPM = (int)(*pwm_hal[ch].dc_cmd);
+        int dutyCycle = (targetRPM * 100) / maxRPM;
 
-        softPwmWrite((int)(*pwm_hal[ch].pwm_pin), (int)(freq && dc ? 1000 : 0));
+        // int32_t dc = pwm_get_new_dc(ch);
+        // int32_t freq = pwm_get_new_freq(ch, period);
 
-        if (pwm_hal_prev[ch].freq_mHz != freq || pwm_hal_prev[ch].dc_s32 != dc) {
-            pwm_hal_prev[ch].dc_s32 = dc;
-            pwm_hal_prev[ch].freq_mHz = freq;
-        }
+        softPwmWrite((int)(*pwm_hal[ch].pwm_pin), dutyCycle);
+
+        // if (pwm_hal_prev[ch].freq_mHz != freq || pwm_hal_prev[ch].dc_s32 != dc) {
+        //     pwm_hal_prev[ch].dc_s32 = dc;
+        //     pwm_hal_prev[ch].freq_mHz = freq;
+        // }
     }
 }
 
