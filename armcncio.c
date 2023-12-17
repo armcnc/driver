@@ -357,11 +357,11 @@ static void pwm_write(void *arg, long period)
 
         if(target_rpm > 0)
         {
-            digitalWrite((int)(pwm_hal_prev[ch].dir_pin), *pwm_hal[ch].pwm_pin_not ? LOW : HIGH);
+            digitalWrite((int)(pwm_hal_prev[ch].dir_pin), *pwm_hal[ch].dir_pin_not ? LOW : HIGH);
         }
         if(target_rpm < 0)
         {
-            digitalWrite((int)(pwm_hal_prev[ch].dir_pin), *pwm_hal[ch].pwm_pin_not ? HIGH : LOW);
+            digitalWrite((int)(pwm_hal_prev[ch].dir_pin), *pwm_hal[ch].dir_pin_not ? HIGH : LOW);
         }
 
         softPwmWrite((int)(*pwm_hal[ch].pwm_pin), pwm_cycle);
