@@ -229,16 +229,16 @@ static void gpio_read(void *arg, long period)
 
         if (!(gpio_in_mask[pin] & gpio_mask[pin])) continue;
 
-        int is_pwm_ch = 0;
-        for (int ch = 0; ch < pwm_hal_count; ch++)
-        {
-            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].dir_pin) == pin)
-            {
-                is_pwm_ch = 1;
-            }
-        }
+        // int is_pwm_ch = 0;
+        // for (int ch = 0; ch < pwm_hal_count; ch++)
+        // {
+        //     if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].dir_pin) == pin)
+        //     {
+        //         is_pwm_ch = 1;
+        //     }
+        // }
 
-        if (is_pwm_ch > 0) continue;
+        // if (is_pwm_ch > 0) continue;
 
         uint32_t pin_state = digitalRead(pin) == HIGH ? gpio_mask[pin] : 0;
 
@@ -270,16 +270,16 @@ static void gpio_write(void *arg, long period)
 
         if (!(gpio_out_mask[pin] & gpio_mask[pin])) continue;
 
-        int is_pwm_ch = 0;
-        for (int ch = 0; ch < pwm_hal_count; ch++)
-        {
-            if ((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].dir_pin) == pin)
-            {
-                is_pwm_ch = 1;
-            }
-        }
+        // int is_pwm_ch = 0;
+        // for (int ch = 0; ch < pwm_hal_count; ch++)
+        // {
+        //     if ((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].dir_pin) == pin)
+        //     {
+        //         is_pwm_ch = 1;
+        //     }
+        // }
 
-        if (is_pwm_ch > 0) continue;
+        // if (is_pwm_ch > 0) continue;
 
         if (*gpio_hal[pin] != gpio_hal_prev[pin])
         {
