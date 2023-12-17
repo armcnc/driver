@@ -350,7 +350,13 @@ static void pwm_write(void *arg, long period)
 
         int max_rpm = (int)(*pwm_hal[ch].dc_scale);
         int target_rpm = (int)(*pwm_hal[ch].dc_cmd);
+
+        if (target_rpm > 0) digitalWrite((int)(*pwm_hal[ch].dir_pin), *pwm_hal[ch].dir_pin_not ? LOW : HIGH);
+        if (target_rpm == 0) digitalWrite((int)(*pwm_hal[ch].dir_pin), NOTD);
+        if (target_rpm < 0) digitalWrite((int)(*pwm_hal[ch].dir_pin), *pwm_hal[ch].dir_pin_not ? HIGH : LOW);
+
         if(target_rpm < 0) target_rpm = -target_rpm;
+        
         int pwm_cycle = (target_rpm * 100) / max_rpm;
 
         if (*pwm_hal[ch].pwm_pin_not) {
@@ -358,10 +364,6 @@ static void pwm_write(void *arg, long period)
         }
 
         softPwmWrite((int)(*pwm_hal[ch].pwm_pin), pwm_cycle);
-
-        // if (target_rpm > 0) digitalWrite((int)(*pwm_hal[ch].dir_pin), *pwm_hal[ch].dir_pin_not ? LOW : HIGH);
-        // if (target_rpm == 0) digitalWrite((int)(*pwm_hal[ch].dir_pin), NOTD);
-        // if (target_rpm < 0) digitalWrite((int)(*pwm_hal[ch].dir_pin), *pwm_hal[ch].dir_pin_not ? HIGH : LOW);
     }
 }
 
