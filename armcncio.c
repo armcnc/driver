@@ -372,14 +372,14 @@ static void pwm_write(void *arg, long period)
         {
             pinMode((int)(*pwm_hal[ch].dir_pin), OUTPUT);
             pullUpDnControl((int)(*pwm_hal[ch].dir_pin), PUD_OFF);
-            digitalWrite((int)(*pwm_hal[ch].dir_pin), HIGH);
+            digitalWrite((int)(*pwm_hal[ch].dir_pin), LOW);
         }
 
         if (target_rpm < 0)
         {
             pinMode((int)(*pwm_hal[ch].dir_pin), OUTPUT);
             pullUpDnControl((int)(*pwm_hal[ch].dir_pin), PUD_OFF);
-            digitalWrite((int)(*pwm_hal[ch].dir_pin), LOW);
+            digitalWrite((int)(*pwm_hal[ch].dir_pin), HIGH);
         }
 
         if (target_rpm < 0) target_rpm = -target_rpm;
