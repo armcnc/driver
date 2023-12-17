@@ -350,7 +350,8 @@ static void pwm_write(void *arg, long period)
 
         int max_rpm = (int)(*pwm_hal[ch].dc_scale);
         int target_rpm = (int)(*pwm_hal[ch].dc_cmd);
-        int pwm_cycle = abs(target_rpm) * 100 / max_rpm;
+        if(target_rpm < 0) target_rpm = -target_rpm
+        int pwm_cycle = (target_rpm * 100) / max_rpm;
 
         if (*pwm_hal[ch].pwm_pin_not) {
             pwm_cycle = 100 - pwm_cycle;
