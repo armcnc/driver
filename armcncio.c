@@ -361,12 +361,22 @@ static void pwm_write(void *arg, long period)
 
         if (!(*pwm_hal[ch].enable))
         {
+            pullUpDnControl((int)(*pwm_hal[ch].dir_pin), PUD_OFF);
             softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
             continue;
         }
 
         int max_rpm = (int)(*pwm_hal[ch].dc_scale);
         int target_rpm = (int)(*pwm_hal[ch].dc_cmd);
+
+        if (target_rpm > 0)
+        {
+            pullUpDnControl((int)(*pwm_hal[ch].dir_pin), PUD_UP);
+        }
+        if (target_rpm < 0)
+        {
+            pullUpDnControl((int)(*pwm_hal[ch].dir_pin), PUD_DOWN);
+        }
 
         if (target_rpm < 0) target_rpm = -target_rpm;
         int pwm_cycle = (target_rpm * 100) / max_rpm;
