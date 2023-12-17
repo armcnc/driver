@@ -346,8 +346,6 @@ static void pwm_write(void *arg, long period)
         if (*pwm_hal[ch].pos_scale < 1e-20 && *pwm_hal[ch].pos_scale > -1e-20) *pwm_hal[ch].pos_scale = 1.0;
 
         if (pwm_hal_prev[ch].pos_scale != *pwm_hal[ch].pos_scale) pwm_hal_prev[ch].pos_scale = *pwm_hal[ch].pos_scale;
-        
-        if (!*pwm_hal[ch].enable) continue;
 
         int max_rpm = (int)(*pwm_hal[ch].dc_scale);
         int target_rpm = (int)(*pwm_hal[ch].dc_cmd);
