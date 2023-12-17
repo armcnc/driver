@@ -229,16 +229,16 @@ static void gpio_read(void *arg, long period)
 
         if (!(gpio_in_mask[pin] & gpio_mask[pin])) continue;
 
-        // int is_pwm_ch = 0;
-        // for (int ch = 0; ch < pwm_hal_count; ch++)
-        // {
-        //     if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].dir_pin) == pin)
-        //     {
-        //         is_pwm_ch = 1;
-        //     }
-        // }
+        int is_pwm_ch = 0;
+        for (int ch = 0; ch < pwm_hal_count; ch++)
+        {
+            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].dir_pin) == pin)
+            {
+                is_pwm_ch = 1;
+            }
+        }
 
-        // if (is_pwm_ch > 0) continue;
+        if (is_pwm_ch > 0) continue;
 
         uint32_t pin_state = digitalRead(pin) == HIGH ? gpio_mask[pin] : 0;
 
@@ -270,16 +270,16 @@ static void gpio_write(void *arg, long period)
 
         if (!(gpio_out_mask[pin] & gpio_mask[pin])) continue;
 
-        // int is_pwm_ch = 0;
-        // for (int ch = 0; ch < pwm_hal_count; ch++)
-        // {
-        //     if ((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].dir_pin) == pin)
-        //     {
-        //         is_pwm_ch = 1;
-        //     }
-        // }
+        int is_pwm_ch = 0;
+        for (int ch = 0; ch < pwm_hal_count; ch++)
+        {
+            if ((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].dir_pin) == pin)
+            {
+                is_pwm_ch = 1;
+            }
+        }
 
-        // if (is_pwm_ch > 0) continue;
+        if (is_pwm_ch > 0) continue;
 
         if (*gpio_hal[pin] != gpio_hal_prev[pin])
         {
@@ -362,22 +362,21 @@ static void pwm_write(void *arg, long period)
         if (!(*pwm_hal[ch].enable))
         {
             softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
+            digitalWrite((int)(*pwm_hal[ch].dir_pin), HIGH);
             continue;
         }
 
         int max_rpm = (int)(*pwm_hal[ch].dc_scale);
         int target_rpm = (int)(*pwm_hal[ch].dc_cmd);
 
-        if (target_rpm > 0)
-        {
-            *gpio_hal[(int)(*pwm_hal[ch].dir_pin)] = 0;
-        }
         if (target_rpm < 0)
         {
-             *gpio_hal[(int)(*pwm_hal[ch].dir_pin)] = 1;
+            target_rpm = -target_rpm;
+            digitalWrite((int)(*pwm_hal[ch].dir_pin), LOW);
+        }else{
+            digitalWrite((int)(*pwm_hal[ch].dir_pin), HIGH);
         }
-
-        if (target_rpm < 0) target_rpm = -target_rpm;
+        
         int pwm_cycle = (target_rpm * 100) / max_rpm;
 
         if (*pwm_hal[ch].pwm_pin_not) {
