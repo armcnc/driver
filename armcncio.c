@@ -318,7 +318,7 @@ static void pwm_write(void *arg, long period)
             pinMode((int)(*pwm_hal[ch].pwm_pin), OUTPUT);
             pullUpDnControl((int)(*pwm_hal[ch].pwm_pin), PUD_OFF);
             softPwmCreate((int)(*pwm_hal[ch].pwm_pin), 0, 100);
-            !pwm_hal_prev[ch].is_init = 1;
+            pwm_hal_prev[ch].is_init = 1;
             continue;
         }
 
