@@ -376,22 +376,18 @@ static void pwm_write(void *arg, long period)
             {
                 softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
                 digitalWrite((int)(*pwm_hal[ch].dir_pin), LOW);
-                pwm_hal_prev[ch].is_reverse = 1;
             }
+            pwm_hal_prev[ch].is_reverse = 1;
         }else{
             if (pwm_hal_prev[ch].is_reverse)
             {
                 softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
                 digitalWrite((int)(*pwm_hal[ch].dir_pin), HIGH);
-                pwm_hal_prev[ch].is_reverse = 0;
             }
+            pwm_hal_prev[ch].is_reverse = 0;
         }
 
         int pwm_cycle = (target_rpm * 100) / max_rpm;
-
-        // if (*pwm_hal[ch].pwm_pin_not) {
-        //     pwm_cycle = 100 - pwm_cycle;
-        // }
 
         softPwmWrite((int)(*pwm_hal[ch].pwm_pin), pwm_cycle);
     }
