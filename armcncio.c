@@ -375,7 +375,7 @@ static void pwm_write(void *arg, long period)
         }
         if (target_rpm < 0)
         {
-            pullUpDnControl((int)(*pwm_hal[ch].dir_pin), PUD_DOWN);
+            pullUpDnControl((int)(*pwm_hal[ch].dir_pin), PUD_OFF);
         }
 
         if (target_rpm < 0) target_rpm = -target_rpm;
