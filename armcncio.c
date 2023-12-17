@@ -343,6 +343,7 @@ static void pwm_write(void *arg, long period)
         if (!(*pwm_hal[ch].enable))
         {
             softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
+            digitalWrite((int)(*pwm_hal[ch].dir_pin), NOTD);
             continue;
         }
 
