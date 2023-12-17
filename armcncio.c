@@ -238,7 +238,7 @@ static void gpio_read(void *arg, long period)
             }
         }
 
-        if (is_pwm_ch) continue;
+        if (is_pwm_ch > 0) continue;
 
         uint32_t pin_state = digitalRead(pin) == HIGH ? gpio_mask[pin] : 0;
 
@@ -279,7 +279,7 @@ static void gpio_write(void *arg, long period)
             }
         }
 
-        if (is_pwm_ch) continue;
+        if (is_pwm_ch > 0) continue;
 
         if (*gpio_hal[pin] != gpio_hal_prev[pin])
         {
@@ -371,11 +371,11 @@ static void pwm_write(void *arg, long period)
 
         if (target_rpm > 0)
         {
-            pullUpDnControl((int)(*pwm_hal[ch].dir_pin), PUD_UP);
+            digitalWrite((int)(*pwm_hal[ch].dir_pin), LOW);
         }
         if (target_rpm < 0)
         {
-            pullUpDnControl((int)(*pwm_hal[ch].dir_pin), PUD_OFF);
+            digitalWrite((int)(*pwm_hal[ch].dir_pin), HIGH);
         }
 
         if (target_rpm < 0) target_rpm = -target_rpm;
