@@ -69,6 +69,7 @@ typedef struct
 
     hal_u32_t ctrl_type;
     int is_init;
+    int is_reverse;
 } pwm_hal_priv_struct;
 
 static uint32_t gpio_mask[GPIO_BCM_MAX_COUNT] = {0};
