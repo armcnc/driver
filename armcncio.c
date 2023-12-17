@@ -310,7 +310,6 @@ static void pwm_read(void *arg, long period)
 
 static void pwm_write(void *arg, long period)
 {
-
     for (int ch = 0; ch < pwm_hal_count; ch++)
     {
         if(!pwm_hal_prev[ch].is_init)
@@ -318,6 +317,12 @@ static void pwm_write(void *arg, long period)
             pinMode((int)(*pwm_hal[ch].pwm_pin), OUTPUT);
             pullUpDnControl((int)(*pwm_hal[ch].pwm_pin), PUD_OFF);
             softPwmCreate((int)(*pwm_hal[ch].pwm_pin), 0, 100);
+            if(*pwm_hal[ch].pwm_pin_not)
+            {
+                digitalWrite((int)(*pwm_hal[ch].pwm_pin), LOW);
+            }else{
+                digitalWrite((int)(*pwm_hal[ch].pwm_pin), HIGH);
+            }
             pwm_hal_prev[ch].is_init = 1;
             continue;
         }
