@@ -318,6 +318,10 @@ static void pwm_write(void *arg, long period)
             pinMode((int)(*pwm_hal[ch].dir_pin), OUTPUT);
             pullUpDnControl((int)(*pwm_hal[ch].pwm_pin), PUD_OFF);
             softPwmCreate((int)(*pwm_hal[ch].pwm_pin), 0, 100);
+
+            softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
+            digitalWrite((int)(*pwm_hal[ch].dir_pin), LOW);
+
             pwm_hal_prev[ch].is_init = 1;
             continue;
         }
@@ -325,11 +329,6 @@ static void pwm_write(void *arg, long period)
         if (pwm_hal_prev[ch].enable != *pwm_hal[ch].enable)
         {
             pwm_hal_prev[ch].enable = *pwm_hal[ch].enable;
-            if (!(*pwm_hal[ch].enable))
-            {
-                softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
-                continue;
-            }
         }
 
         if (pwm_hal_prev[ch].pwm_pin != *pwm_hal[ch].pwm_pin) pwm_hal_prev[ch].pwm_pin = *pwm_hal[ch].pwm_pin;
@@ -347,6 +346,12 @@ static void pwm_write(void *arg, long period)
         if (*pwm_hal[ch].pos_scale < 1e-20 && *pwm_hal[ch].pos_scale > -1e-20) *pwm_hal[ch].pos_scale = 1.0;
 
         if (pwm_hal_prev[ch].pos_scale != *pwm_hal[ch].pos_scale) pwm_hal_prev[ch].pos_scale = *pwm_hal[ch].pos_scale;
+
+        if (!(*pwm_hal[ch].enable))
+        {
+            softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
+            continue;
+        }
 
         int max_rpm = (int)(*pwm_hal[ch].dc_scale);
         int target_rpm = (int)(*pwm_hal[ch].dc_cmd);
