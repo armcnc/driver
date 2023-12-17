@@ -359,10 +359,6 @@ static void pwm_write(void *arg, long period)
 
         int pwm_cycle = (target_rpm * 100) / max_rpm;
 
-        if (*pwm_hal[ch].pwm_pin_not) {
-            pwm_cycle = 100 - pwm_cycle;
-        }
-
         softPwmWrite((int)(*pwm_hal[ch].pwm_pin), pwm_cycle);
     }
 }
