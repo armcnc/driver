@@ -370,11 +370,11 @@ static void pwm_write(void *arg, long period)
 
         if (target_rpm > 0)
         {
-            *gpio_hal[(int)(*pwm_hal[ch].dir_pin)] = 1;
+            *gpio_hal[(int)(*pwm_hal[ch].dir_pin)] = 0;
         }
         if (target_rpm < 0)
         {
-             *gpio_hal[(int)(*pwm_hal[ch].dir_pin)] = 0;
+             *gpio_hal[(int)(*pwm_hal[ch].dir_pin)] = 1;
         }
 
         if (target_rpm < 0) target_rpm = -target_rpm;
