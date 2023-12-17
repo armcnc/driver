@@ -336,10 +336,6 @@ static void pwm_write(void *arg, long period)
     {
         if(!pwm_hal_prev[ch].is_init)
         {
-            pinMode((int)(*pwm_hal[ch].pwm_pin), OUTPUT);
-            pullUpDnControl((int)(*pwm_hal[ch].pwm_pin), PUD_OFF);
-            pinMode((int)(*pwm_hal[ch].dir_pin), OUTPUT);
-            pullUpDnControl((int)(*pwm_hal[ch].dir_pin), PUD_OFF);
             softPwmCreate((int)(*pwm_hal[ch].pwm_pin), 0, 100);
             pwm_hal_prev[ch].is_init = 1;
             continue;
