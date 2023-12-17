@@ -246,7 +246,7 @@ static void gpio_read(void *arg, long period)
         {
             *gpio_hal[pin] = 1;
             *gpio_hal_not[pin] = 0;
-        }else{
+        } else {
             *gpio_hal[pin] = 0;
             *gpio_hal_not[pin] = 1;
         }
@@ -273,7 +273,7 @@ static void gpio_write(void *arg, long period)
         int is_pwm_ch = 0;
         for (int ch = 0; ch < pwm_hal_count; ch++)
         {
-            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].dir_pin) == pin)
+            if ((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].dir_pin) == pin)
             {
                 is_pwm_ch = 1;
             }
@@ -281,13 +281,13 @@ static void gpio_write(void *arg, long period)
 
         if (is_pwm_ch) continue;
 
-        if(*gpio_hal[pin] != gpio_hal_prev[pin])
+        if (*gpio_hal[pin] != gpio_hal_prev[pin])
         {
             if (*gpio_hal[pin] == HIGH)
             {
                 *gpio_hal_not[pin] = 0;
                 mask_1 |= gpio_mask[pin];
-            }else{
+            } else {
                 *gpio_hal_not[pin] = 1;
                 mask_0 |= gpio_mask[pin];
             }
@@ -296,13 +296,13 @@ static void gpio_write(void *arg, long period)
             gpio_hal_not_prev[pin] = *gpio_hal_not[pin];
         }
 
-        if(*gpio_hal_not[pin] != gpio_hal_not_prev[pin])
+        if (*gpio_hal_not[pin] != gpio_hal_not_prev[pin])
         {
             if (*gpio_hal_not[pin] == HIGH)
             {
                 *gpio_hal[pin] = 0;
                 mask_0 |= gpio_mask[pin];
-            }else{
+            } else {
                 *gpio_hal[pin] = 1;
                 mask_1 |= gpio_mask[pin];
             }
@@ -334,7 +334,7 @@ static void pwm_write(void *arg, long period)
 {
     for (int ch = 0; ch < pwm_hal_count; ch++)
     {
-        if(!pwm_hal_prev[ch].is_init)
+        if (!pwm_hal_prev[ch].is_init)
         {
             softPwmCreate((int)(*pwm_hal[ch].pwm_pin), 0, 100);
             pwm_hal_prev[ch].is_init = 1;
@@ -368,7 +368,11 @@ static void pwm_write(void *arg, long period)
         int max_rpm = (int)(*pwm_hal[ch].dc_scale);
         int target_rpm = (int)(*pwm_hal[ch].dc_cmd);
 
-        if(target_rpm < 0) target_rpm = -target_rpm;
+        if (target_rpm >= 0) digitalWrite((int)(*pwm_hal[ch].dir_pin), HIGH);
+
+        if (target_rpm < 0) digitalWrite((int)(*pwm_hal[ch].dir_pin), LOW);
+
+        if (target_rpm < 0) target_rpm = -target_rpm;
         int pwm_cycle = (target_rpm * 100) / max_rpm;
 
         if (*pwm_hal[ch].pwm_pin_not) {
