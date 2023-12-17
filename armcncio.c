@@ -329,7 +329,7 @@ static void pwm_write(void *arg, long period)
         if (pwm_hal_prev[ch].enable != *pwm_hal[ch].enable)
         {
             pwm_hal_prev[ch].enable = *pwm_hal[ch].enable;
-            if (!*pwm_hal[ch].enable)
+            if (!(*pwm_hal[ch].enable))
             {
                 softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
                 continue;
@@ -337,13 +337,10 @@ static void pwm_write(void *arg, long period)
         }
 
         pwm_pins_update(ch);
-
+        
         int maxRPM = (int)(*pwm_hal[ch].dc_scale);
         int targetRPM = (int)(*pwm_hal[ch].dc_cmd);
         int dutyCycle = (targetRPM * 100) / maxRPM;
-
-        // int32_t dc = pwm_get_new_dc(ch);
-        // int32_t freq = pwm_get_new_freq(ch, period);
 
         softPwmWrite((int)(*pwm_hal[ch].pwm_pin), dutyCycle);
 
