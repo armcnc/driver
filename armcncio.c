@@ -160,44 +160,24 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         {
             EXPORT_PIN(ch, HAL_IN, bit, enable, "enable", 0);
 
-            EXPORT_PIN(ch, HAL_IN, u32, pwm_port, "pwm-port", UINT32_MAX);
-            EXPORT_PIN(ch, HAL_IN, u32, pwm_pin, "pwm-pin", UINT32_MAX);
-            EXPORT_PIN(ch, HAL_IN, bit, pwm_invert, "pwm-invert", 0);
+            EXPORT_PIN(ch, HAL_IO, float, freq_cmd, "freq-cmd", 0.0);
+            EXPORT_PIN(ch, HAL_IO, float, freq_min, "freq-min", 50.0);
+            EXPORT_PIN(ch, HAL_IO, float, freq_max, "freq-max", 500000.0);
 
-            EXPORT_PIN(ch, HAL_IN, u32, dir_port ,"dir-port", UINT32_MAX);
+            EXPORT_PIN(ch, HAL_IN, u32, pwm_pin, "pwm-pin", UINT32_MAX);
+            EXPORT_PIN(ch, HAL_IN, bit, pwm_pin_not, "pwm-pin-not", 0);
+
             EXPORT_PIN(ch, HAL_IN, u32, dir_pin, "dir-pin", UINT32_MAX);
-            EXPORT_PIN(ch, HAL_IN, bit, dir_invert, "dir-invert", 0);
-            EXPORT_PIN(ch, HAL_IO, u32, dir_hold, "dir-hold", 50000);
-            EXPORT_PIN(ch, HAL_IO, u32, dir_setup, "dir-setup", 50000);
+            EXPORT_PIN(ch, HAL_IN, bit, dir_pin_not, "dir-pin-not", 0);
 
             EXPORT_PIN(ch, HAL_IN, float, dc_cmd, "dc-cmd", 0.0);
-            EXPORT_PIN(ch, HAL_IO, float, dc_min, "dc-min", -1.0);
-            EXPORT_PIN(ch, HAL_IO, float, dc_max, "dc-max", 1.0);
-            EXPORT_PIN(ch, HAL_IO, u32, dc_max_t, "dc-max-t", 0);
-            EXPORT_PIN(ch, HAL_IO, float, dc_offset, "dc-offset", 0.0);
             EXPORT_PIN(ch, HAL_IO, float, dc_scale, "dc-scale", 1.0);
 
             EXPORT_PIN(ch, HAL_IO, float, pos_scale, "pos-scale", 1.0);
             EXPORT_PIN(ch, HAL_IN, float, pos_cmd, "pos-cmd", 0.0);
 
-            EXPORT_PIN(ch, HAL_IO, float, vel_scale, "vel-scale", 1.0);
-            EXPORT_PIN(ch, HAL_IN, float, vel_cmd, "vel-cmd", 0.0);
-
-            EXPORT_PIN(ch, HAL_IO, float, freq_cmd, "freq-cmd", 0.0);
-            EXPORT_PIN(ch, HAL_IO, float, freq_min, "freq-min", 50.0);
-            EXPORT_PIN(ch, HAL_IO, float, freq_max, "freq-max", 500000.0);
-
-            EXPORT_PIN(ch, HAL_OUT, float, dc_fb, "dc-fb", 0.0);
-            EXPORT_PIN(ch, HAL_OUT, float, pos_fb, "pos-fb", 0.0);
-            EXPORT_PIN(ch, HAL_OUT, float, freq_fb, "freq-fb", 0.0);
-            EXPORT_PIN(ch, HAL_OUT, float, vel_fb, "vel-fb", 0.0);
-            EXPORT_PIN(ch, HAL_OUT, s32, counts, "counts", 0);
-
             pwm_hal_prev[ch].ctrl_type = pwm_hal_array[ch];
-            pwm_hal_prev[ch].freq_mHz = 0;
-            pwm_hal_prev[ch].freq_min_mHz = 50000;
-            pwm_hal_prev[ch].freq_max_mHz = 500000000;
-            pwm_hal_prev[ch].dc_s32 = 0;
+            pwm_hal_prev[ch].is_init = 0;
         }
 
         if (retval < 0) {
@@ -318,14 +298,30 @@ static void pwm_read(void *arg, long period)
 {
     for (int ch = 0; ch < pwm_hal_count; ch++)
     {
-        if (!(*pwm_hal[ch].enable)) continue;
+        if (!(*pwm_hal[ch].enable) || !pwm_hal_prev[ch].is_init) continue;
+
+        if (*pwm_hal[ch].pos_scale < 1e-20 && *pwm_hal[ch].pos_scale > -1e-20)
+        {
+            *pwm_hal[ch].pos_scale = 1.0;
+        }
+
     }
 }
 
 static void pwm_write(void *arg, long period)
 {
+
     for (int ch = 0; ch < pwm_hal_count; ch++)
     {
+        if(!pwm_hal_prev[ch].is_init)
+        {
+            pinMode((int)(*pwm_hal[ch].pwm_pin), OUTPUT);
+            pullUpDnControl((int)(*pwm_hal[ch].pwm_pin), PUD_OFF);
+            softPwmCreate((int)(*pwm_hal[ch].pwm_pin), 0, 100);
+            !pwm_hal_prev[ch].is_init = 1;
+            continue;
+        }
+
         if (pwm_hal_prev[ch].enable != *pwm_hal[ch].enable)
         {
             pwm_hal_prev[ch].enable = *pwm_hal[ch].enable;
@@ -336,18 +332,27 @@ static void pwm_write(void *arg, long period)
             }
         }
 
-        pwm_pins_update(ch);
+        if (pwm_hal_prev[ch].pwm_pin != *pwm_hal[ch].pwm_pin) pwm_hal_prev[ch].pwm_pin = *pwm_hal[ch].pwm_pin;
+
+        if (pwm_hal_prev[ch].pwm_pin_not != *pwm_hal[ch].pwm_pin_not) pwm_hal_prev[ch].pwm_pin_not = *pwm_hal[ch].pwm_pin_not;
+
+        if (pwm_hal_prev[ch].dir_pin != *pwm_hal[ch].dir_pin) pwm_hal_prev[ch].dir_pin = *pwm_hal[ch].dir_pin;
+
+        if (pwm_hal_prev[ch].dir_pin_not != *pwm_hal[ch].dir_pin_not) pwm_hal_prev[ch].dir_pin_not = *pwm_hal[ch].dir_pin_not;
+
+        if (*pwm_hal[ch].dc_scale < 1e-20 && *pwm_hal[ch].dc_scale > -1e-20) *pwm_hal[ch].dc_scale = 1.0;
+
+        if (pwm_hal_prev[ch].dc_scale != *pwm_hal[ch].dc_scale) pwm_hal_prev[ch].dc_scale = *pwm_hal[ch].dc_scale;
+
+        if (*pwm_hal[ch].pos_scale < 1e-20 && *pwm_hal[ch].pos_scale > -1e-20) *pwm_hal[ch].pos_scale = 1.0;
+
+        if (pwm_hal_prev[ch].pos_scale != *pwm_hal[ch].pos_scale) pwm_hal_prev[ch].pos_scale = *pwm_hal[ch].pos_scale;
         
-        int maxRPM = (int)(*pwm_hal[ch].dc_scale);
-        int targetRPM = (int)(*pwm_hal[ch].dc_cmd);
-        int dutyCycle = (targetRPM * 100) / maxRPM;
+        int max_rpm = (int)(*pwm_hal[ch].dc_scale);
+        int target_rpm = (int)(*pwm_hal[ch].dc_cmd);
+        int pwm_cycle = (target_rpm * 100) / max_rpm;
 
-        softPwmWrite((int)(*pwm_hal[ch].pwm_pin), dutyCycle);
-
-        // if (pwm_hal_prev[ch].freq_mHz != freq || pwm_hal_prev[ch].dc_s32 != dc) {
-        //     pwm_hal_prev[ch].dc_s32 = dc;
-        //     pwm_hal_prev[ch].freq_mHz = freq;
-        // }
+        softPwmWrite((int)(*pwm_hal[ch].pwm_pin), pwm_cycle);
     }
 }
 
