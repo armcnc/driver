@@ -229,6 +229,17 @@ static void gpio_read(void *arg, long period)
 
         if (!(gpio_in_mask[pin] & gpio_mask[pin])) continue;
 
+        int is_pwm_ch = 0;
+        for (int ch = 0; ch < pwm_hal_count; ch++)
+        {
+            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].dir_pin) == pin)
+            {
+                is_pwm_ch = 1;
+            }
+        }
+
+        if (is_pwm_ch) continue;
+
         uint32_t pin_state = digitalRead(pin) == HIGH ? gpio_mask[pin] : 0;
 
         if (pin_state & gpio_mask[pin])
@@ -258,6 +269,17 @@ static void gpio_write(void *arg, long period)
         if (!(gpio_in_mask[pin] & gpio_mask[pin]) && !(gpio_out_mask[pin] & gpio_mask[pin])) continue;
 
         if (!(gpio_out_mask[pin] & gpio_mask[pin])) continue;
+
+        int is_pwm_ch = 0;
+        for (int ch = 0; ch < pwm_hal_count; ch++)
+        {
+            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].dir_pin) == pin)
+            {
+                is_pwm_ch = 1;
+            }
+        }
+
+        if (is_pwm_ch) continue;
 
         if(*gpio_hal[pin] != gpio_hal_prev[pin])
         {
@@ -314,6 +336,10 @@ static void pwm_write(void *arg, long period)
     {
         if(!pwm_hal_prev[ch].is_init)
         {
+            pinMode((int)(*pwm_hal[ch].pwm_pin), OUTPUT);
+            pullUpDnControl((int)(*pwm_hal[ch].pwm_pin), PUD_OFF);
+            pinMode((int)(*pwm_hal[ch].dir_pin), OUTPUT);
+            pullUpDnControl((int)(*pwm_hal[ch].dir_pin), PUD_OFF);
             softPwmCreate((int)(*pwm_hal[ch].pwm_pin), 0, 100);
             pwm_hal_prev[ch].is_init = 1;
             continue;
@@ -345,15 +371,6 @@ static void pwm_write(void *arg, long period)
 
         int max_rpm = (int)(*pwm_hal[ch].dc_scale);
         int target_rpm = (int)(*pwm_hal[ch].dc_cmd);
-
-        if(target_rpm > 0)
-        {
-            *gpio_hal[(int)(*pwm_hal[ch].dir_pin)] = 1;
-        }
-        if(target_rpm < 0)
-        {
-            *gpio_hal[(int)(*pwm_hal[ch].dir_pin)] = 0;
-        }
 
         if(target_rpm < 0) target_rpm = -target_rpm;
         int pwm_cycle = (target_rpm * 100) / max_rpm;
