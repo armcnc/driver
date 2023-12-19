@@ -34,17 +34,17 @@ typedef struct
     hal_float_t *freq_min;
     hal_float_t *freq_max;
 
-    hal_u32_t *pwm_pin;
-    hal_bit_t *pwm_pin_not;
+    hal_bit_t *pwm_pin;
 
-    hal_u32_t *dir_pin;
-    hal_bit_t *dir_pin_not;
+    hal_u32_t forward_pin;
+    hal_bit_t forward_pin_not;
+
+    hal_u32_t reverse_pin;
+    hal_bit_t reverse_pin_not;
 
     hal_float_t *dc_cmd;
     hal_float_t *dc_scale;
 
-    hal_float_t *pos_cmd; // in
-    hal_float_t *pos_scale; // io
 }pwm_hal_struct;
 
 typedef struct
@@ -52,24 +52,20 @@ typedef struct
     hal_bit_t enable;
 
     hal_float_t freq_cmd;
-    hal_float_t freq_min;
-    hal_float_t freq_max;
 
-    hal_u32_t pwm_pin;
-    hal_bit_t pwm_pin_not;
+    hal_bit_t pwm_pin;
 
-    hal_u32_t dir_pin;
-    hal_bit_t dir_pin_not;
+    hal_u32_t forward_pin;
+    hal_bit_t forward_pin_not;
+
+    hal_u32_t reverse_pin;
+    hal_bit_t reverse_pin_not;
 
     hal_float_t dc_cmd;
     hal_float_t dc_scale;
 
-    hal_float_t pos_cmd;
-    hal_float_t pos_scale;
-
     hal_u32_t ctrl_type;
     int is_init;
-    int is_reverse;
 } pwm_hal_priv_struct;
 
 static uint32_t gpio_mask[GPIO_BCM_MAX_COUNT] = {0};
@@ -85,6 +81,12 @@ static hal_bit_t **gpio_hal_not;
 static hal_bit_t gpio_hal_not_prev[GPIO_BCM_MAX_COUNT];
 static int out_pins_array[GPIO_BCM_MAX_COUNT];
 static int out_pins_count = 0;
+
+static hal_s32_t **gpio_hal_pull;
+static hal_s32_t gpio_hal_pull_prev[GPIO_BCM_MAX_COUNT];
+
+static hal_u32_t **gpio_hal_drive;
+static hal_u32_t gpio_hal_drive_prev[GPIO_BCM_MAX_COUNT];
 
 static pwm_hal_struct *pwm_hal;
 static pwm_hal_priv_struct pwm_hal_prev[GPIO_BCM_MAX_COUNT];

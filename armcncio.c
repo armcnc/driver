@@ -57,8 +57,10 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
 
     gpio_hal = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_bit_t *));
     gpio_hal_not = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_bit_t *));
+    gpio_hal_pull = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_s32_t *));
+    gpio_hal_drive = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_u32_t *));
 
-    if (!gpio_hal || !gpio_hal_not) {
+    if (!gpio_hal || !gpio_hal_not || !gpio_hal_pull || !gpio_hal_drive) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_hal failed \n");
         return -1;
     }
@@ -99,12 +101,28 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
             return -1;
         }
 
+        retval = hal_pin_s32_newf(HAL_IN, &gpio_hal_pull[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%s-pull", component_name, in_pins_array[in_pins_i]);
+        if (retval < 0) {
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_hal_pull failed \n");
+            return -1;
+        }
+
         pullUpDnControl(in_pins_array[in_pins_i], PUD_OFF);
 
         *gpio_hal[in_pins_array[in_pins_i]] = digitalRead(in_pins_array[in_pins_i]) == HIGH ? 1 : 0;
         *gpio_hal_not[in_pins_array[in_pins_i]] = *gpio_hal[in_pins_array[in_pins_i]] ? 0 : 1;
         gpio_hal_prev[in_pins_array[in_pins_i]] = *gpio_hal[in_pins_array[in_pins_i]];
         gpio_hal_not_prev[in_pins_array[in_pins_i]] = *gpio_hal_not[in_pins_array[in_pins_i]];
+
+        switch (armcnc_xj3_get_gpio_pull(in_pins_array[in_pins_i])) {
+            case PULL_UP:      *gpio_hal_pull[in_pins_array[in_pins_i]] = 1;
+            case PULL_DOWN:    *gpio_hal_pull[in_pins_array[in_pins_i]] = -1;
+            default:           *gpio_hal_pull[in_pins_array[in_pins_i]] = 0;
+        }
+        gpio_hal_pull_prev[in_pins_array[in_pins_i]] = *gpio_hal_pull[in_pins_array[in_pins_i]];
+
+        gpio_hal_drive[in_pins_array[in_pins_i]] = armcnc_xj3_get_pin_drive(in_pins_array[in_pins_i]);
+        gpio_hal_drive_prev[in_pins_array[in_pins_i]] = *gpio_hal_drive[in_pins_array[in_pins_i]];
     }
 
     for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
@@ -125,12 +143,28 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
             return -1;
         }
 
+        retval = hal_pin_s32_newf(HAL_IN, &gpio_hal_pull[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%s-pull", component_name, out_pins_array[out_pins_i]);
+        if (retval < 0) {
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_hal_pull failed \n");
+            return -1;
+        }
+
         pullUpDnControl(out_pins_array[out_pins_i], PUD_OFF);
 
         *gpio_hal[out_pins_array[out_pins_i]] = digitalRead(out_pins_array[out_pins_i]) == HIGH ? 1 : 0;
         *gpio_hal_not[out_pins_array[out_pins_i]] = *gpio_hal[out_pins_array[out_pins_i]] ? 0 : 1;
         gpio_hal_prev[out_pins_array[out_pins_i]] = *gpio_hal[out_pins_array[out_pins_i]];
         gpio_hal_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_not[out_pins_array[out_pins_i]];
+
+        switch (armcnc_xj3_get_gpio_pull(out_pins_array[out_pins_i])) {
+            case PUD_UP:      *gpio_hal_pull[out_pins_array[out_pins_i]] = 1;
+            case PUD_DOWN:    *gpio_hal_pull[out_pins_array[out_pins_i]] = -1;
+            default:           *gpio_hal_pull[out_pins_array[out_pins_i]] = 0;
+        }
+        gpio_hal_pull_prev[out_pins_array[out_pins_i]] = *gpio_hal_pull[out_pins_array[out_pins_i]];
+
+        gpio_hal_drive[out_pins_array[out_pins_i]] = armcnc_xj3_get_pin_drive(out_pins_array[out_pins_i]);
+        gpio_hal_drive_prev[out_pins_array[out_pins_i]] = *gpio_hal_drive[out_pins_array[out_pins_i]];
     }
 
     char *pwm_hal_token = strtok(pwm_types, ",");
@@ -161,20 +195,17 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
             EXPORT_PIN(ch, HAL_IN, bit, enable, "enable", 0);
 
             EXPORT_PIN(ch, HAL_IO, float, freq_cmd, "freq-cmd", 0.0);
-            EXPORT_PIN(ch, HAL_IO, float, freq_min, "freq-min", 50.0);
-            EXPORT_PIN(ch, HAL_IO, float, freq_max, "freq-max", 500000.0);
 
-            EXPORT_PIN(ch, HAL_IN, u32, pwm_pin, "pwm-pin", UINT32_MAX);
-            EXPORT_PIN(ch, HAL_IN, bit, pwm_pin_not, "pwm-pin-not", 0);
+            EXPORT_PIN(ch, HAL_IN, bit, pwm_pin, "pwm-pin", 0);
 
-            EXPORT_PIN(ch, HAL_IN, u32, dir_pin, "dir-pin", UINT32_MAX);
-            EXPORT_PIN(ch, HAL_IN, bit, dir_pin_not, "dir-pin-not", 0);
+            EXPORT_PIN(ch, HAL_IN, u32, forward_pin, "forward-pin", 0);
+            EXPORT_PIN(ch, HAL_IN, bit, forward_pin_not, "forward-pin-not", 0);
+
+            EXPORT_PIN(ch, HAL_IN, u32, reverse_pin, "reverse-pin", 0);
+            EXPORT_PIN(ch, HAL_IN, bit, reverse_pin_not, "reverse-pin-not", 0);
 
             EXPORT_PIN(ch, HAL_IN, float, dc_cmd, "dc-cmd", 0.0);
             EXPORT_PIN(ch, HAL_IO, float, dc_scale, "dc-scale", 1.0);
-
-            EXPORT_PIN(ch, HAL_IO, float, pos_scale, "pos-scale", 1.0);
-            EXPORT_PIN(ch, HAL_IN, float, pos_cmd, "pos-cmd", 0.0);
 
             pwm_hal_prev[ch].ctrl_type = pwm_hal_array[ch];
             pwm_hal_prev[ch].is_init = 0;
@@ -229,16 +260,16 @@ static void gpio_read(void *arg, long period)
 
         if (!(gpio_in_mask[pin] & gpio_mask[pin])) continue;
 
-        // int is_pwm_ch = 0;
-        // for (int ch = 0; ch < pwm_hal_count; ch++)
-        // {
-        //     if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].dir_pin) == pin)
-        //     {
-        //         is_pwm_ch = 1;
-        //     }
-        // }
+        int is_pwm_ch = 0;
+        for (int ch = 0; ch < pwm_hal_count; ch++)
+        {
+            if(*pwm_hal[ch].pwm_pin == pin || *pwm_hal[ch].forward_pin == pin || *pwm_hal[ch].reverse_pin == pin)
+            {
+                is_pwm_ch = 1;
+            }
+        }
 
-        // if (is_pwm_ch > 0) continue;
+        if (is_pwm_ch > 0) continue;
 
         uint32_t pin_state = digitalRead(pin) == HIGH ? gpio_mask[pin] : 0;
 
@@ -270,16 +301,32 @@ static void gpio_write(void *arg, long period)
 
         if (!(gpio_out_mask[pin] & gpio_mask[pin])) continue;
 
-        // int is_pwm_ch = 0;
-        // for (int ch = 0; ch < pwm_hal_count; ch++)
-        // {
-        //     if ((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].dir_pin) == pin)
-        //     {
-        //         is_pwm_ch = 1;
-        //     }
-        // }
+        int is_pwm_ch = 0;
+        for (int ch = 0; ch < pwm_hal_count; ch++)
+        {
+            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].forward_pin) == pin || (int)(*pwm_hal[ch].reverse_pin) == pin)
+            {
+                is_pwm_ch = 1;
+            }
+        }
 
-        // if (is_pwm_ch > 0) continue;
+        if (is_pwm_ch > 0) continue;
+
+        if (gpio_hal_pull_prev[pin] != *gpio_hal_pull[pin])
+        {
+            if (*gpio_hal_pull[pin] > 0)
+            {
+                *gpio_hal_pull[pin] = 1;
+                pullUpDnControl(pin, PUD_UP);
+            } else if (*gpio_hal_pull[pin] < 0){
+                *gpio_hal_pull[pin] = -1;
+                pullUpDnControl(pin, PUD_DOWN);
+            } else {
+                *gpio_hal_pull[pin] = 0;
+                pullUpDnControl(pin, PUD_OFF);
+            }
+            gpio_hal_pull_prev[pin] = *gpio_hal_pull[pin];
+        }
 
         if (*gpio_hal[pin] != gpio_hal_prev[pin])
         {
@@ -337,6 +384,11 @@ static void pwm_write(void *arg, long period)
         if (!pwm_hal_prev[ch].is_init)
         {
             softPwmCreate((int)(*pwm_hal[ch].pwm_pin), 0, 100);
+            softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
+            pullUpDnControl((int)(*pwm_hal[ch].forward_pin), PUD_OFF);
+            pullUpDnControl((int)(*pwm_hal[ch].reverse_pin), PUD_OFF);
+            digitalWrite((int)(*pwm_hal[ch].forward_pin), *pwm_hal[ch].forward_pin_not ? HIGH : LOW);
+            digitalWrite((int)(*pwm_hal[ch].reverse_pin), *pwm_hal[ch].reverse_pin_not ? HIGH : LOW);
             pwm_hal_prev[ch].is_init = 1;
             continue;
         }
@@ -345,24 +397,25 @@ static void pwm_write(void *arg, long period)
 
         if (pwm_hal_prev[ch].pwm_pin != *pwm_hal[ch].pwm_pin) pwm_hal_prev[ch].pwm_pin = *pwm_hal[ch].pwm_pin;
 
-        if (pwm_hal_prev[ch].pwm_pin_not != *pwm_hal[ch].pwm_pin_not) pwm_hal_prev[ch].pwm_pin_not = *pwm_hal[ch].pwm_pin_not;
+        if (pwm_hal_prev[ch].forward_pin != *pwm_hal[ch].forward_pin) pwm_hal_prev[ch].forward_pin = *pwm_hal[ch].forward_pin;
 
-        if (pwm_hal_prev[ch].dir_pin != *pwm_hal[ch].dir_pin) pwm_hal_prev[ch].dir_pin = *pwm_hal[ch].dir_pin;
+        if (pwm_hal_prev[ch].forward_pin_not != *pwm_hal[ch].forward_pin_not) pwm_hal_prev[ch].forward_pin_not = *pwm_hal[ch].forward_pin_not;
 
-        if (pwm_hal_prev[ch].dir_pin_not != *pwm_hal[ch].dir_pin_not) pwm_hal_prev[ch].dir_pin_not = *pwm_hal[ch].dir_pin_not;
+        if (pwm_hal_prev[ch].reverse_pin != *pwm_hal[ch].reverse_pin) pwm_hal_prev[ch].reverse_pin = *pwm_hal[ch].reverse_pin;
+
+        if (pwm_hal_prev[ch].reverse_pin_not != *pwm_hal[ch].reverse_pin_not) pwm_hal_prev[ch].reverse_pin_not = *pwm_hal[ch].reverse_pin_not;
 
         if (*pwm_hal[ch].dc_scale < 1e-20 && *pwm_hal[ch].dc_scale > -1e-20) *pwm_hal[ch].dc_scale = 1.0;
 
         if (pwm_hal_prev[ch].dc_scale != *pwm_hal[ch].dc_scale) pwm_hal_prev[ch].dc_scale = *pwm_hal[ch].dc_scale;
 
-        if (*pwm_hal[ch].pos_scale < 1e-20 && *pwm_hal[ch].pos_scale > -1e-20) *pwm_hal[ch].pos_scale = 1.0;
-
-        if (pwm_hal_prev[ch].pos_scale != *pwm_hal[ch].pos_scale) pwm_hal_prev[ch].pos_scale = *pwm_hal[ch].pos_scale;
-
         if (!(*pwm_hal[ch].enable))
         {
             softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
-            digitalWrite((int)(*pwm_hal[ch].dir_pin), HIGH);
+            pullUpDnControl((int)(*pwm_hal[ch].forward_pin), PUD_OFF);
+            pullUpDnControl((int)(*pwm_hal[ch].reverse_pin), PUD_OFF);
+            digitalWrite((int)(*pwm_hal[ch].forward_pin), *pwm_hal[ch].forward_pin_not ? HIGH : LOW);
+            digitalWrite((int)(*pwm_hal[ch].reverse_pin), *pwm_hal[ch].reverse_pin_not ? HIGH : LOW);
             continue;
         }
 
@@ -372,19 +425,15 @@ static void pwm_write(void *arg, long period)
         if (target_rpm < 0)
         {
             target_rpm = -target_rpm;
-            if (!pwm_hal_prev[ch].is_reverse)
-            {
-                softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
-                digitalWrite((int)(*pwm_hal[ch].dir_pin), LOW);
-            }
-            pwm_hal_prev[ch].is_reverse = 1;
+            pullUpDnControl((int)(*pwm_hal[ch].forward_pin), PUD_OFF);
+            pullUpDnControl((int)(*pwm_hal[ch].reverse_pin), PUD_OFF);
+            digitalWrite((int)(*pwm_hal[ch].forward_pin), *pwm_hal[ch].forward_pin_not ? HIGH : LOW);
+            digitalWrite((int)(*pwm_hal[ch].reverse_pin), *pwm_hal[ch].reverse_pin_not ? LOW : HIGH);
         }else{
-            if (pwm_hal_prev[ch].is_reverse)
-            {
-                softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
-                digitalWrite((int)(*pwm_hal[ch].dir_pin), HIGH);
-            }
-            pwm_hal_prev[ch].is_reverse = 0;
+            pullUpDnControl((int)(*pwm_hal[ch].forward_pin), PUD_OFF);
+            pullUpDnControl((int)(*pwm_hal[ch].reverse_pin), PUD_OFF);
+            digitalWrite((int)(*pwm_hal[ch].forward_pin), *pwm_hal[ch].forward_pin_not ? LOW : HIGH);
+            digitalWrite((int)(*pwm_hal[ch].reverse_pin), *pwm_hal[ch].reverse_pin_not ? HIGH : LOW);
         }
 
         int pwm_cycle = (target_rpm * 100) / max_rpm;
