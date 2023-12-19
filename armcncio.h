@@ -62,7 +62,7 @@ typedef struct
     hal_float_t dc_cmd;
     hal_float_t dc_scale;
 
-    hal_u32_t ctrl_type;
+    int ctrl_type;
     int is_init;
 } pwm_hal_priv_struct;
 
