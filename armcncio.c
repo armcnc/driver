@@ -378,7 +378,7 @@ static void gpio_write(void *arg, long period)
 static void pwm_read(void *arg, long period)
 {
     if (!pwm_hal_count) return;
-    
+
     for (int ch = 0; ch < pwm_hal_count; ch++)
     {
         if (!(*pwm_hal[ch].enable) || !pwm_hal_prev[ch].is_init) continue;
@@ -395,8 +395,6 @@ static void pwm_write(void *arg, long period)
         {
             softPwmCreate((int)(*pwm_hal[ch].pwm_pin), 0, 100);
             softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
-            pullUpDnControl((int)(*pwm_hal[ch].forward_pin), PUD_OFF);
-            pullUpDnControl((int)(*pwm_hal[ch].reverse_pin), PUD_OFF);
             digitalWrite((int)(*pwm_hal[ch].forward_pin), *pwm_hal[ch].forward_pin_not ? HIGH : LOW);
             digitalWrite((int)(*pwm_hal[ch].reverse_pin), *pwm_hal[ch].reverse_pin_not ? HIGH : LOW);
             pwm_hal_prev[ch].is_init = 1;
@@ -422,8 +420,6 @@ static void pwm_write(void *arg, long period)
         if (!(*pwm_hal[ch].enable))
         {
             softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
-            pullUpDnControl((int)(*pwm_hal[ch].forward_pin), PUD_OFF);
-            pullUpDnControl((int)(*pwm_hal[ch].reverse_pin), PUD_OFF);
             digitalWrite((int)(*pwm_hal[ch].forward_pin), *pwm_hal[ch].forward_pin_not ? HIGH : LOW);
             digitalWrite((int)(*pwm_hal[ch].reverse_pin), *pwm_hal[ch].reverse_pin_not ? HIGH : LOW);
             continue;
@@ -435,13 +431,9 @@ static void pwm_write(void *arg, long period)
         if (target_rpm < 0)
         {
             target_rpm = -target_rpm;
-            pullUpDnControl((int)(*pwm_hal[ch].forward_pin), PUD_OFF);
-            pullUpDnControl((int)(*pwm_hal[ch].reverse_pin), PUD_OFF);
             digitalWrite((int)(*pwm_hal[ch].forward_pin), *pwm_hal[ch].forward_pin_not ? HIGH : LOW);
             digitalWrite((int)(*pwm_hal[ch].reverse_pin), *pwm_hal[ch].reverse_pin_not ? LOW : HIGH);
-        }else{
-            pullUpDnControl((int)(*pwm_hal[ch].forward_pin), PUD_OFF);
-            pullUpDnControl((int)(*pwm_hal[ch].reverse_pin), PUD_OFF);
+        } else {
             digitalWrite((int)(*pwm_hal[ch].forward_pin), *pwm_hal[ch].forward_pin_not ? LOW : HIGH);
             digitalWrite((int)(*pwm_hal[ch].reverse_pin), *pwm_hal[ch].reverse_pin_not ? HIGH : LOW);
         }
