@@ -377,6 +377,8 @@ static void gpio_write(void *arg, long period)
 
 static void pwm_read(void *arg, long period)
 {
+    if (!pwm_hal_count) return;
+    
     for (int ch = 0; ch < pwm_hal_count; ch++)
     {
         if (!(*pwm_hal[ch].enable) || !pwm_hal_prev[ch].is_init) continue;
@@ -385,6 +387,8 @@ static void pwm_read(void *arg, long period)
 
 static void pwm_write(void *arg, long period)
 {
+    if (!pwm_hal_count) return;
+
     for (int ch = 0; ch < pwm_hal_count; ch++)
     {
         if (!pwm_hal_prev[ch].is_init)
