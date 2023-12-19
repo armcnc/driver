@@ -263,7 +263,7 @@ static void gpio_read(void *arg, long period)
         int is_pwm_ch = 0;
         for (int ch = 0; ch < pwm_hal_count; ch++)
         {
-            if(*pwm_hal[ch].pwm_pin == pin || *pwm_hal[ch].forward_pin == pin || *pwm_hal[ch].reverse_pin == pin)
+            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].forward_pin) == pin || (int)(*pwm_hal[ch].reverse_pin) == pin)
             {
                 is_pwm_ch = 1;
             }
