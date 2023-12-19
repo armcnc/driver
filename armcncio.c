@@ -127,7 +127,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         }
         gpio_hal_pull_prev[in_pins_array[in_pins_i]] = *gpio_hal_pull[in_pins_array[in_pins_i]];
 
-        *gpio_hal_drive[in_pins_array[in_pins_i]] = (hal_u32_t)(armcnc_xj3_get_pin_drive((char)getAlt(in_pins_array[in_pins_i])));
+        *gpio_hal_drive[in_pins_array[in_pins_i]] = armcnc_xj3_get_pin_drive((char)getAlt(in_pins_array[in_pins_i]));
         gpio_hal_drive_prev[in_pins_array[in_pins_i]] = (hal_u32_t)(*gpio_hal_drive[in_pins_array[in_pins_i]]);
     }
 
@@ -175,7 +175,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         }
         gpio_hal_pull_prev[out_pins_array[out_pins_i]] = *gpio_hal_pull[out_pins_array[out_pins_i]];
 
-        *gpio_hal_drive[out_pins_array[out_pins_i]] = (hal_u32_t)(armcnc_xj3_get_pin_drive((char)getAlt(out_pins_array[out_pins_i])));
+        *gpio_hal_drive[out_pins_array[out_pins_i]] = armcnc_xj3_get_pin_drive((char)getAlt(out_pins_array[out_pins_i]));
         gpio_hal_drive_prev[out_pins_array[out_pins_i]] = (hal_u32_t)(*gpio_hal_drive[out_pins_array[out_pins_i]]);
     }
 
