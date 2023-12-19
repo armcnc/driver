@@ -36,11 +36,11 @@ typedef struct
 
     hal_bit_t *pwm_pin;
 
-    hal_u32_t forward_pin;
-    hal_bit_t forward_pin_not;
+    hal_u32_t *forward_pin;
+    hal_bit_t *forward_pin_not;
 
-    hal_u32_t reverse_pin;
-    hal_bit_t reverse_pin_not;
+    hal_u32_t *reverse_pin;
+    hal_bit_t *reverse_pin_not;
 
     hal_float_t *dc_cmd;
     hal_float_t *dc_scale;
