@@ -57,8 +57,10 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
 
     gpio_hal = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_bit_t *));
     gpio_hal_not = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_bit_t *));
+    gpio_hal_pull = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_s32_t *));
+    gpio_hal_drive = hal_malloc(GPIO_BCM_MAX_COUNT * sizeof(hal_u32_t *));
 
-    if (!gpio_hal || !gpio_hal_not) {
+    if (!gpio_hal || !gpio_hal_not || !gpio_hal_pull || !gpio_hal_drive) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_hal failed \n");
         return -1;
     }
@@ -99,6 +101,18 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
             return -1;
         }
 
+        retval = hal_pin_s32_newf(HAL_IN, &gpio_hal_pull[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%s-pull", component_name, in_pins_array[in_pins_i]);
+        if (retval < 0) {
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_hal_pull failed \n");
+            return -1;
+        }
+
+        retval = hal_pin_u32_newf(HAL_IN, &gpio_hal_drive[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%s-drive", component_name, in_pins_array[in_pins_i]);
+        if (retval < 0) {
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_hal_drive failed \n");
+            return -1;
+        }
+
         pullUpDnControl(in_pins_array[in_pins_i], PUD_OFF);
 
         *gpio_hal[in_pins_array[in_pins_i]] = digitalRead(in_pins_array[in_pins_i]) == HIGH ? 1 : 0;
@@ -106,6 +120,15 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         gpio_hal_prev[in_pins_array[in_pins_i]] = *gpio_hal[in_pins_array[in_pins_i]];
         gpio_hal_not_prev[in_pins_array[in_pins_i]] = *gpio_hal_not[in_pins_array[in_pins_i]];
 
+        switch (armcnc_xj3_get_gpio_pull((char)getAlt(in_pins_array[in_pins_i]))) {
+            case PULL_UP:      *gpio_hal_pull[in_pins_array[in_pins_i]] = 1;
+            case PULL_DOWN:    *gpio_hal_pull[in_pins_array[in_pins_i]] = -1;
+            default:           *gpio_hal_pull[in_pins_array[in_pins_i]] = 0;
+        }
+        gpio_hal_pull_prev[in_pins_array[in_pins_i]] = *gpio_hal_pull[in_pins_array[in_pins_i]];
+
+        *gpio_hal_drive[in_pins_array[in_pins_i]] = (hal_u32_t)(armcnc_xj3_get_pin_drive((char)getAlt(in_pins_array[in_pins_i])));
+        gpio_hal_drive_prev[in_pins_array[in_pins_i]] = (hal_u32_t)(*gpio_hal_drive[in_pins_array[in_pins_i]]);
     }
 
     for (int out_pins_i = 0; out_pins_i < out_pins_count; out_pins_i++)
@@ -126,12 +149,34 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
             return -1;
         }
 
+        retval = hal_pin_s32_newf(HAL_IN, &gpio_hal_pull[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%s-pull", component_name, out_pins_array[out_pins_i]);
+        if (retval < 0) {
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_hal_pull failed \n");
+            return -1;
+        }
+
+        retval = hal_pin_u32_newf(HAL_IN, &gpio_hal_drive[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%s-drive", component_name, out_pins_array[out_pins_i]);
+        if (retval < 0) {
+            rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_hal_drive failed \n");
+            return -1;
+        }
+
         pullUpDnControl(out_pins_array[out_pins_i], PUD_OFF);
 
         *gpio_hal[out_pins_array[out_pins_i]] = digitalRead(out_pins_array[out_pins_i]) == HIGH ? 1 : 0;
         *gpio_hal_not[out_pins_array[out_pins_i]] = *gpio_hal[out_pins_array[out_pins_i]] ? 0 : 1;
         gpio_hal_prev[out_pins_array[out_pins_i]] = *gpio_hal[out_pins_array[out_pins_i]];
         gpio_hal_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_not[out_pins_array[out_pins_i]];
+
+        switch (armcnc_xj3_get_gpio_pull((char)getAlt(out_pins_array[out_pins_i]))) {
+            case PUD_UP:      *gpio_hal_pull[out_pins_array[out_pins_i]] = 1;
+            case PUD_DOWN:    *gpio_hal_pull[out_pins_array[out_pins_i]] = -1;
+            default:           *gpio_hal_pull[out_pins_array[out_pins_i]] = 0;
+        }
+        gpio_hal_pull_prev[out_pins_array[out_pins_i]] = *gpio_hal_pull[out_pins_array[out_pins_i]];
+
+        *gpio_hal_drive[out_pins_array[out_pins_i]] = (hal_u32_t)(armcnc_xj3_get_pin_drive((char)getAlt(out_pins_array[out_pins_i])));
+        gpio_hal_drive_prev[out_pins_array[out_pins_i]] = (hal_u32_t)(*gpio_hal_drive[out_pins_array[out_pins_i]]);
     }
 
     char *pwm_hal_token = strtok(pwm_types, ",");
@@ -163,12 +208,12 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
 
             EXPORT_PIN(ch, HAL_IO, float, freq_cmd, "freq-cmd", 0.0);
 
-            EXPORT_PIN(ch, HAL_IN, u32, pwm_pin, "pwm-pin", 0);
+            EXPORT_PIN(ch, HAL_IN, u32, pwm_pin, "pwm-pin", UINT32_MAX);
 
-            EXPORT_PIN(ch, HAL_IN, u32, forward_pin, "forward-pin", 0);
+            EXPORT_PIN(ch, HAL_IN, u32, forward_pin, "forward-pin", UINT32_MAX);
             EXPORT_PIN(ch, HAL_IN, bit, forward_pin_not, "forward-pin-not", 0);
 
-            EXPORT_PIN(ch, HAL_IN, u32, reverse_pin, "reverse-pin", 0);
+            EXPORT_PIN(ch, HAL_IN, u32, reverse_pin, "reverse-pin", UINT32_MAX);
             EXPORT_PIN(ch, HAL_IN, bit, reverse_pin_not, "reverse-pin-not", 0);
 
             EXPORT_PIN(ch, HAL_IN, float, dc_cmd, "dc-cmd", 0.0);
@@ -279,6 +324,22 @@ static void gpio_write(void *arg, long period)
 
         if (is_pwm_ch > 0) continue;
 
+        if (gpio_hal_pull_prev[pin] != *gpio_hal_pull[pin])
+        {
+            if (*gpio_hal_pull[pin] > 0)
+            {
+                *gpio_hal_pull[pin] = 1;
+                pullUpDnControl(pin, PUD_UP);
+            } else if (*gpio_hal_pull[pin] < 0){
+                *gpio_hal_pull[pin] = -1;
+                pullUpDnControl(pin, PUD_DOWN);
+            } else {
+                *gpio_hal_pull[pin] = 0;
+                pullUpDnControl(pin, PUD_OFF);
+            }
+            gpio_hal_pull_prev[pin] = *gpio_hal_pull[pin];
+        }
+
         if (*gpio_hal[pin] != gpio_hal_prev[pin])
         {
             if (*gpio_hal[pin] == HIGH)
@@ -330,6 +391,8 @@ static void pwm_write(void *arg, long period)
         {
             softPwmCreate((int)(*pwm_hal[ch].pwm_pin), 0, 100);
             softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
+            pullUpDnControl((int)(*pwm_hal[ch].forward_pin), PUD_OFF);
+            pullUpDnControl((int)(*pwm_hal[ch].reverse_pin), PUD_OFF);
             digitalWrite((int)(*pwm_hal[ch].forward_pin), *pwm_hal[ch].forward_pin_not ? HIGH : LOW);
             digitalWrite((int)(*pwm_hal[ch].reverse_pin), *pwm_hal[ch].reverse_pin_not ? HIGH : LOW);
             pwm_hal_prev[ch].is_init = 1;
@@ -355,6 +418,8 @@ static void pwm_write(void *arg, long period)
         if (!(*pwm_hal[ch].enable))
         {
             softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
+            pullUpDnControl((int)(*pwm_hal[ch].forward_pin), PUD_OFF);
+            pullUpDnControl((int)(*pwm_hal[ch].reverse_pin), PUD_OFF);
             digitalWrite((int)(*pwm_hal[ch].forward_pin), *pwm_hal[ch].forward_pin_not ? HIGH : LOW);
             digitalWrite((int)(*pwm_hal[ch].reverse_pin), *pwm_hal[ch].reverse_pin_not ? HIGH : LOW);
             continue;
@@ -366,9 +431,13 @@ static void pwm_write(void *arg, long period)
         if (target_rpm < 0)
         {
             target_rpm = -target_rpm;
+            pullUpDnControl((int)(*pwm_hal[ch].forward_pin), PUD_OFF);
+            pullUpDnControl((int)(*pwm_hal[ch].reverse_pin), PUD_OFF);
             digitalWrite((int)(*pwm_hal[ch].forward_pin), *pwm_hal[ch].forward_pin_not ? HIGH : LOW);
             digitalWrite((int)(*pwm_hal[ch].reverse_pin), *pwm_hal[ch].reverse_pin_not ? LOW : HIGH);
         }else{
+            pullUpDnControl((int)(*pwm_hal[ch].forward_pin), PUD_OFF);
+            pullUpDnControl((int)(*pwm_hal[ch].reverse_pin), PUD_OFF);
             digitalWrite((int)(*pwm_hal[ch].forward_pin), *pwm_hal[ch].forward_pin_not ? LOW : HIGH);
             digitalWrite((int)(*pwm_hal[ch].reverse_pin), *pwm_hal[ch].reverse_pin_not ? HIGH : LOW);
         }
