@@ -156,7 +156,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         gpio_hal_prev[out_pins_array[out_pins_i]] = *gpio_hal[out_pins_array[out_pins_i]];
         gpio_hal_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_not[out_pins_array[out_pins_i]];
 
-        switch (armcnc_xj3_get_gpio_pull((char)getAlt(out_pins_array[out_pins_i])) {
+        switch (armcnc_xj3_get_gpio_pull((char)getAlt(out_pins_array[out_pins_i]))) {
             case PUD_UP:      *gpio_hal_pull[out_pins_array[out_pins_i]] = 1;
             case PUD_DOWN:    *gpio_hal_pull[out_pins_array[out_pins_i]] = -1;
             default:           *gpio_hal_pull[out_pins_array[out_pins_i]] = 0;
