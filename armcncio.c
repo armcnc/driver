@@ -264,7 +264,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
 
 static void gpio_read(void *arg, long period)
 {
-    if (!in_pins_count) return;
+    if (!in_pins_count || !pwm_hal_count) return;
 
     for (int pin = 0; pin < GPIO_BCM_MAX_COUNT; pin++)
     {
@@ -300,7 +300,7 @@ static void gpio_write(void *arg, long period)
 {
     static uint32_t mask_0, mask_1;
 
-    if (!in_pins_count && !out_pins_count) return;
+    if (!in_pins_count || !out_pins_count || !pwm_hal_count) return;
 
     for (int pin = 0; pin < GPIO_BCM_MAX_COUNT; pin++)
     {
