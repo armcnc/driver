@@ -1591,8 +1591,10 @@ int piGpioLayout (void)
     gpioLayout = 4 ;
   else if (strcmp (c, "504") == 0)
     gpioLayout = 5 ;	// Covers everything else from the B revision 2 to the B+, the Pi v2, v3, zero and CM's.
+  else if (strcmp (c, "b04") == 0)
+    gpioLayout = 5 ;	// Covers everything else from the B revision 2 to the B+, the Pi v2, v3, zero and CM's.
   else
-    gpioLayout = 5 ;
+    gpioLayout = 3 ;
 
   if (wiringPiDebug)
     printf ("piGpioLayoutOops: Returning Board type: %d\n", gpioLayout) ;
