@@ -208,7 +208,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
 
             EXPORT_PIN(ch, HAL_IO, float, freq_cmd, "freq-cmd", 0.0);
 
-            EXPORT_PIN(ch, HAL_IN, bit, pwm_pin, "pwm-pin", 0);
+            EXPORT_PIN(ch, HAL_IN, u32, pwm_pin, "pwm-pin", 0);
 
             EXPORT_PIN(ch, HAL_IN, u32, forward_pin, "forward-pin", 0);
             EXPORT_PIN(ch, HAL_IN, bit, forward_pin_not, "forward-pin-not", 0);

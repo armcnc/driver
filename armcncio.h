@@ -32,7 +32,7 @@ typedef struct
 
     hal_float_t *freq_cmd;
 
-    hal_bit_t *pwm_pin;
+    hal_u32_t *pwm_pin;
 
     hal_u32_t *forward_pin;
     hal_bit_t *forward_pin_not;
@@ -51,7 +51,7 @@ typedef struct
 
     hal_float_t freq_cmd;
 
-    hal_bit_t pwm_pin;
+    hal_u32_t pwm_pin;
 
     hal_u32_t forward_pin;
     hal_bit_t forward_pin_not;
