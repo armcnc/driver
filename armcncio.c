@@ -101,13 +101,13 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
             return -1;
         }
 
-        retval = hal_pin_s32_newf(HAL_IN, &gpio_hal_pull[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%s-pull", component_name, in_pins_array[in_pins_i]);
+        retval = hal_pin_s32_newf(HAL_IN, &gpio_hal_pull[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-pull", component_name, in_pins_array[in_pins_i]);
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_hal_pull failed \n");
             return -1;
         }
 
-        retval = hal_pin_u32_newf(HAL_IN, &gpio_hal_drive[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%s-drive", component_name, in_pins_array[in_pins_i]);
+        retval = hal_pin_u32_newf(HAL_IN, &gpio_hal_drive[in_pins_array[in_pins_i]], component_id, "%s.gpio.pin%d-drive", component_name, in_pins_array[in_pins_i]);
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_hal_drive failed \n");
             return -1;
@@ -127,7 +127,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         }
         gpio_hal_pull_prev[in_pins_array[in_pins_i]] = *gpio_hal_pull[in_pins_array[in_pins_i]];
 
-        *gpio_hal_drive[in_pins_array[in_pins_i]] = armcnc_xj3_get_pin_drive((char)getAlt(in_pins_array[in_pins_i]));
+        *gpio_hal_drive[in_pins_array[in_pins_i]] = (hal_u32_t)armcnc_xj3_get_pin_drive((char)getAlt(in_pins_array[in_pins_i]));
         gpio_hal_drive_prev[in_pins_array[in_pins_i]] = *gpio_hal_drive[in_pins_array[in_pins_i]];
     }
 
@@ -149,13 +149,13 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
             return -1;
         }
 
-        retval = hal_pin_s32_newf(HAL_IN, &gpio_hal_pull[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%s-pull", component_name, out_pins_array[out_pins_i]);
+        retval = hal_pin_s32_newf(HAL_IN, &gpio_hal_pull[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-pull", component_name, out_pins_array[out_pins_i]);
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_hal_pull failed \n");
             return -1;
         }
 
-        retval = hal_pin_u32_newf(HAL_IN, &gpio_hal_drive[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%s-drive", component_name, out_pins_array[out_pins_i]);
+        retval = hal_pin_u32_newf(HAL_IN, &gpio_hal_drive[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-drive", component_name, out_pins_array[out_pins_i]);
         if (retval < 0) {
             rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_hal_drive failed \n");
             return -1;
@@ -175,7 +175,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         }
         gpio_hal_pull_prev[out_pins_array[out_pins_i]] = *gpio_hal_pull[out_pins_array[out_pins_i]];
 
-        *gpio_hal_drive[out_pins_array[out_pins_i]] = armcnc_xj3_get_pin_drive((char)getAlt(out_pins_array[out_pins_i]));
+        *gpio_hal_drive[out_pins_array[out_pins_i]] = (hal_u32_t)armcnc_xj3_get_pin_drive((char)getAlt(out_pins_array[out_pins_i]));
         gpio_hal_drive_prev[out_pins_array[out_pins_i]] = *gpio_hal_drive[out_pins_array[out_pins_i]];
     }
 
@@ -272,16 +272,16 @@ static void gpio_read(void *arg, long period)
 
         if (!(gpio_in_mask[pin] & gpio_mask[pin])) continue;
 
-        // int is_pwm_ch = 0;
-        // for (int ch = 0; ch < pwm_hal_count; ch++)
-        // {
-        //     if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].forward_pin) == pin || (int)(*pwm_hal[ch].reverse_pin) == pin)
-        //     {
-        //         is_pwm_ch = 1;
-        //     }
-        // }
+        int is_pwm_ch = 0;
+        for (int ch = 0; ch < pwm_hal_count; ch++)
+        {
+            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].forward_pin) == pin || (int)(*pwm_hal[ch].reverse_pin) == pin)
+            {
+                is_pwm_ch = 1;
+            }
+        }
 
-        // if (is_pwm_ch > 0) continue;
+        if (is_pwm_ch > 0) continue;
 
         uint32_t pin_state = digitalRead(pin) == HIGH ? gpio_mask[pin] : 0;
 
@@ -313,16 +313,16 @@ static void gpio_write(void *arg, long period)
 
         if (!(gpio_out_mask[pin] & gpio_mask[pin])) continue;
 
-        // int is_pwm_ch = 0;
-        // for (int ch = 0; ch < pwm_hal_count; ch++)
-        // {
-        //     if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].forward_pin) == pin || (int)(*pwm_hal[ch].reverse_pin) == pin)
-        //     {
-        //         is_pwm_ch = 1;
-        //     }
-        // }
+        int is_pwm_ch = 0;
+        for (int ch = 0; ch < pwm_hal_count; ch++)
+        {
+            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].forward_pin) == pin || (int)(*pwm_hal[ch].reverse_pin) == pin)
+            {
+                is_pwm_ch = 1;
+            }
+        }
 
-        // if (is_pwm_ch > 0) continue;
+        if (is_pwm_ch > 0) continue;
 
         if (gpio_hal_pull_prev[pin] != *gpio_hal_pull[pin])
         {
