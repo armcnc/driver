@@ -31,8 +31,6 @@ typedef struct
     hal_bit_t *enable;
 
     hal_float_t *freq_cmd;
-    hal_float_t *freq_min;
-    hal_float_t *freq_max;
 
     hal_bit_t *pwm_pin;
 
