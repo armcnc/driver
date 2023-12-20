@@ -393,6 +393,7 @@ static void pwm_read(void *arg, long period)
     for (int ch = 0; ch < pwm_hal_count; ch++)
     {
         if (!(*pwm_hal[ch].enable) || !pwm_hal_prev[ch].is_init) continue;
+        
     }
 }
 
