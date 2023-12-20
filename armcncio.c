@@ -206,13 +206,23 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         {
             EXPORT_PIN(ch, HAL_IN, bit, enable, "enable", 0);
 
-            EXPORT_PIN(ch, HAL_IO, float, freq_cmd, "freq-cmd", 0.0);
+            EXPORT_PIN(ch, HAL_IO, float, frequency_command, "frequency-command", 0.0);
 
-            EXPORT_PIN(ch, HAL_IN, float, dc_cmd, "dc-cmd", 0.0);
-            EXPORT_PIN(ch, HAL_IO, float, dc_scale, "dc-scale", 1.0);
+            EXPORT_PIN(ch, HAL_IN, float, duty_cycle_command, "duty-cycle-command", 0.0);
+            EXPORT_PIN(ch, HAL_IO, float, duty_cycle_scale, "duty-cycle-scale", 1.0);
+            EXPORT_PIN(ch, HAL_IO, u32, duty_cycle_max_time, "duty-cycle-max-time", 0);
+
+            EXPORT_PIN(ch, HAL_IO, float, position_scale, "position-scale", 1.0);
+            EXPORT_PIN(ch, HAL_IN, float, position_command, "position-command", 0.0);
+            EXPORT_PIN(ch, HAL_OUT, float, position_feedback, "position-feedback", 0.0);
 
             EXPORT_PIN(ch, HAL_IN, u32, pwm_pin, "pwm-pin", UINT32_MAX);
             EXPORT_PIN(ch, HAL_IN, bit, pwm_pin_not, "pwm-pin-not", 0);
+
+            EXPORT_PIN(ch, HAL_IN, u32, step_direction_pin, "step-direction-pin", UINT32_MAX);
+            EXPORT_PIN(ch, HAL_IN, bit, step_direction_pin_not, "step-direction-pin-not", 0);
+            EXPORT_PIN(ch, HAL_IO, u32, step_direction_hold_time, "step-direction-hold-time", 50000);
+            EXPORT_PIN(ch, HAL_IO, u32, step_direction_setup_time, "step-direction-setup-time", 50000);
 
             EXPORT_PIN(ch, HAL_IN, u32, spindle_forward_pin, "spindle-forward-pin", UINT32_MAX);
             EXPORT_PIN(ch, HAL_IN, bit, spindle_forward_pin_not, "spindle-forward-pin-not", 0);

@@ -28,40 +28,54 @@
 
 typedef struct
 {
-    hal_bit_t *enable;
+    hal_bit_t   *enable;
 
-    hal_float_t *freq_cmd;
+    hal_float_t *frequency_command;
 
-    hal_float_t *dc_cmd;
-    hal_float_t *dc_scale;
+    hal_float_t *duty_cycle_command;
+    hal_float_t *duty_cycle_scale;
+    hal_u32_t   *duty_cycle_max_time;
 
-    hal_u32_t *pwm_pin;
-    hal_bit_t *pwm_pin_not;
+    hal_float_t *position_command;
+    hal_float_t *position_scale;
+    hal_float_t *position_feedback;
 
-    hal_u32_t *spindle_forward_pin;
-    hal_bit_t *spindle_forward_pin_not;
+    hal_u32_t   *pwm_pin;
+    hal_bit_t   *pwm_pin_not;
 
-    hal_u32_t *spindle_reverse_pin;
-    hal_bit_t *spindle_reverse_pin_not;
+    hal_u32_t   *step_direction_pin;
+    hal_bit_t   *step_direction_pin_not;
+    hal_u32_t   *step_direction_hold_time;
+    hal_u32_t   *step_direction_setup_time;
+
+    hal_u32_t   *spindle_forward_pin;
+    hal_bit_t   *spindle_forward_pin_not;
+
+    hal_u32_t   *spindle_reverse_pin;
+    hal_bit_t   *spindle_reverse_pin_not;
 }pwm_hal_struct;
 
 typedef struct
 {
-    hal_bit_t enable;
+    hal_bit_t   enable;
 
-    hal_float_t freq_cmd;
+    hal_float_t frequency_command;
 
-    hal_u32_t pwm_pin;
-    hal_bit_t pwm_pin_not;
+    hal_float_t duty_cycle_command;
+    hal_float_t duty_cycle_scale;
+    hal_u32_t   duty_cycle_max_time;
 
-    hal_float_t dc_cmd;
-    hal_float_t dc_scale;
+    hal_float_t position_command;
+    hal_float_t position_scale;
 
-    hal_u32_t spindle_forward_pin;
-    hal_bit_t spindle_forward_pin_not;
+    hal_u32_t   pwm_pin;
+    hal_bit_t   pwm_pin_not;
 
-    hal_u32_t spindle_reverse_pin;
-    hal_bit_t spindle_reverse_pin_not;
+    hal_u32_t   spindle_forward_pin;
+    hal_bit_t   spindle_forward_pin_not;
+
+    hal_u32_t   spindle_reverse_pin;
+    hal_bit_t   spindle_reverse_pin_not;
 
     int ctrl_type;
     int is_init;
@@ -114,25 +128,55 @@ static int pwm_spindle_control(int ch)
         return 1;
     }
 
-    if (pwm_hal_prev[ch].enable != *pwm_hal[ch].enable) pwm_hal_prev[ch].enable = *pwm_hal[ch].enable;
+    if (pwm_hal_prev[ch].enable != *pwm_hal[ch].enable)
+    {
+        pwm_hal_prev[ch].enable = *pwm_hal[ch].enable;
+    }
 
-    if (pwm_hal_prev[ch].freq_cmd != *pwm_hal[ch].freq_cmd) pwm_hal_prev[ch].freq_cmd = *pwm_hal[ch].freq_cmd;
+    if (pwm_hal_prev[ch].frequency_command != *pwm_hal[ch].frequency_command)
+    {
+        pwm_hal_prev[ch].frequency_command = *pwm_hal[ch].frequency_command;
+    }
 
-    if (*pwm_hal[ch].dc_scale < 1e-20 && *pwm_hal[ch].dc_scale > -1e-20) *pwm_hal[ch].dc_scale = 1.0;
+    if (*pwm_hal[ch].duty_cycle_scale < 1e-20 && *pwm_hal[ch].duty_cycle_scale > -1e-20)
+    {
+        *pwm_hal[ch].duty_cycle_scale = 1.0;
+    }
 
-    if (pwm_hal_prev[ch].dc_scale != *pwm_hal[ch].dc_scale) pwm_hal_prev[ch].dc_scale = *pwm_hal[ch].dc_scale;
+    if (pwm_hal_prev[ch].duty_cycle_scale != *pwm_hal[ch].duty_cycle_scale)
+    {
+        pwm_hal_prev[ch].duty_cycle_scale = *pwm_hal[ch].duty_cycle_scale;
+    }
 
-    if (pwm_hal_prev[ch].pwm_pin != *pwm_hal[ch].pwm_pin) pwm_hal_prev[ch].pwm_pin = *pwm_hal[ch].pwm_pin;
+    if (pwm_hal_prev[ch].pwm_pin != *pwm_hal[ch].pwm_pin)
+    {
+        pwm_hal_prev[ch].pwm_pin = *pwm_hal[ch].pwm_pin;
+    }
 
-    if (pwm_hal_prev[ch].pwm_pin_not != *pwm_hal[ch].pwm_pin_not) pwm_hal_prev[ch].pwm_pin_not = *pwm_hal[ch].pwm_pin_not;
+    if (pwm_hal_prev[ch].pwm_pin_not != *pwm_hal[ch].pwm_pin_not)
+    {
+        pwm_hal_prev[ch].pwm_pin_not = *pwm_hal[ch].pwm_pin_not;
+    }
 
-    if (pwm_hal_prev[ch].spindle_forward_pin != *pwm_hal[ch].spindle_forward_pin) pwm_hal_prev[ch].spindle_forward_pin = *pwm_hal[ch].spindle_forward_pin;
+    if (pwm_hal_prev[ch].spindle_forward_pin != *pwm_hal[ch].spindle_forward_pin)
+    {
+        pwm_hal_prev[ch].spindle_forward_pin = *pwm_hal[ch].spindle_forward_pin;
+    }
 
-    if (pwm_hal_prev[ch].spindle_forward_pin_not != *pwm_hal[ch].spindle_forward_pin_not) pwm_hal_prev[ch].spindle_forward_pin_not = *pwm_hal[ch].spindle_forward_pin_not;
+    if (pwm_hal_prev[ch].spindle_forward_pin_not != *pwm_hal[ch].spindle_forward_pin_not)
+    {
+        pwm_hal_prev[ch].spindle_forward_pin_not = *pwm_hal[ch].spindle_forward_pin_not;
+    }
 
-    if (pwm_hal_prev[ch].spindle_reverse_pin != *pwm_hal[ch].spindle_reverse_pin) pwm_hal_prev[ch].spindle_reverse_pin = *pwm_hal[ch].spindle_reverse_pin;
+    if (pwm_hal_prev[ch].spindle_reverse_pin != *pwm_hal[ch].spindle_reverse_pin)
+    {
+        pwm_hal_prev[ch].spindle_reverse_pin = *pwm_hal[ch].spindle_reverse_pin;
+    }
 
-    if (pwm_hal_prev[ch].spindle_reverse_pin_not != *pwm_hal[ch].spindle_reverse_pin_not) pwm_hal_prev[ch].spindle_reverse_pin_not = *pwm_hal[ch].spindle_reverse_pin_not;
+    if (pwm_hal_prev[ch].spindle_reverse_pin_not != *pwm_hal[ch].spindle_reverse_pin_not)
+    {
+        pwm_hal_prev[ch].spindle_reverse_pin_not = *pwm_hal[ch].spindle_reverse_pin_not;
+    }
 
     if (!(*pwm_hal[ch].enable))
     {
@@ -140,8 +184,8 @@ static int pwm_spindle_control(int ch)
         digitalWrite((int)(*pwm_hal[ch].spindle_forward_pin), *pwm_hal[ch].spindle_forward_pin_not ? HIGH : LOW);
         digitalWrite((int)(*pwm_hal[ch].spindle_reverse_pin), *pwm_hal[ch].spindle_reverse_pin_not ? HIGH : LOW);
     } else {
-        int max_rpm = (int)(*pwm_hal[ch].dc_scale);
-        int target_rpm = (int)(*pwm_hal[ch].dc_cmd);
+        int max_rpm = (int)(*pwm_hal[ch].duty_cycle_scale);
+        int target_rpm = (int)(*pwm_hal[ch].duty_cycle_command);
 
         if (target_rpm < 0)
         {
