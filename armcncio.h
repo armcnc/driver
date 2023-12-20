@@ -67,9 +67,15 @@ typedef struct
 
     hal_float_t position_command;
     hal_float_t position_scale;
+    hal_float_t position_feedback;
 
     hal_u32_t   pwm_pin;
     hal_bit_t   pwm_pin_not;
+
+    hal_u32_t   step_direction_pin;
+    hal_bit_t   step_direction_pin_not;
+    hal_u32_t   step_direction_hold_time;
+    hal_u32_t   step_direction_setup_time;
 
     hal_u32_t   spindle_forward_pin;
     hal_bit_t   spindle_forward_pin_not;
