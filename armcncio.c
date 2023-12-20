@@ -393,7 +393,15 @@ static void pwm_read(void *arg, long period)
     for (int ch = 0; ch < pwm_hal_count; ch++)
     {
         if (!(*pwm_hal[ch].enable) || !pwm_hal_prev[ch].is_init) continue;
+
+        if (*pwm_hal[ch].position_scale < 1e-20 && *pwm_hal[ch].position_scale > -1e-20) *pwm_hal[ch].position_scale = 1.0;
         
+        if (pwm_hal_prev[ch].ctrl_type == 1)
+        {
+            
+        } else {
+            *pwm_hal[ch].position_feedback = ((hal_float_t)pwm_ch_pos_get(ch,1)) / *pwm_hal[ch].position_feedback / 1000;
+        }
     }
 }
 
