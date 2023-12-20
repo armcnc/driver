@@ -32,17 +32,17 @@ typedef struct
 
     hal_float_t *freq_cmd;
 
-    hal_u32_t *pwm_pin;
-
-    hal_u32_t *forward_pin;
-    hal_bit_t *forward_pin_not;
-
-    hal_u32_t *reverse_pin;
-    hal_bit_t *reverse_pin_not;
-
     hal_float_t *dc_cmd;
     hal_float_t *dc_scale;
 
+    hal_u32_t *pwm_pin;
+    hal_bit_t *pwm_pin_not;
+
+    hal_u32_t *spindle_forward_pin;
+    hal_bit_t *spindle_forward_pin_not;
+
+    hal_u32_t *spindle_reverse_pin;
+    hal_bit_t *spindle_reverse_pin_not;
 }pwm_hal_struct;
 
 typedef struct
@@ -52,15 +52,16 @@ typedef struct
     hal_float_t freq_cmd;
 
     hal_u32_t pwm_pin;
-
-    hal_u32_t forward_pin;
-    hal_bit_t forward_pin_not;
-
-    hal_u32_t reverse_pin;
-    hal_bit_t reverse_pin_not;
+    hal_bit_t pwm_pin_not;
 
     hal_float_t dc_cmd;
     hal_float_t dc_scale;
+
+    hal_u32_t spindle_forward_pin;
+    hal_bit_t spindle_forward_pin_not;
+
+    hal_u32_t spindle_reverse_pin;
+    hal_bit_t spindle_reverse_pin_not;
 
     int ctrl_type;
     int is_init;
@@ -107,33 +108,37 @@ static int pwm_spindle_control(int ch)
     {
         softPwmCreate((int)(*pwm_hal[ch].pwm_pin), 0, 100);
         softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
-        digitalWrite((int)(*pwm_hal[ch].forward_pin), *pwm_hal[ch].forward_pin_not ? HIGH : LOW);
-        digitalWrite((int)(*pwm_hal[ch].reverse_pin), *pwm_hal[ch].reverse_pin_not ? HIGH : LOW);
+        digitalWrite((int)(*pwm_hal[ch].spindle_forward_pin), *pwm_hal[ch].spindle_forward_pin_not ? HIGH : LOW);
+        digitalWrite((int)(*pwm_hal[ch].spindle_reverse_pin), *pwm_hal[ch].spindle_reverse_pin_not ? HIGH : LOW);
         pwm_hal_prev[ch].is_init = 1;
         return 1;
     }
 
     if (pwm_hal_prev[ch].enable != *pwm_hal[ch].enable) pwm_hal_prev[ch].enable = *pwm_hal[ch].enable;
 
-    if (pwm_hal_prev[ch].pwm_pin != *pwm_hal[ch].pwm_pin) pwm_hal_prev[ch].pwm_pin = *pwm_hal[ch].pwm_pin;
-
-    if (pwm_hal_prev[ch].forward_pin != *pwm_hal[ch].forward_pin) pwm_hal_prev[ch].forward_pin = *pwm_hal[ch].forward_pin;
-
-    if (pwm_hal_prev[ch].forward_pin_not != *pwm_hal[ch].forward_pin_not) pwm_hal_prev[ch].forward_pin_not = *pwm_hal[ch].forward_pin_not;
-
-    if (pwm_hal_prev[ch].reverse_pin != *pwm_hal[ch].reverse_pin) pwm_hal_prev[ch].reverse_pin = *pwm_hal[ch].reverse_pin;
-
-    if (pwm_hal_prev[ch].reverse_pin_not != *pwm_hal[ch].reverse_pin_not) pwm_hal_prev[ch].reverse_pin_not = *pwm_hal[ch].reverse_pin_not;
+    if (pwm_hal_prev[ch].freq_cmd != *pwm_hal[ch].freq_cmd) pwm_hal_prev[ch].freq_cmd = *pwm_hal[ch].freq_cmd;
 
     if (*pwm_hal[ch].dc_scale < 1e-20 && *pwm_hal[ch].dc_scale > -1e-20) *pwm_hal[ch].dc_scale = 1.0;
 
     if (pwm_hal_prev[ch].dc_scale != *pwm_hal[ch].dc_scale) pwm_hal_prev[ch].dc_scale = *pwm_hal[ch].dc_scale;
 
+    if (pwm_hal_prev[ch].pwm_pin != *pwm_hal[ch].pwm_pin) pwm_hal_prev[ch].pwm_pin = *pwm_hal[ch].pwm_pin;
+
+    if (pwm_hal_prev[ch].pwm_pin_not != *pwm_hal[ch].pwm_pin_not) pwm_hal_prev[ch].pwm_pin_not = *pwm_hal[ch].pwm_pin_not;
+
+    if (pwm_hal_prev[ch].spindle_forward_pin != *pwm_hal[ch].spindle_forward_pin) pwm_hal_prev[ch].spindle_forward_pin = *pwm_hal[ch].spindle_forward_pin;
+
+    if (pwm_hal_prev[ch].spindle_forward_pin_not != *pwm_hal[ch].spindle_forward_pin_not) pwm_hal_prev[ch].spindle_forward_pin_not = *pwm_hal[ch].spindle_forward_pin_not;
+
+    if (pwm_hal_prev[ch].spindle_reverse_pin != *pwm_hal[ch].spindle_reverse_pin) pwm_hal_prev[ch].spindle_reverse_pin = *pwm_hal[ch].spindle_reverse_pin;
+
+    if (pwm_hal_prev[ch].spindle_reverse_pin_not != *pwm_hal[ch].spindle_reverse_pin_not) pwm_hal_prev[ch].spindle_reverse_pin_not = *pwm_hal[ch].spindle_reverse_pin_not;
+
     if (!(*pwm_hal[ch].enable))
     {
         softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
-        digitalWrite((int)(*pwm_hal[ch].forward_pin), *pwm_hal[ch].forward_pin_not ? HIGH : LOW);
-        digitalWrite((int)(*pwm_hal[ch].reverse_pin), *pwm_hal[ch].reverse_pin_not ? HIGH : LOW);
+        digitalWrite((int)(*pwm_hal[ch].spindle_forward_pin), *pwm_hal[ch].spindle_forward_pin_not ? HIGH : LOW);
+        digitalWrite((int)(*pwm_hal[ch].spindle_reverse_pin), *pwm_hal[ch].spindle_reverse_pin_not ? HIGH : LOW);
     } else {
         int max_rpm = (int)(*pwm_hal[ch].dc_scale);
         int target_rpm = (int)(*pwm_hal[ch].dc_cmd);
@@ -141,11 +146,11 @@ static int pwm_spindle_control(int ch)
         if (target_rpm < 0)
         {
             target_rpm = -target_rpm;
-            digitalWrite((int)(*pwm_hal[ch].forward_pin), *pwm_hal[ch].forward_pin_not ? HIGH : LOW);
-            digitalWrite((int)(*pwm_hal[ch].reverse_pin), *pwm_hal[ch].reverse_pin_not ? LOW : HIGH);
+            digitalWrite((int)(*pwm_hal[ch].spindle_forward_pin), *pwm_hal[ch].spindle_forward_pin_not ? HIGH : LOW);
+            digitalWrite((int)(*pwm_hal[ch].spindle_reverse_pin), *pwm_hal[ch].spindle_reverse_pin_not ? LOW : HIGH);
         } else {
-            digitalWrite((int)(*pwm_hal[ch].forward_pin), *pwm_hal[ch].forward_pin_not ? LOW : HIGH);
-            digitalWrite((int)(*pwm_hal[ch].reverse_pin), *pwm_hal[ch].reverse_pin_not ? HIGH : LOW);
+            digitalWrite((int)(*pwm_hal[ch].spindle_forward_pin), *pwm_hal[ch].spindle_forward_pin_not ? LOW : HIGH);
+            digitalWrite((int)(*pwm_hal[ch].spindle_reverse_pin), *pwm_hal[ch].spindle_reverse_pin_not ? HIGH : LOW);
         }
 
         int pwm_cycle = (target_rpm * 100) / max_rpm;

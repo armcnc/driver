@@ -208,16 +208,17 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
 
             EXPORT_PIN(ch, HAL_IO, float, freq_cmd, "freq-cmd", 0.0);
 
-            EXPORT_PIN(ch, HAL_IN, u32, pwm_pin, "pwm-pin", UINT32_MAX);
-
-            EXPORT_PIN(ch, HAL_IN, u32, forward_pin, "forward-pin", UINT32_MAX);
-            EXPORT_PIN(ch, HAL_IN, bit, forward_pin_not, "forward-pin-not", 0);
-
-            EXPORT_PIN(ch, HAL_IN, u32, reverse_pin, "reverse-pin", UINT32_MAX);
-            EXPORT_PIN(ch, HAL_IN, bit, reverse_pin_not, "reverse-pin-not", 0);
-
             EXPORT_PIN(ch, HAL_IN, float, dc_cmd, "dc-cmd", 0.0);
             EXPORT_PIN(ch, HAL_IO, float, dc_scale, "dc-scale", 1.0);
+
+            EXPORT_PIN(ch, HAL_IN, u32, pwm_pin, "pwm-pin", UINT32_MAX);
+            EXPORT_PIN(ch, HAL_IN, bit, pwm_pin_not, "pwm-pin-not", 0);
+
+            EXPORT_PIN(ch, HAL_IN, u32, spindle_forward_pin, "spindle-forward-pin", UINT32_MAX);
+            EXPORT_PIN(ch, HAL_IN, bit, spindle_forward_pin_not, "spindle-forward-pin-not", 0);
+
+            EXPORT_PIN(ch, HAL_IN, u32, spindle_reverse_pin, "spindle-reverse-pin", UINT32_MAX);
+            EXPORT_PIN(ch, HAL_IN, bit, spindle_reverse_pin_not, "spindle-reverse-pin-not", 0);
 
             pwm_hal_prev[ch].ctrl_type = pwm_hal_array[ch];
             pwm_hal_prev[ch].is_init = 0;
@@ -275,7 +276,7 @@ static void gpio_read(void *arg, long period)
         int is_pwm_ch = 0;
         for (int ch = 0; ch < pwm_hal_count; ch++)
         {
-            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].forward_pin) == pin || (int)(*pwm_hal[ch].reverse_pin) == pin)
+            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].spindle_forward_pin) == pin || (int)(*pwm_hal[ch].spindle_reverse_pin) == pin)
             {
                 is_pwm_ch = 1;
             }
@@ -316,7 +317,7 @@ static void gpio_write(void *arg, long period)
         int is_pwm_ch = 0;
         for (int ch = 0; ch < pwm_hal_count; ch++)
         {
-            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].forward_pin) == pin || (int)(*pwm_hal[ch].reverse_pin) == pin)
+            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].spindle_forward_pin) == pin || (int)(*pwm_hal[ch].spindle_reverse_pin) == pin)
             {
                 is_pwm_ch = 1;
             }
