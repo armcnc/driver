@@ -301,7 +301,7 @@ static void gpio_read(void *arg, long period)
         int is_pwm_ch = 0;
         for (int ch = 0; ch < pwm_hal_count; ch++)
         {
-            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].step_direction_pin) == pin || (int)(*pwm_hal[ch].spindle_forward_pin) == pin || (int)(*pwm_hal[ch].spindle_reverse_pin) == pin)
+            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].direction_pin) == pin || (int)(*pwm_hal[ch].step_direction_pin) == pin || (int)(*pwm_hal[ch].spindle_forward_pin) == pin || (int)(*pwm_hal[ch].spindle_reverse_pin) == pin)
             {
                 is_pwm_ch = 1;
             }
@@ -342,7 +342,7 @@ static void gpio_write(void *arg, long period)
         int is_pwm_ch = 0;
         for (int ch = 0; ch < pwm_hal_count; ch++)
         {
-            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].step_direction_pin) == pin || (int)(*pwm_hal[ch].spindle_forward_pin) == pin || (int)(*pwm_hal[ch].spindle_reverse_pin) == pin)
+            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].direction_pin) == pin || (int)(*pwm_hal[ch].step_direction_pin) == pin || (int)(*pwm_hal[ch].spindle_forward_pin) == pin || (int)(*pwm_hal[ch].spindle_reverse_pin) == pin)
             {
                 is_pwm_ch = 1;
             }
