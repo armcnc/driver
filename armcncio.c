@@ -207,6 +207,8 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
             EXPORT_PIN(ch, HAL_IN, bit, enable, "enable", 0);
 
             EXPORT_PIN(ch, HAL_IO, float, frequency_command, "frequency-command", 0.0);
+            EXPORT_PIN(ch, HAL_IO, float, frequency_min, "frequency-min", 50.0);
+            EXPORT_PIN(ch, HAL_IO, float, frequency_max, "frequency-max", 500000.0);
 
             EXPORT_PIN(ch, HAL_IN, float, duty_cycle_command, "duty-cycle-command", 0.0);
             EXPORT_PIN(ch, HAL_IO, float, duty_cycle_scale, "duty-cycle-scale", 1.0);
@@ -215,6 +217,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
             EXPORT_PIN(ch, HAL_IO, float, position_scale, "position-scale", 1.0);
             EXPORT_PIN(ch, HAL_IN, float, position_command, "position-command", 0.0);
             EXPORT_PIN(ch, HAL_OUT, float, position_feedback, "position-feedback", 0.0);
+            EXPORT_PIN(ch, HAL_OUT, s32, position_count, "position-count", 0);
 
             EXPORT_PIN(ch, HAL_IN, u32, pwm_pin, "pwm-pin", UINT32_MAX);
             EXPORT_PIN(ch, HAL_IN, bit, pwm_pin_not, "pwm-pin-not", 0);
@@ -399,8 +402,6 @@ static void pwm_read(void *arg, long period)
         if (pwm_hal_prev[ch].ctrl_type == 1)
         {
             
-        } else {
-            *pwm_hal[ch].position_feedback = ((hal_float_t)pwm_ch_pos_get(ch,1)) / *pwm_hal[ch].position_feedback / 1000;
         }
     }
 }
