@@ -33,10 +33,15 @@ typedef struct
     hal_float_t *frequency_command;
     hal_float_t *frequency_min;
     hal_float_t *frequency_max;
+    hal_float_t *frequency_feedback;
 
     hal_float_t *duty_cycle_command;
     hal_float_t *duty_cycle_scale;
     hal_u32_t   *duty_cycle_max_time;
+    hal_float_t *duty_cycle_min;
+    hal_float_t *duty_cycle_max;
+    hal_float_t *duty_cycle_offset;
+    hal_float_t *duty_cycle_feedback;
 
     hal_float_t *position_command;
     hal_float_t *position_scale;
@@ -65,10 +70,15 @@ typedef struct
     hal_float_t frequency_command;
     hal_float_t frequency_min;
     hal_float_t frequency_max;
+    hal_float_t frequency_feedback;
 
     hal_float_t duty_cycle_command;
     hal_float_t duty_cycle_scale;
     hal_u32_t   duty_cycle_max_time;
+    hal_float_t duty_cycle_min;
+    hal_float_t duty_cycle_max;
+    hal_float_t duty_cycle_offset;
+    hal_float_t duty_cycle_feedback;
 
     hal_float_t position_command;
     hal_float_t position_scale;

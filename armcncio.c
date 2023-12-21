@@ -209,10 +209,15 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
             EXPORT_PIN(ch, HAL_IO, float, frequency_command, "frequency-command", 0.0);
             EXPORT_PIN(ch, HAL_IO, float, frequency_min, "frequency-min", 50.0);
             EXPORT_PIN(ch, HAL_IO, float, frequency_max, "frequency-max", 500000.0);
+            EXPORT_PIN(ch, HAL_OUT, float, frequency_feedback, "frequency-feedback", 0.0);
 
             EXPORT_PIN(ch, HAL_IN, float, duty_cycle_command, "duty-cycle-command", 0.0);
             EXPORT_PIN(ch, HAL_IO, float, duty_cycle_scale, "duty-cycle-scale", 1.0);
             EXPORT_PIN(ch, HAL_IO, u32, duty_cycle_max_time, "duty-cycle-max-time", 0);
+            EXPORT_PIN(ch, HAL_IO, float, duty_cycle_min, "duty-cycle-min", -1.0);
+            EXPORT_PIN(ch, HAL_IO, float, duty_cycle_max, "duty-cycle-max", 1.0);
+            EXPORT_PIN(ch, HAL_IO, float, duty_cycle_offset, "duty-cycle-offset", 0.0);
+            EXPORT_PIN(ch, HAL_OUT, float, duty_cycle_feedback, "duty-cycle-feedback", 0.0);
 
             EXPORT_PIN(ch, HAL_IO, float, position_scale, "position-scale", 1.0);
             EXPORT_PIN(ch, HAL_IN, float, position_command, "position-command", 0.0);
