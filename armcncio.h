@@ -197,7 +197,7 @@ static int32_t pwm_frequency_get(int ch, long period)
 
     if (pwm_hal_prev[ch].frequency_max != *pwm_hal[ch].frequency_max) {
         pwm_hal_prev[ch].freq_max_mHz = (hal_u32_t)round((*pwm_hal[ch].frequency_max) * 1000);
-        pwm_hal_prev[ch].freq_max = *pwm_hal[ch].frequency_max;
+        pwm_hal_prev[ch].frequency_max = *pwm_hal[ch].frequency_max;
     }
 
     switch (pwm_hal_prev[ch].ctrl_type)
