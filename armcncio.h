@@ -236,7 +236,7 @@ static int32_t pwm_data_write(int ch, int value)
 
 static int32_t pwm_data_setup(int ch, int32_t freq, int32_t duty_cycle, uint32_t duty_cycle_max_time, uint32_t hold, uint32_t setup)
 {
-
+    return 0;
 }
 
 static void pwm_data_update(int ch)
