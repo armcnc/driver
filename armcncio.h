@@ -47,6 +47,7 @@ typedef struct
     hal_float_t *position_scale;
     hal_float_t *position_feedback;
     hal_s32_t   *position_count;
+    hal_float_t *position_current;
 
     hal_u32_t   *pwm_pin;
     hal_bit_t   *pwm_pin_not;
@@ -84,6 +85,7 @@ typedef struct
     hal_float_t position_scale;
     hal_float_t position_feedback;
     hal_s32_t   position_count;
+    hal_float_t position_current;
 
     hal_u32_t   pwm_pin;
     hal_bit_t   pwm_pin_not;
@@ -132,6 +134,20 @@ static void gpio_write(void *arg, long period);
 static void gpio_read(void *arg, long period);
 static void pwm_write(void *arg, long period);
 static void pwm_read(void *arg, long period);
+
+static uint32_t pwm_position_count_get(int ch)
+{
+    uint32_t position_count = (uint32_t)(*pwm_hal[ch].position_count);
+    return position_count;
+}
+
+static int64_t pwm_position_get(int ch)
+{
+    int32_t position_32 = (int32_t)(*pwm_hal[ch].position_current);
+    int64_t position = (int64_t)position_32;
+    position *= 1000;
+    return position;
+}
 
 static int pwm_step_control(int ch)
 {
