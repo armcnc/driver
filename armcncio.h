@@ -52,6 +52,9 @@ typedef struct
     hal_u32_t   *pwm_pin;
     hal_bit_t   *pwm_pin_not;
 
+    hal_u32_t   *direction_pin;
+    hal_bit_t   *direction_pin_not;
+
     hal_u32_t   *step_direction_pin;
     hal_bit_t   *step_direction_pin_not;
     hal_u32_t   *step_direction_hold_time;
@@ -90,6 +93,9 @@ typedef struct
     hal_u32_t   pwm_pin;
     hal_bit_t   pwm_pin_not;
 
+    hal_u32_t   direction_pin;
+    hal_bit_t   direction_pin_not;
+
     hal_u32_t   step_direction_pin;
     hal_bit_t   step_direction_pin_not;
     hal_u32_t   step_direction_hold_time;
@@ -103,6 +109,10 @@ typedef struct
 
     int ctrl_type;
     int is_init;
+    hal_s32_t duty_cycle_s32;
+    hal_s32_t freq_mHz;
+    hal_u32_t freq_min_mHz;
+    hal_u32_t freq_max_mHz;
 } pwm_hal_priv_struct;
 
 static uint32_t gpio_mask[GPIO_BCM_MAX_COUNT] = {0};
@@ -147,6 +157,120 @@ static int64_t pwm_position_get(int ch)
     int64_t position = (int64_t)position_32;
     position *= 1000;
     return position;
+}
+
+static int32_t pwm_duty_cycle_get(int ch)
+{
+    if (*pwm_hal[ch].duty_cycle_command == pwm_hal_prev[ch].duty_cycle_command && 
+        *pwm_hal[ch].duty_cycle_scale == pwm_hal_prev[ch].duty_cycle_scale && 
+        *pwm_hal[ch].duty_cycle_offset == pwm_hal_prev[ch].duty_cycle_offset && 
+        *pwm_hal[ch].duty_cycle_min == pwm_hal_prev[ch].duty_cycle_min && 
+        *pwm_hal[ch].duty_cycle_max == pwm_hal_prev[ch].duty_cycle_max) return pwm_hal_prev[ch].duty_cycle_s32;
+    
+    if (*pwm_hal[ch].duty_cycle_min < -1.0) *pwm_hal[ch].duty_cycle_min = -1.0;
+    if (*pwm_hal[ch].duty_cycle_max > 1.0) *pwm_hal[ch].duty_cycle_max = 1.0;
+    if (*pwm_hal[ch].duty_cycle_max < *pwm_hal[ch].duty_cycle_min) *pwm_hal[ch].duty_cycle_max = *pwm_hal[ch].duty_cycle_min;
+    if (*pwm_hal[ch].duty_cycle_scale < 1e-20 && *pwm_hal[ch].duty_cycle_scale > -1e-20) *pwm_hal[ch].duty_cycle_scale = 1.0;
+
+    *pwm_hal[ch].duty_cycle_feedback = *pwm_hal[ch].duty_cycle_command / *pwm_hal[ch].duty_cycle_scale + *pwm_hal[ch].duty_cycle_offset;
+
+    if (*pwm_hal[ch].duty_cycle_feedback < *pwm_hal[ch].duty_cycle_min) *pwm_hal[ch].duty_cycle_feedback = *pwm_hal[ch].duty_cycle_min;
+    if (*pwm_hal[ch].duty_cycle_feedback > *pwm_hal[ch].duty_cycle_max) *pwm_hal[ch].duty_cycle_feedback = *pwm_hal[ch].duty_cycle_max;
+
+    pwm_hal_prev[ch].duty_cycle_command = *pwm_hal[ch].duty_cycle_command;
+    pwm_hal_prev[ch].duty_cycle_min = *pwm_hal[ch].duty_cycle_min;
+    pwm_hal_prev[ch].duty_cycle_max = *pwm_hal[ch].duty_cycle_max;
+    pwm_hal_prev[ch].duty_cycle_offset = *pwm_hal[ch].duty_cycle_offset;
+    pwm_hal_prev[ch].duty_cycle_scale = *pwm_hal[ch].duty_cycle_scale;
+
+    return (int32_t)(*pwm_hal[ch].duty_cycle_feedback * INT32_MAX);
+}
+
+static int32_t pwm_frequency_get(int ch, long period)
+{
+    int32_t frequency = 0;
+
+    if (pwm_hal_prev[ch].frequency_min != *pwm_hal[ch].frequency_min) {
+        pwm_hal_prev[ch].freq_min_mHz = (hal_u32_t)round((*pwm_hal[ch].frequency_min) * 1000);
+        pwm_hal_prev[ch].frequency_min = *pwm_hal[ch].frequency_min;
+    }
+
+    if (pwm_hal_prev[ch].frequency_max != *pwm_hal[ch].frequency_max) {
+        pwm_hal_prev[ch].freq_max_mHz = (hal_u32_t)round((*pwm_hal[ch].frequency_max) * 1000);
+        pwm_hal_prev[ch].freq_max = *pwm_hal[ch].frequency_max;
+    }
+
+    switch (pwm_hal_prev[ch].ctrl_type)
+    {
+        case 1:
+        {
+            int64_t position_command_64 = (int64_t)(*pwm_hal[ch].position_command * (*pwm_hal[ch].position_scale) * 1000);
+            int64_t position_current_64 = pwm_position_get(ch);
+            int64_t task_64 = position_command_64 - position_current_64;
+            if (labs(task_64) < 500) 
+            {
+                frequency = 0;
+            } else {
+                frequency = (int32_t)(task_64 * ((int64_t)rtapi_clock_set_period(0)) / 1000);
+            }
+        }
+        case 2:
+        {
+            if (pwm_hal_prev[ch].frequency_command == *pwm_hal[ch].frequency_command) {
+                frequency = pwm_hal_prev[ch].freq_mHz;
+                break;
+            }
+            pwm_hal_prev[ch].frequency_command = *pwm_hal[ch].frequency_command;
+            if (*pwm_hal[ch].frequency_command < 1e-20 && *pwm_hal[ch].frequency_command > -1e-20) break;
+            frequency = (int32_t)round(*pwm_hal[ch].frequency_command * 1000);
+            if (abs(frequency) < pwm_hal_prev[ch].freq_min_mHz) frequency = 0;
+            else if (abs(frequency) > pwm_hal_prev[ch].freq_max_mHz ) frequency = pwm_hal_prev[ch].freq_max_mHz * (frequency < 0 ? -1 : 1);
+            break;
+        }
+    }
+
+    *pwm_hal[ch].frequency_feedback = frequency ? ((hal_float_t)frequency) / 1000 : 0.0;
+
+    return frequency;
+}
+
+static int32_t pwm_data_write(int ch, int value)
+{
+    softPwmWrite((int)(*pwm_hal[ch].pwm_pin), value);
+    return 0;
+}
+
+static int32_t pwm_data_setup(int ch, int32_t freq, int32_t duty_cycle, uint32_t duty_cycle_max_time, uint32_t hold, uint32_t setup)
+{
+
+}
+
+static void pwm_data_update(int ch)
+{
+    uint32_t update = 0;
+
+    if (pwm_hal_prev[ch].pwm_pin != *pwm_hal[ch].pwm_pin){pwm_hal_prev[ch].pwm_pin = *pwm_hal[ch].pwm_pin; update++;}
+    if (pwm_hal_prev[ch].pwm_pin_not != *pwm_hal[ch].pwm_pin_not) {pwm_hal_prev[ch].pwm_pin_not = *pwm_hal[ch].pwm_pin_not; update++;}
+
+    if (pwm_hal_prev[ch].direction_pin != *pwm_hal[ch].direction_pin) {pwm_hal_prev[ch].direction_pin = *pwm_hal[ch].direction_pin; update++;}
+    if (pwm_hal_prev[ch].direction_pin_not != *pwm_hal[ch].direction_pin_not) {pwm_hal_prev[ch].direction_pin_not = *pwm_hal[ch].direction_pin_not; update++;}
+
+    if (update)
+    {
+        if (*pwm_hal[ch].pwm_pin_not)
+        {
+            digitalWrite((int)(*pwm_hal[ch].pwm_pin), HIGH);
+        } else {
+            digitalWrite((int)(*pwm_hal[ch].pwm_pin), LOW);
+        }
+
+        if (*pwm_hal[ch].direction_pin_not)
+        {
+            digitalWrite((int)(*pwm_hal[ch].direction_pin), HIGH);
+        } else {
+            digitalWrite((int)(*pwm_hal[ch].direction_pin), LOW);
+        }
+    }
 }
 
 static int pwm_step_control(int ch)

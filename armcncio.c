@@ -227,6 +227,9 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
             EXPORT_PIN(ch, HAL_IN, u32, pwm_pin, "pwm-pin", UINT32_MAX);
             EXPORT_PIN(ch, HAL_IN, bit, pwm_pin_not, "pwm-pin-not", 0);
 
+            EXPORT_PIN(ch, HAL_IN, u32, direction_pin, "direction-pin", UINT32_MAX);
+            EXPORT_PIN(ch, HAL_IN, bit, direction_pin_not, "direction-pin-not", 0);
+
             EXPORT_PIN(ch, HAL_IN, u32, step_direction_pin, "step-direction-pin", UINT32_MAX);
             EXPORT_PIN(ch, HAL_IN, bit, step_direction_pin_not, "step-direction-pin-not", 0);
             EXPORT_PIN(ch, HAL_IO, u32, step_direction_hold_time, "step-direction-hold-time", 50000);
@@ -240,6 +243,10 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
 
             pwm_hal_prev[ch].ctrl_type = pwm_hal_array[ch];
             pwm_hal_prev[ch].is_init = 0;
+            pwm_hal_prev[ch].duty_cycle_s32 = 0;
+            pwm_hal_prev[ch].freq_mHz = 0;
+            pwm_hal_prev[ch].freq_min_mHz = 50000;
+            pwm_hal_prev[ch].freq_max_mHz = 500000000;
         }
 
         if (retval < 0) {
@@ -427,21 +434,46 @@ static void pwm_write(void *arg, long period)
 
     for (int ch = 0; ch < pwm_hal_count; ch++)
     {
-        if (pwm_hal_prev[ch].ctrl_type == 1)
-        {
-            int step_control = pwm_step_control(ch);
-            if (step_control) {
+        if (pwm_hal_prev[ch].enable != *pwm_hal[ch].enable) {
+            pwm_hal_prev[ch].enable = *pwm_hal[ch].enable;
+            if (!*pwm_hal[ch].enable)
+            {
+                pwm_data_write(ch, 0);
+                pwm_data_setup(ch, 0, 0, *pwm_hal[ch].duty_cycle_max_time, *pwm_hal[ch].step_direction_hold_time, *pwm_hal[ch].step_direction_setup_time);
                 continue;
             }
         }
 
-        if (pwm_hal_prev[ch].ctrl_type == 2)
+        pwm_data_update(ch);
+
+        int32_t duty_cycle = pwm_duty_cycle_get(ch);
+
+        int32_t frequency = pwm_frequency_get(ch, period);
+
+        pwm_data_write(ch, (frequency && duty_cycle ? 1000 : 0));
+
+        if (pwm_hal_prev[ch].freq_mHz != frequency || pwm_hal_prev[ch].duty_cycle_s32 != duty_cycle)
         {
-            int spindle_control = pwm_spindle_control(ch);
-            if (spindle_control) {
-                continue;
-            }
+            pwm_data_setup(ch, frequency, duty_cycle, *pwm_hal[ch].duty_cycle_max_time, *pwm_hal[ch].step_direction_hold_time, *pwm_hal[ch].step_direction_setup_time);
+            pwm_hal_prev[ch].duty_cycle_s32 = duty_cycle;
+            pwm_hal_prev[ch].freq_mHz = frequency;
         }
+
+        // if (pwm_hal_prev[ch].ctrl_type == 1)
+        // {
+        //     int step_control = pwm_step_control(ch);
+        //     if (step_control) {
+        //         continue;
+        //     }
+        // }
+
+        // if (pwm_hal_prev[ch].ctrl_type == 2)
+        // {
+        //     int spindle_control = pwm_spindle_control(ch);
+        //     if (spindle_control) {
+        //         continue;
+        //     }
+        // }
     }
 }
 
