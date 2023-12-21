@@ -267,7 +267,7 @@ static void pwm_data_update(int ch)
     }
 }
 
-static int pwm_step_control(int ch)
+static int pwm_step_control(int ch, long period)
 {
     if (!pwm_hal_prev[ch].is_init)
     {
@@ -283,7 +283,7 @@ static int pwm_step_control(int ch)
         {
             pwm_data_write(ch, 0);
             pwm_data_setup(ch, 0, 0, *pwm_hal[ch].duty_cycle_max_time, *pwm_hal[ch].step_direction_hold_time, *pwm_hal[ch].step_direction_setup_time);
-            continue;
+            return 1;
         }
     }
 

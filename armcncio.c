@@ -433,7 +433,7 @@ static void pwm_write(void *arg, long period)
     {
         if (pwm_hal_prev[ch].ctrl_type == 1)
         {
-            int step_control = pwm_step_control(ch);
+            int step_control = pwm_step_control(ch, period);
             if (step_control) {
                 continue;
             }
