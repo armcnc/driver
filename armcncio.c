@@ -406,22 +406,20 @@ static void pwm_read(void *arg, long period)
     {
         if (!(*pwm_hal[ch].enable) || !pwm_hal_prev[ch].is_init) continue;
 
-        if (*pwm_hal[ch].position_scale < 1e-20 && *pwm_hal[ch].position_scale > -1e-20) *pwm_hal[ch].position_scale = 1.0;
+        // if (*pwm_hal[ch].position_scale < 1e-20 && *pwm_hal[ch].position_scale > -1e-20) *pwm_hal[ch].position_scale = 1.0;
         
-        if (pwm_hal_prev[ch].ctrl_type == 1)
-        {
-            *pwm_hal[ch].position_count = (int32_t)pwm_position_count_get(ch);
-            pwm_hal_prev[ch].position_count = (int32_t)(*pwm_hal[ch].position_scale * (*pwm_hal[ch].position_command));
-            if (abs(pwm_hal_prev[ch].position_count - (*pwm_hal[ch].position_count)) < 10)
-            {
-                *pwm_hal[ch].position_count = pwm_hal_prev[ch].position_count;
-                *pwm_hal[ch].position_feedback = *pwm_hal[ch].position_command;
-            } else {
-                *pwm_hal[ch].position_feedback = ((hal_float_t)pwm_position_get(ch)) / *pwm_hal[ch].position_scale / 1000;
-            }
-        } else {
-            *pwm_hal[ch].position_feedback = ((hal_float_t)pwm_position_get(ch)) / *pwm_hal[ch].position_scale / 1000;
-        }
+        // if (pwm_hal_prev[ch].ctrl_type == 1)
+        // {
+        //     *pwm_hal[ch].position_count = (int32_t)pwm_position_count_get(ch);
+        //     pwm_hal_prev[ch].position_count = (int32_t)(*pwm_hal[ch].position_scale * (*pwm_hal[ch].position_command));
+        //     if (abs(pwm_hal_prev[ch].position_count - (*pwm_hal[ch].position_count)) < 10)
+        //     {
+        //         *pwm_hal[ch].position_count = pwm_hal_prev[ch].position_count;
+        //         *pwm_hal[ch].position_feedback = *pwm_hal[ch].position_command;
+        //     } else {
+        //         *pwm_hal[ch].position_feedback = ((hal_float_t)pwm_position_get(ch)) / *pwm_hal[ch].position_scale / 1000;
+        //     }
+        // }
     }
 }
 
