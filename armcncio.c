@@ -227,9 +227,6 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
             EXPORT_PIN(ch, HAL_IN, u32, pwm_pin, "pwm-pin", UINT32_MAX);
             EXPORT_PIN(ch, HAL_IN, bit, pwm_pin_not, "pwm-pin-not", 0);
 
-            EXPORT_PIN(ch, HAL_IN, u32, direction_pin, "direction-pin", UINT32_MAX);
-            EXPORT_PIN(ch, HAL_IN, bit, direction_pin_not, "direction-pin-not", 0);
-
             EXPORT_PIN(ch, HAL_IN, u32, step_direction_pin, "step-direction-pin", UINT32_MAX);
             EXPORT_PIN(ch, HAL_IN, bit, step_direction_pin_not, "step-direction-pin-not", 0);
             EXPORT_PIN(ch, HAL_IO, u32, step_direction_hold_time, "step-direction-hold-time", 50000);
@@ -301,7 +298,7 @@ static void gpio_read(void *arg, long period)
         int is_pwm_ch = 0;
         for (int ch = 0; ch < pwm_hal_count; ch++)
         {
-            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].direction_pin) == pin || (int)(*pwm_hal[ch].step_direction_pin) == pin || (int)(*pwm_hal[ch].spindle_forward_pin) == pin || (int)(*pwm_hal[ch].spindle_reverse_pin) == pin)
+            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].step_direction_pin) == pin || (int)(*pwm_hal[ch].spindle_forward_pin) == pin || (int)(*pwm_hal[ch].spindle_reverse_pin) == pin)
             {
                 is_pwm_ch = 1;
             }
@@ -342,7 +339,7 @@ static void gpio_write(void *arg, long period)
         int is_pwm_ch = 0;
         for (int ch = 0; ch < pwm_hal_count; ch++)
         {
-            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].direction_pin) == pin || (int)(*pwm_hal[ch].step_direction_pin) == pin || (int)(*pwm_hal[ch].spindle_forward_pin) == pin || (int)(*pwm_hal[ch].spindle_reverse_pin) == pin)
+            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].step_direction_pin) == pin || (int)(*pwm_hal[ch].spindle_forward_pin) == pin || (int)(*pwm_hal[ch].spindle_reverse_pin) == pin)
             {
                 is_pwm_ch = 1;
             }

@@ -52,9 +52,6 @@ typedef struct
     hal_u32_t   *pwm_pin;
     hal_bit_t   *pwm_pin_not;
 
-    hal_u32_t   *direction_pin;
-    hal_bit_t   *direction_pin_not;
-
     hal_u32_t   *step_direction_pin;
     hal_bit_t   *step_direction_pin_not;
     hal_u32_t   *step_direction_hold_time;
@@ -92,9 +89,6 @@ typedef struct
 
     hal_u32_t   pwm_pin;
     hal_bit_t   pwm_pin_not;
-
-    hal_u32_t   direction_pin;
-    hal_bit_t   direction_pin_not;
 
     hal_u32_t   step_direction_pin;
     hal_bit_t   step_direction_pin_not;
@@ -252,8 +246,8 @@ static void pwm_data_update(int ch)
     if (pwm_hal_prev[ch].pwm_pin != *pwm_hal[ch].pwm_pin){pwm_hal_prev[ch].pwm_pin = *pwm_hal[ch].pwm_pin; update++;}
     if (pwm_hal_prev[ch].pwm_pin_not != *pwm_hal[ch].pwm_pin_not) {pwm_hal_prev[ch].pwm_pin_not = *pwm_hal[ch].pwm_pin_not; update++;}
 
-    if (pwm_hal_prev[ch].direction_pin != *pwm_hal[ch].direction_pin) {pwm_hal_prev[ch].direction_pin = *pwm_hal[ch].direction_pin; update++;}
-    if (pwm_hal_prev[ch].direction_pin_not != *pwm_hal[ch].direction_pin_not) {pwm_hal_prev[ch].direction_pin_not = *pwm_hal[ch].direction_pin_not; update++;}
+    if (pwm_hal_prev[ch].step_direction_pin != *pwm_hal[ch].step_direction_pin) {pwm_hal_prev[ch].step_direction_pin = *pwm_hal[ch].step_direction_pin; update++;}
+    if (pwm_hal_prev[ch].step_direction_pin_not != *pwm_hal[ch].step_direction_pin_not) {pwm_hal_prev[ch].step_direction_pin_not = *pwm_hal[ch].step_direction_pin_not; update++;}
 
     if (update)
     {
@@ -264,11 +258,11 @@ static void pwm_data_update(int ch)
             digitalWrite((int)(*pwm_hal[ch].pwm_pin), LOW);
         }
 
-        if (*pwm_hal[ch].direction_pin_not)
+        if (*pwm_hal[ch].step_direction_pin_not)
         {
-            digitalWrite((int)(*pwm_hal[ch].direction_pin), HIGH);
+            digitalWrite((int)(*pwm_hal[ch].step_direction_pin), HIGH);
         } else {
-            digitalWrite((int)(*pwm_hal[ch].direction_pin), LOW);
+            digitalWrite((int)(*pwm_hal[ch].step_direction_pin), LOW);
         }
     }
 }
