@@ -384,7 +384,7 @@ static int pinToGpioR2 [64] =
 } ;
 
 
-X3 PI
+// X3 PI
 static int pinToGpioX3PI [64] =
 {
   106, 107, // 0, 1
