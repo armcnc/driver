@@ -283,6 +283,31 @@ static int pwm_step_control(int ch)
         return 1;
     }
 
+    if (pwm_hal_prev[ch].enable != *pwm_hal[ch].enable) {
+        pwm_hal_prev[ch].enable = *pwm_hal[ch].enable;
+        if (!*pwm_hal[ch].enable)
+        {
+            pwm_data_write(ch, 0);
+            pwm_data_setup(ch, 0, 0, *pwm_hal[ch].duty_cycle_max_time, *pwm_hal[ch].step_direction_hold_time, *pwm_hal[ch].step_direction_setup_time);
+            continue;
+        }
+    }
+
+    pwm_data_update(ch);
+
+    int32_t duty_cycle = pwm_duty_cycle_get(ch);
+
+    int32_t frequency = pwm_frequency_get(ch, period);
+
+    pwm_data_write(ch, (frequency && duty_cycle ? 1000 : 0));
+
+    if (pwm_hal_prev[ch].freq_mHz != frequency || pwm_hal_prev[ch].duty_cycle_s32 != duty_cycle)
+    {
+        pwm_data_setup(ch, frequency, duty_cycle, *pwm_hal[ch].duty_cycle_max_time, *pwm_hal[ch].step_direction_hold_time, *pwm_hal[ch].step_direction_setup_time);
+        pwm_hal_prev[ch].duty_cycle_s32 = duty_cycle;
+        pwm_hal_prev[ch].freq_mHz = frequency;
+    }
+
     return 0;
 }
 
