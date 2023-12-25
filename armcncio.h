@@ -222,9 +222,29 @@ static int pwm_step_control(int ch, long period)
         softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
         digitalWrite((int)(*pwm_hal[ch].step_direction_pin), *pwm_hal[ch].step_direction_pin_not ? HIGH : LOW);
     } else {
-        // 在这里补充
-        softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 50);
-        digitalWrite((int)(*pwm_hal[ch].step_direction_pin), *pwm_hal[ch].step_direction_pin_not ? HIGH : LOW);
+        long targetSteps = (*pwm_hal[ch].position_command) * (*pwm_hal[ch].position_scale);
+        long currentSteps = (*pwm_hal[ch].position_current) * (*pwm_hal[ch].position_scale);
+
+        // 确定运动方向
+        int direction = (targetSteps > currentSteps) ? HIGH : LOW;
+        digitalWrite((int)(*pwm_hal[ch].step_direction_pin), direction);
+
+        // 如果当前位置不等于目标位置，则移动一个步长
+        if (currentSteps != targetSteps) {
+            softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 50); // 设定占空比
+            delayMicroseconds(*pwm_hal[ch].duty_cycle_max_time);
+            softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
+
+            // 更新当前位置
+            if (direction == HIGH) {
+                (*pwm_hal[ch].position_current) += 1.0 / (*pwm_hal[ch].position_scale);
+            } else {
+                (*pwm_hal[ch].position_current) -= 1.0 / (*pwm_hal[ch].position_scale);
+            }
+
+            // 更新位置反馈
+            (*pwm_hal[ch].position_feedback) = (*pwm_hal[ch].position_current);
+        }
     }
 
     return 0;
