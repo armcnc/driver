@@ -220,9 +220,10 @@ static int pwm_step_control(int ch, long period)
     if (!(*pwm_hal[ch].enable))
     {
         softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
-        digitalWrite((int)(*pwm_hal[ch].step_direction_pin), *pwm_hal[ch].step_direction_pin ? HIGH : LOW);
+        digitalWrite((int)(*pwm_hal[ch].step_direction_pin), *pwm_hal[ch].step_direction_pin ? LOW : HIGH);
     } else {
-        
+        softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
+        digitalWrite((int)(*pwm_hal[ch].step_direction_pin), *pwm_hal[ch].step_direction_pin ? HIGH : LOW);
     }
 
     return 0;
