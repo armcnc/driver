@@ -17,7 +17,7 @@ sudo halcompile --install armcncio.c | grep Linking
 ```shell
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
-loadrt armcncio in_pins="2,6,13,26,20,21,25,8,7" out_pins="1,18"
+loadrt armcncio pwm_types="p,p,p,p,p,f" in_pins="19,20,21" out_pins="4,5,6"
 ...
 ```
 
