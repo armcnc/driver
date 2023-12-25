@@ -217,13 +217,14 @@ static int pwm_step_control(int ch, long period)
 
     pwm_update_data(ch);
 
-    if (*pwm_hal[ch].enable > 0)
+    if (!(*pwm_hal[ch].enable))
     {
         softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
         digitalWrite((int)(*pwm_hal[ch].step_direction_pin), *pwm_hal[ch].step_direction_pin_not ? HIGH : LOW);
     } else {
+        // 在这里补充
         softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 50);
-        digitalWrite((int)(*pwm_hal[ch].step_direction_pin), *pwm_hal[ch].step_direction_pin_not ? LOW : HIGH);
+        digitalWrite((int)(*pwm_hal[ch].step_direction_pin), *pwm_hal[ch].step_direction_pin_not ? HIGH : LOW);
     }
 
     return 0;
