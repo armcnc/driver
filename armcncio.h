@@ -222,25 +222,7 @@ static int pwm_step_control(int ch, long period)
         softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
         digitalWrite((int)(*pwm_hal[ch].step_direction_pin), *pwm_hal[ch].step_direction_pin_not ? HIGH : LOW);
     } else {
-        long targetSteps = (*pwm_hal[ch].position_command) * (*pwm_hal[ch].position_scale);
-        long currentSteps = (*pwm_hal[ch].position_current) * (*pwm_hal[ch].position_scale);
-
-        int direction = (targetSteps > currentSteps) ? HIGH : LOW;
-        digitalWrite((int)(*pwm_hal[ch].step_direction_pin), direction);
-
-        if (currentSteps != targetSteps) {
-            softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 50); // 设定占空比
-            delayMicroseconds(50);
-            softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
-
-            if (direction == HIGH) {
-                (*pwm_hal[ch].position_current) += 1.0 / (*pwm_hal[ch].position_scale);
-            } else {
-                (*pwm_hal[ch].position_current) -= 1.0 / (*pwm_hal[ch].position_scale);
-            }
-
-            (*pwm_hal[ch].position_feedback) = (*pwm_hal[ch].position_current);
-        }
+        
     }
 
     return 0;
