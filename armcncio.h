@@ -210,20 +210,20 @@ static int pwm_step_control(int ch, long period)
     {
         softPwmCreate((int)(*pwm_hal[ch].pwm_pin), 0, 100);
         softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
-        digitalWrite((int)(*pwm_hal[ch].step_direction_pin), *pwm_hal[ch].step_direction_pin ? HIGH : LOW);
+        digitalWrite((int)(*pwm_hal[ch].step_direction_pin), *pwm_hal[ch].step_direction_pin_not ? HIGH : LOW);
         pwm_hal_prev[ch].is_init = 1;
         return 1;
     }
 
     pwm_update_data(ch);
 
-    if (!(*pwm_hal[ch].enable))
+    if (*pwm_hal[ch].enable > 0)
     {
         softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
-        digitalWrite((int)(*pwm_hal[ch].step_direction_pin), *pwm_hal[ch].step_direction_pin ? LOW : HIGH);
+        digitalWrite((int)(*pwm_hal[ch].step_direction_pin), *pwm_hal[ch].step_direction_pin_not ? HIGH : LOW);
     } else {
         softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
-        digitalWrite((int)(*pwm_hal[ch].step_direction_pin), *pwm_hal[ch].step_direction_pin ? HIGH : LOW);
+        digitalWrite((int)(*pwm_hal[ch].step_direction_pin), *pwm_hal[ch].step_direction_pin_not ? LOW : HIGH);
     }
 
     return 0;
