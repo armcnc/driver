@@ -230,7 +230,7 @@ static int pwm_step_control(int ch, long period)
 
         if (currentSteps != targetSteps) {
             softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 50); // 设定占空比
-            delayMicroseconds(*pwm_hal[ch].duty_cycle_max_time);
+            delayMicroseconds(50);
             softPwmWrite((int)(*pwm_hal[ch].pwm_pin), 0);
 
             if (direction == HIGH) {
