@@ -245,11 +245,6 @@ static void write_port(void *arg, long period)
 
     spindle_control(0);
 
-    for (int pin = 0; pin < GPIO_STEP_MAX_COUNT; pin++)
-    {
-        step_control(pin);
-    }
-
     for (int pin = 0; pin < GPIO_BCM_MAX_COUNT; pin++)
     {
         if (!gpio_in_mask[pin] && !gpio_out_mask[pin]) continue;
@@ -260,6 +255,21 @@ static void write_port(void *arg, long period)
         if (!(gpio_in_mask[pin] & gpio_mask[pin]) && !(gpio_out_mask[pin] & gpio_mask[pin])) continue;
 
         if (!(gpio_out_mask[pin] & gpio_mask[pin])) continue;
+
+        int is_step = 0;
+        for (int step_pin = 0; step_pin < GPIO_STEP_MAX_COUNT; step_pin++)
+        {
+            if ((int)(*step_hal[step_pin].step_port) == pin || (int)(*step_hal[step_pin].step_direction_port) == pin)
+            {
+                step_control(step_pin);
+                is_step++;
+            }
+        }
+
+        if (is_step > 0)
+        {
+            continue;
+        }
 
         if (*gpio_hal[pin] != gpio_hal_prev[pin])
         {
@@ -314,8 +324,6 @@ int rtapi_app_main(void)
     }
 
     hal_ready(component_id);
-
-    rtapi_print_msg(RTAPI_MSG_ERR, "[armcnc]: %s \n", ARMCNCIO_PLATFORM);
 
     return 0;
 }
