@@ -243,6 +243,8 @@ static void write_port(void *arg, long period)
 
     if (!in_pins_count || !out_pins_count || !spindle_hal_count || !step_hal_count) return;
 
+    spindle_control(0);
+
     for (int pin = 0; pin < GPIO_BCM_MAX_COUNT; pin++)
     {
         if (!gpio_in_mask[pin] && !gpio_out_mask[pin]) continue;

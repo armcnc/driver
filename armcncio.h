@@ -27,6 +27,7 @@
 #define GPIO_BCM_MAX_COUNT 28
 #define GPIO_STEP_MAX_COUNT 5
 #define GPIO_SPINDLE_MAX_COUNT 1
+#define RTAPI_BIT(nr)(1UL << (nr))
 
 typedef struct
 {
@@ -138,8 +139,63 @@ static int spindle_update_data(int ch)
     return 0;
 }
 
+static int step_update_data(int ch)
+{
+    if (step_hal_prev[ch].spindle_enable != *step_hal[ch].step_enable) step_hal_prev[ch].step_enable = *step_hal[ch].step_enable;
+
+    if (step_hal_prev[ch].step_port != *step_hal[ch].step_port) step_hal_prev[ch].step_port = *step_hal[ch].step_port;
+
+    if (step_hal_prev[ch].step_pin != *step_hal[ch].step_pin) step_hal_prev[ch].step_pin = *step_hal[ch].step_pin;
+
+    if (step_hal_prev[ch].step_pin_not != *step_hal[ch].step_pin_not) step_hal_prev[ch].step_pin_not = *step_hal[ch].step_pin_not;
+
+    if (step_hal_prev[ch].step_direction_port != *step_hal[ch].step_direction_port) step_hal_prev[ch].step_direction_port = *step_hal[ch].step_direction_port;
+
+    if (step_hal_prev[ch].step_direction_pin != *step_hal[ch].step_direction_pin) step_hal_prev[ch].step_direction_pin = *step_hal[ch].step_direction_pin;
+
+    if (step_hal_prev[ch].step_direction_pin_not != *step_hal[ch].step_direction_pin_not) step_hal_prev[ch].step_direction_pin_not = *step_hal[ch].step_direction_pin_not;
+
+    return 0;
+}
+
 static int step_control(int ch)
 {
+    if (!step_hal_prev[ch].is_init)
+    {
+        step_hal_prev[ch].is_init = 1;
+        return 1;
+    }
+
+    step_update_data(ch);
+
+    if (gpio_out_mask[(int)(*step_hal[ch].step_direction_port)] & gpio_mask[(int)(*step_hal[ch].step_direction_port)])
+    {
+        if (gpio_mask[(int)(*step_hal[ch].step_direction_port)])
+        {
+            *step_hal[ch].step_direction_pin = *step_hal[ch].step_direction_pin_not ? LOW : HIGH;
+            step_hal_prev[ch].step_direction_pin = *step_hal[ch].step_direction_pin;
+            digitalWrite((int)(*step_hal[ch].step_direction_port), *step_hal[ch].step_direction_pin_not ? LOW : HIGH);
+        } else {
+            *step_hal[ch].step_direction_pin = *step_hal[ch].step_direction_pin_not ? HIGH : LOW;
+            step_hal_prev[ch].step_direction_pin = *step_hal[ch].step_direction_pin;
+            digitalWrite((int)(*step_hal[ch].step_direction_port), *step_hal[ch].step_direction_pin_not ? HIGH : LOW);
+        }
+    }
+
+    if (gpio_out_mask[(int)(*step_hal[ch].step_port)] & gpio_mask[(int)(*step_hal[ch].step_port)])
+    {
+        if (gpio_mask[(int)(*step_hal[ch].step_port)])
+        {
+            *step_hal[ch].step_pin = *step_hal[ch].step_pin_not ? LOW : HIGH;
+            step_hal_prev[ch].step_pin = *step_hal[ch].step_pin;
+            digitalWrite((int)(*step_hal[ch].step_port), *step_hal[ch].step_pin_not ? LOW : HIGH);
+        } else {
+            *step_hal[ch].step_pin = *step_hal[ch].step_pin_not ? HIGH : LOW;
+            step_hal_prev[ch].step_pin = *step_hal[ch].step_direction_pin;
+            digitalWrite((int)(*step_hal[ch].step_port), *step_hal[ch].step_pin_not ? HIGH : LOW);
+        }
+    }
+
     return 0;
 }
 
