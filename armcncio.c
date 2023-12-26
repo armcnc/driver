@@ -162,7 +162,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
 
     #undef SPINDLE_EXPORT_PIN
 
-    step_hal = hal_malloc(GPIO_SPINDLE_MAX_COUNT * sizeof(step_hal_struct));
+    step_hal = hal_malloc(GPIO_STEP_MAX_COUNT * sizeof(step_hal_struct));
     if (!step_hal) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() step_hal failed \n");
         return -1;

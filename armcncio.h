@@ -154,6 +154,8 @@ static int spindle_control(int ch)
     if (!spindle_hal_prev[ch].is_init)
     {
         pinMode((int)(*spindle_hal[ch].spindle_pin), OUTPUT);
+        pinMode((int)(*spindle_hal[ch].spindle_forward_pin), OUTPUT);
+        pinMode((int)(*spindle_hal[ch].spindle_reverse_pin), OUTPUT);
         softPwmCreate((int)(*spindle_hal[ch].spindle_pin), 0, 100);
         softPwmWrite((int)(*spindle_hal[ch].spindle_pin), 0);
         digitalWrite((int)(*spindle_hal[ch].spindle_forward_pin), *spindle_hal[ch].spindle_forward_pin_not ? HIGH : LOW);
