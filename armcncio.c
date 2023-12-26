@@ -197,15 +197,15 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
 
     #undef STEP_EXPORT_PIN
 
-    rtapi_snprintf(name, sizeof(name), "%s.gpio.write", component_name);
-    retval = hal_export_funct(name, gpio_write, 0, 0, 0, component_id);
+    rtapi_snprintf(name, sizeof(name), "%s.write", component_name);
+    retval = hal_export_funct(name, write_port, 0, 0, 0, component_id);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_write failed \n");
         return -1;
     }
 
-    rtapi_snprintf(name, sizeof(name), "%s.gpio.read", component_name);
-    retval = hal_export_funct(name, gpio_read, 0, 0, 0, component_id);
+    rtapi_snprintf(name, sizeof(name), "%s.read", component_name);
+    retval = hal_export_funct(name, read_port, 0, 0, 0, component_id);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_read failed \n");
         return -1;
@@ -214,7 +214,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
     return 0;
 }
 
-static void gpio_read(void *arg, long period)
+static void read_port(void *arg, long period)
 {
     if (!in_pins_count || !out_pins_count || !spindle_hal_count || !step_hal_count) return;
 
@@ -237,7 +237,7 @@ static void gpio_read(void *arg, long period)
     }
 }
 
-static void gpio_write(void *arg, long period)
+static void write_port(void *arg, long period)
 {
     static uint32_t mask_0, mask_1;
 

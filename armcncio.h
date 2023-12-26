@@ -108,8 +108,8 @@ static step_hal_struct *step_hal;
 static step_hal_priv_struct step_hal_prev[GPIO_STEP_MAX_COUNT];
 static int step_hal_count = 0;
 
-static void gpio_write(void *arg, long period);
-static void gpio_read(void *arg, long period);
+static void write_port(void *arg, long period);
+static void read_port(void *arg, long period);
 
 static int spindle_update_data(int ch)
 {
@@ -147,9 +147,6 @@ static int spindle_control(int ch)
 {
     if (!spindle_hal_prev[ch].is_init)
     {
-        pinMode((int)(*spindle_hal[ch].spindle_pin), OUTPUT);
-        pinMode((int)(*spindle_hal[ch].spindle_forward_pin), OUTPUT);
-        pinMode((int)(*spindle_hal[ch].spindle_reverse_pin), OUTPUT);
         softPwmCreate((int)(*spindle_hal[ch].spindle_pin), 0, 100);
         softPwmWrite((int)(*spindle_hal[ch].spindle_pin), 0);
         digitalWrite((int)(*spindle_hal[ch].spindle_forward_pin), *spindle_hal[ch].spindle_forward_pin_not ? HIGH : LOW);
