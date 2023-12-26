@@ -245,6 +245,11 @@ static void write_port(void *arg, long period)
 
     spindle_control(0);
 
+    for (int pin = 0; pin < GPIO_STEP_MAX_COUNT; pin++)
+    {
+        step_control(pin);
+    }
+
     for (int pin = 0; pin < GPIO_BCM_MAX_COUNT; pin++)
     {
         if (!gpio_in_mask[pin] && !gpio_out_mask[pin]) continue;
