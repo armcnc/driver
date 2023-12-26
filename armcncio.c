@@ -13,7 +13,7 @@ MODULE_DESCRIPTION("Driver for ARMCNC");
 MODULE_LICENSE("GPL");
 #endif
 
-static char *gpio_pin = "";
+static char *gpio_in = "";
 #ifdef RTAPI
 RTAPI_MP_STRING(gpio_in, "channels control type, comma separated");
 #endif

@@ -138,14 +138,8 @@ static int spindle_update_data(int ch)
     return 0;
 }
 
-static int pwm_step_control(int ch, long period)
+static int step_control(int ch)
 {
-    if (!pwm_hal_prev[ch].is_init)
-    {
-        pwm_hal_prev[ch].is_init = 1;
-        return 1;
-    }
-
     return 0;
 }
 
