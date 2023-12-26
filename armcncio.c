@@ -13,14 +13,14 @@ MODULE_DESCRIPTION("Driver for ARMCNC");
 MODULE_LICENSE("GPL");
 #endif
 
-static char *gpio_in = "";
+static char *ins = "";
 #ifdef RTAPI
-RTAPI_MP_STRING(gpio_in, "channels control type, comma separated");
+RTAPI_MP_STRING(ins, "channels control type, comma separated");
 #endif
 
-static char *gpio_out = "";
+static char *outs = "";
 #ifdef RTAPI
-RTAPI_MP_STRING(gpio_out, "channels control type, comma separated");
+RTAPI_MP_STRING(outs, "channels control type, comma separated");
 #endif
 
 static int32_t component_id;
@@ -32,15 +32,15 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
 
     char name[HAL_NAME_LEN + 1];
 
-    if (gpio_in == NULL || gpio_in[0] == '\0')
+    if (ins == NULL || ins[0] == '\0')
     {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_in failed \n");
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() ins failed \n");
         return -1;
     }
 
-    if (gpio_out == NULL || gpio_out[0] == '\0')
+    if (outs == NULL || outs[0] == '\0')
     {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_out failed \n");
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() outs failed \n");
         return -1;
     }
 
@@ -54,7 +54,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
 
     for (int n = 0; n < GPIO_BCM_MAX_COUNT; n++) gpio_mask[n] = 1UL << n;
 
-    char *in_pins_token = strtok(gpio_in, ",");
+    char *in_pins_token = strtok(ins, ",");
     while (in_pins_token != NULL)
     {
         in_pins_array[in_pins_count] = atoi(in_pins_token);
@@ -62,7 +62,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         in_pins_token = strtok(NULL, ",");
     }
 
-    char *out_pins_token = strtok(gpio_out, ",");
+    char *out_pins_token = strtok(outs, ",");
     while (out_pins_token != NULL)
     {
         out_pins_array[out_pins_count] = atoi(out_pins_token);
