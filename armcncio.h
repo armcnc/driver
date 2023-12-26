@@ -141,7 +141,7 @@ static int spindle_update_data(int ch)
 
 static int step_update_data(int ch)
 {
-    if (step_hal_prev[ch].spindle_enable != *step_hal[ch].step_enable) step_hal_prev[ch].step_enable = *step_hal[ch].step_enable;
+    if (step_hal_prev[ch].step_enable != *step_hal[ch].step_enable) step_hal_prev[ch].step_enable = *step_hal[ch].step_enable;
 
     if (step_hal_prev[ch].step_port != *step_hal[ch].step_port) step_hal_prev[ch].step_port = *step_hal[ch].step_port;
 
