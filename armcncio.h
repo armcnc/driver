@@ -170,15 +170,29 @@ static int step_control(int ch)
 {
     if (!step_hal_prev[ch].is_init)
     {
+        step_update_data(ch);
         step_hal_prev[ch].is_init = 1;
         return 1;
     }
 
-    *step_hal[ch].step_direction_pin = 1;
-    digitalWrite((int)(*step_hal[ch].step_direction_port), 1);
-    *step_hal[ch].step_pin = 1;
-    digitalWrite((int)(*step_hal[ch].step_port), 1);
+    if (step_hal_prev[ch].step_direction_pin)
+    {
+        *step_hal[ch].step_direction_pin = HIGH;
+        digitalWrite((int)(*step_hal[ch].step_direction_port), HIGH);
+    } else {
+        *step_hal[ch].step_direction_pin = LOW;
+        digitalWrite((int)(*step_hal[ch].step_direction_port), LOW);
+    }
 
+    if (step_hal_prev[ch].step_pin)
+    {
+        *step_hal[ch].step_pin = HIGH;
+        digitalWrite((int)(*step_hal[ch].step_port), HIGH);
+    } else {
+        *step_hal[ch].step_pin = LOW;
+        digitalWrite((int)(*step_hal[ch].step_port), LOW);
+    }
+    
     // if (gpio_out_mask[(int)(*step_hal[ch].step_direction_port)] & gpio_mask[(int)(*step_hal[ch].step_direction_port)])
     // {
     //     if (gpio_mask[(int)(*step_hal[ch].step_direction_port)])
