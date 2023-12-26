@@ -29,6 +29,14 @@
 #define GPIO_SPINDLE_MAX_COUNT 1
 #define RTAPI_BIT(nr)(1UL << (nr))
 
+#if defined(__arm__) || defined(__aarch64__)
+#define ARMCNCIO_PLATFORM "arm64"
+#endif
+
+#if defined(__amd64__) || defined(__x86_64__)
+#define ARMCNCIO_PLATFORM "amd64"
+#endif
+
 typedef struct
 {
     hal_float_t *frequency_command;

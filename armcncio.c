@@ -293,6 +293,9 @@ static void write_port(void *arg, long period)
 
 int rtapi_app_main(void)
 {
+
+    rtapi_print_msg(RTAPI_MSG_ERR, "[armcnc]: %s \n", ARMCNCIO_PLATFORM);
+
     if (wiringPiSetup() == -1){
         rtapi_print_msg(RTAPI_MSG_ERR, "[error]: wiringPiSetup() failed \n");
         return -1;
