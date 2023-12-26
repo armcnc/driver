@@ -207,43 +207,26 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
             EXPORT_PIN(ch, HAL_IN, bit, enable, "enable", 0);
 
             EXPORT_PIN(ch, HAL_IO, float, frequency_command, "frequency-command", 0.0);
-            EXPORT_PIN(ch, HAL_IO, float, frequency_min, "frequency-min", 50.0);
-            EXPORT_PIN(ch, HAL_IO, float, frequency_max, "frequency-max", 500000.0);
-            EXPORT_PIN(ch, HAL_OUT, float, frequency_feedback, "frequency-feedback", 0.0);
 
             EXPORT_PIN(ch, HAL_IN, float, duty_cycle_command, "duty-cycle-command", 0.0);
             EXPORT_PIN(ch, HAL_IO, float, duty_cycle_scale, "duty-cycle-scale", 1.0);
-            EXPORT_PIN(ch, HAL_IO, u32, duty_cycle_max_time, "duty-cycle-max-time", 0);
-            EXPORT_PIN(ch, HAL_IO, float, duty_cycle_min, "duty-cycle-min", -1.0);
-            EXPORT_PIN(ch, HAL_IO, float, duty_cycle_max, "duty-cycle-max", 1.0);
-            EXPORT_PIN(ch, HAL_IO, float, duty_cycle_offset, "duty-cycle-offset", 0.0);
-            EXPORT_PIN(ch, HAL_OUT, float, duty_cycle_feedback, "duty-cycle-feedback", 0.0);
-
-            EXPORT_PIN(ch, HAL_IO, float, position_scale, "position-scale", 1.0);
-            EXPORT_PIN(ch, HAL_IN, float, position_command, "position-command", 0.0);
-            EXPORT_PIN(ch, HAL_OUT, float, position_feedback, "position-feedback", 0.0);
-            EXPORT_PIN(ch, HAL_OUT, s32, position_count, "position-count", 0);
-
-            EXPORT_PIN(ch, HAL_IN, bit, pwm_pin, "pwm-pin", UINT32_MAX);
-            EXPORT_PIN(ch, HAL_IN, bit, pwm_pin_not, "pwm-pin-not", 0);
-
-            EXPORT_PIN(ch, HAL_IN, bit, step_direction_pin, "step-direction-pin", UINT32_MAX);
+            
+            EXPORT_PIN(ch, HAL_IN, u32, step_port, "step-port", UINT32_MAX);
+            EXPORT_PIN(ch, HAL_IN, bit, step_port_pin, "step-port-pin", 0);
+            EXPORT_PIN(ch, HAL_IN, bit, step_port_pin_not, "step-port-pin-not", 0);
+            EXPORT_PIN(ch, HAL_IN, u32, step_direction_port, "step-direction-port", UINT32_MAX);
+            EXPORT_PIN(ch, HAL_IN, bit, step_direction_pin, "step-direction-pin", 0);
             EXPORT_PIN(ch, HAL_IN, bit, step_direction_pin_not, "step-direction-pin-not", 0);
-            EXPORT_PIN(ch, HAL_IO, u32, step_direction_hold_time, "step-direction-hold-time", 50000);
-            EXPORT_PIN(ch, HAL_IO, u32, step_direction_setup_time, "step-direction-setup-time", 50000);
 
+            EXPORT_PIN(ch, HAL_IN, bit, spindle_pin, "spindle-pin", UINT32_MAX);
+            EXPORT_PIN(ch, HAL_IN, bit, spindle_pin_not, "spindle-pin-not", 0);
             EXPORT_PIN(ch, HAL_IN, u32, spindle_forward_pin, "spindle-forward-pin", UINT32_MAX);
             EXPORT_PIN(ch, HAL_IN, bit, spindle_forward_pin_not, "spindle-forward-pin-not", 0);
-
             EXPORT_PIN(ch, HAL_IN, u32, spindle_reverse_pin, "spindle-reverse-pin", UINT32_MAX);
             EXPORT_PIN(ch, HAL_IN, bit, spindle_reverse_pin_not, "spindle-reverse-pin-not", 0);
 
             pwm_hal_prev[ch].ctrl_type = pwm_hal_array[ch];
             pwm_hal_prev[ch].is_init = 0;
-            pwm_hal_prev[ch].duty_cycle_s32 = 0;
-            pwm_hal_prev[ch].freq_mHz = 0;
-            pwm_hal_prev[ch].freq_min_mHz = 50000;
-            pwm_hal_prev[ch].freq_max_mHz = 500000000;
         }
 
         if (retval < 0) {
@@ -298,7 +281,7 @@ static void gpio_read(void *arg, long period)
         int is_pwm_ch = 0;
         for (int ch = 0; ch < pwm_hal_count; ch++)
         {
-            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].step_direction_pin) == pin || (int)(*pwm_hal[ch].spindle_forward_pin) == pin || (int)(*pwm_hal[ch].spindle_reverse_pin) == pin)
+            if((int)(*pwm_hal[ch].step_port) == pin || (int)(*pwm_hal[ch].step_direction_port) == pin || (int)(*pwm_hal[ch].spindle_pin) == pin || (int)(*pwm_hal[ch].spindle_forward_pin) == pin || (int)(*pwm_hal[ch].spindle_reverse_pin) == pin)
             {
                 is_pwm_ch = 1;
             }
@@ -339,7 +322,7 @@ static void gpio_write(void *arg, long period)
         int is_pwm_ch = 0;
         for (int ch = 0; ch < pwm_hal_count; ch++)
         {
-            if((int)(*pwm_hal[ch].pwm_pin) == pin || (int)(*pwm_hal[ch].step_direction_pin) == pin || (int)(*pwm_hal[ch].spindle_forward_pin) == pin || (int)(*pwm_hal[ch].spindle_reverse_pin) == pin)
+            if((int)(*pwm_hal[ch].step_port) == pin || (int)(*pwm_hal[ch].step_direction_port) == pin || (int)(*pwm_hal[ch].spindle_pin) == pin || (int)(*pwm_hal[ch].spindle_forward_pin) == pin || (int)(*pwm_hal[ch].spindle_reverse_pin) == pin)
             {
                 is_pwm_ch = 1;
             }
