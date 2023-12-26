@@ -175,7 +175,9 @@ static int step_control(int ch)
     }
 
     *step_hal[ch].step_direction_pin = 1;
+    digitalWrite((int)(*step_hal[ch].step_direction_port), 1);
     *step_hal[ch].step_pin = 1;
+    digitalWrite((int)(*step_hal[ch].step_port), 1);
 
     // if (gpio_out_mask[(int)(*step_hal[ch].step_direction_port)] & gpio_mask[(int)(*step_hal[ch].step_direction_port)])
     // {
