@@ -49,10 +49,10 @@ typedef struct
     hal_s32_t   *position_count;
     hal_float_t *position_current;
 
-    hal_u32_t   *pwm_pin;
+    hal_bit_t   *pwm_pin;
     hal_bit_t   *pwm_pin_not;
 
-    hal_u32_t   *step_direction_pin;
+    hal_bit_t   *step_direction_pin;
     hal_bit_t   *step_direction_pin_not;
     hal_u32_t   *step_direction_hold_time;
     hal_u32_t   *step_direction_setup_time;

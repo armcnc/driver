@@ -224,10 +224,10 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
             EXPORT_PIN(ch, HAL_OUT, float, position_feedback, "position-feedback", 0.0);
             EXPORT_PIN(ch, HAL_OUT, s32, position_count, "position-count", 0);
 
-            EXPORT_PIN(ch, HAL_IN, u32, pwm_pin, "pwm-pin", UINT32_MAX);
+            EXPORT_PIN(ch, HAL_IN, bit, pwm_pin, "pwm-pin", UINT32_MAX);
             EXPORT_PIN(ch, HAL_IN, bit, pwm_pin_not, "pwm-pin-not", 0);
 
-            EXPORT_PIN(ch, HAL_IN, u32, step_direction_pin, "step-direction-pin", UINT32_MAX);
+            EXPORT_PIN(ch, HAL_IN, bit, step_direction_pin, "step-direction-pin", UINT32_MAX);
             EXPORT_PIN(ch, HAL_IN, bit, step_direction_pin_not, "step-direction-pin-not", 0);
             EXPORT_PIN(ch, HAL_IO, u32, step_direction_hold_time, "step-direction-hold-time", 50000);
             EXPORT_PIN(ch, HAL_IO, u32, step_direction_setup_time, "step-direction-setup-time", 50000);
