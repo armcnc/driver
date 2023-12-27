@@ -211,8 +211,15 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         return -1;
     }
 
-    rtapi_snprintf(name, sizeof(name), "%s.motion", component_name);
-    retval = hal_export_funct(name, motion_port, 0, 1, 0, component_id);
+    rtapi_snprintf(name, sizeof(name), "%s.step-write", component_name);
+    retval = hal_export_funct(name, step_port, 0, 1, 0, component_id);
+    if (retval < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() motion_port failed \n");
+        return -1;
+    }
+
+    rtapi_snprintf(name, sizeof(name), "%s.spindle-write", component_name);
+    retval = hal_export_funct(name, spindle_port, 0, 1, 0, component_id);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() motion_port failed \n");
         return -1;
@@ -296,7 +303,7 @@ static void write_port(void *arg, long period)
     }
 }
 
-static void motion_port(void *arg, long period)
+static void step_port(void *arg, long period)
 {
     if (!in_pins_count || !out_pins_count || !spindle_hal_count || !step_hal_count) return;
 
@@ -308,15 +315,20 @@ static void motion_port(void *arg, long period)
             continue;
         }
     }
+}
 
-    // for (int spindle_pin = 0; spindle_pin < GPIO_SPINDLE_MAX_COUNT; spindle_pin++)
-    // {
-    //     int spindle_init = spindle_control(spindle_pin);
-    //     if (spindle_init)
-    //     {
-    //         continue;
-    //     }
-    // }
+static void spindle_port(void *arg, long period)
+{
+    if (!in_pins_count || !out_pins_count || !spindle_hal_count || !step_hal_count) return;
+
+    for (int spindle_pin = 0; spindle_pin < GPIO_SPINDLE_MAX_COUNT; spindle_pin++)
+    {
+        int spindle_init = spindle_control(spindle_pin);
+        if (spindle_init)
+        {
+            continue;
+        }
+    }
 }
 
 int rtapi_app_main(void)
