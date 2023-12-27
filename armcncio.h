@@ -26,7 +26,7 @@
 
 #define GPIO_BCM_MAX_COUNT 28
 #define GPIO_STEP_MAX_COUNT 5
-#define GPIO_SPINDLE_MAX_COUNT 5
+#define GPIO_SPINDLE_MAX_COUNT 1
 #define RTAPI_BIT(nr)(1UL << (nr))
 
 #if defined(__arm__) || defined(__aarch64__)
