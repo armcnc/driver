@@ -187,6 +187,7 @@ static int spindle_control(int ch)
 {
     if (!spindle_hal_prev[ch].is_init)
     {
+        spindle_update_data(ch);
         softPwmCreate((int)(*spindle_hal[ch].spindle_pin), 0, 100);
         softPwmWrite((int)(*spindle_hal[ch].spindle_pin), 0);
         digitalWrite((int)(*spindle_hal[ch].spindle_forward_pin), *spindle_hal[ch].spindle_forward_pin_not ? HIGH : LOW);
@@ -194,8 +195,6 @@ static int spindle_control(int ch)
         spindle_hal_prev[ch].is_init = 1;
         return 1;
     }
-
-    spindle_update_data(ch);
 
     if (!(*spindle_hal[ch].spindle_enable))
     {
