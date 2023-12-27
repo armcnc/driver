@@ -119,6 +119,8 @@ static int step_hal_count = 0;
 
 static void write_port(void *arg, long period);
 static void read_port(void *arg, long period);
+static void step_port(void *arg, long period);
+static void spindle_port(void *arg, long period);
 
 static int spindle_update_data(int ch)
 {

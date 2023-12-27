@@ -243,8 +243,6 @@ static void write_port(void *arg, long period)
 
     if (!in_pins_count || !out_pins_count || !spindle_hal_count || !step_hal_count) return;
 
-    // spindle_control(0);
-
     for (int pin = 0; pin < GPIO_BCM_MAX_COUNT; pin++)
     {
         if (!gpio_in_mask[pin] && !gpio_out_mask[pin]) continue;
@@ -255,21 +253,6 @@ static void write_port(void *arg, long period)
         if (!(gpio_in_mask[pin] & gpio_mask[pin]) && !(gpio_out_mask[pin] & gpio_mask[pin])) continue;
 
         if (!(gpio_out_mask[pin] & gpio_mask[pin])) continue;
-
-        // int is_step = 0;
-        // for (int step_pin = 0; step_pin < GPIO_STEP_MAX_COUNT; step_pin++)
-        // {
-        //     if ((int)(*step_hal[step_pin].step_port) == pin || (int)(*step_hal[step_pin].step_direction_port) == pin)
-        //     {
-        //         step_control(step_pin);
-        //         is_step++;
-        //     }
-        // }
-
-        // if (is_step > 0)
-        // {
-        //     continue;
-        // }
 
         if (*gpio_hal[pin] != gpio_hal_prev[pin])
         {
@@ -303,6 +286,34 @@ static void write_port(void *arg, long period)
 
         if (mask_0) digitalWrite(pin, LOW);
         if (mask_1) digitalWrite(pin, HIGH);
+    }
+}
+
+static void step_port(void *arg, long period)
+{
+    if (!in_pins_count || !out_pins_count || !spindle_hal_count || !step_hal_count) return;
+
+    for (int step_pin = 0; step_pin < GPIO_STEP_MAX_COUNT; step_pin++)
+    {
+        int step_init = step_control(step_pin);
+        if (step_init)
+        {
+            continue;
+        }
+    }
+}
+
+static void spindle_port(void *arg, long period)
+{
+    if (!in_pins_count || !out_pins_count || !spindle_hal_count || !step_hal_count) return;
+
+    for (int spindle_pin = 0; spindle_pin < GPIO_SPINDLE_MAX_COUNT; spindle_pin++)
+    {
+        int spindle_init = spindle_control(spindle_pin);
+        if (spindle_init)
+        {
+            continue;
+        }
     }
 }
 
