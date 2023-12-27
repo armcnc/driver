@@ -309,14 +309,14 @@ static void motion_port(void *arg, long period)
         }
     }
 
-    for (int spindle_pin = 0; spindle_pin < GPIO_SPINDLE_MAX_COUNT; spindle_pin++)
-    {
-        int spindle_init = spindle_control(spindle_pin);
-        if (spindle_init)
-        {
-            continue;
-        }
-    }
+    // for (int spindle_pin = 0; spindle_pin < GPIO_SPINDLE_MAX_COUNT; spindle_pin++)
+    // {
+    //     int spindle_init = spindle_control(spindle_pin);
+    //     if (spindle_init)
+    //     {
+    //         continue;
+    //     }
+    // }
 }
 
 int rtapi_app_main(void)
