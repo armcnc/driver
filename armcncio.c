@@ -323,6 +323,8 @@ static void spindle_port(void *arg, long period)
 
     for (int spindle_pin = 0; spindle_pin < GPIO_SPINDLE_MAX_COUNT; spindle_pin++)
     {
+        if (spindle_pin > 0) continue;
+
         int spindle_init = spindle_control(spindle_pin);
         if (spindle_init)
         {
