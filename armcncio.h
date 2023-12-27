@@ -194,7 +194,7 @@ static int spindle_control(int ch)
 
         int pwm_cycle = (target_rpm * 100) / max_rpm;
 
-        softPwmWrite((int)(*pwm_hal[ch].spindle_pin), pwm_cycle);
+        // softPwmWrite((int)(*pwm_hal[ch].spindle_pin), pwm_cycle);
     }
 
     return 0;
