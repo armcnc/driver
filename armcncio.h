@@ -185,11 +185,11 @@ static int spindle_control(int ch)
         if (target_rpm < 0)
         {
             target_rpm = -target_rpm;
-            digitalWrite((int)(*pwm_hal[ch].spindle_forward_pin), *pwm_hal[ch].spindle_forward_pin_not ? HIGH : LOW);
-            digitalWrite((int)(*pwm_hal[ch].spindle_reverse_pin), *pwm_hal[ch].spindle_reverse_pin_not ? LOW : HIGH);
+            //digitalWrite((int)(*pwm_hal[ch].spindle_forward_pin), *pwm_hal[ch].spindle_forward_pin_not ? HIGH : LOW);
+            //digitalWrite((int)(*pwm_hal[ch].spindle_reverse_pin), *pwm_hal[ch].spindle_reverse_pin_not ? LOW : HIGH);
         } else {
-            digitalWrite((int)(*pwm_hal[ch].spindle_forward_pin), *pwm_hal[ch].spindle_forward_pin_not ? LOW : HIGH);
-            digitalWrite((int)(*pwm_hal[ch].spindle_reverse_pin), *pwm_hal[ch].spindle_reverse_pin_not ? HIGH : LOW);
+            //digitalWrite((int)(*pwm_hal[ch].spindle_forward_pin), *pwm_hal[ch].spindle_forward_pin_not ? LOW : HIGH);
+            //digitalWrite((int)(*pwm_hal[ch].spindle_reverse_pin), *pwm_hal[ch].spindle_reverse_pin_not ? HIGH : LOW);
         }
 
         int pwm_cycle = (target_rpm * 100) / max_rpm;
