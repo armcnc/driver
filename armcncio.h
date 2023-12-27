@@ -176,7 +176,7 @@ static int spindle_control(int ch)
         return 1;
     }
 
-    if (!(*pwm_hal[ch].spindle_enable))
+    if (!(*pwm_hal[ch].enable))
     {
         softPwmWrite((int)(*pwm_hal[ch].spindle_pin), 0);
         digitalWrite((int)(*pwm_hal[ch].spindle_forward_pin), *pwm_hal[ch].spindle_forward_pin_not ? HIGH : LOW);
