@@ -212,14 +212,14 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
     }
 
     rtapi_snprintf(name, sizeof(name), "%s.step-write", component_name);
-    retval = hal_export_funct(name, step_port, 0, 1, 0, component_id);
+    retval = hal_export_funct(name, step_port, 0, 0, 0, component_id);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() motion_port failed \n");
         return -1;
     }
 
     rtapi_snprintf(name, sizeof(name), "%s.spindle-write", component_name);
-    retval = hal_export_funct(name, spindle_port, 0, 1, 0, component_id);
+    retval = hal_export_funct(name, spindle_port, 0, 0, 0, component_id);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() motion_port failed \n");
         return -1;
