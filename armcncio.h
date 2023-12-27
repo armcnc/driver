@@ -178,36 +178,6 @@ static int step_control(int ch)
     digitalWrite((int)(*step_hal[ch].step_direction_port), *step_hal[ch].step_direction_pin ? HIGH : LOW);
     digitalWrite((int)(*step_hal[ch].step_port), *step_hal[ch].step_pin ? HIGH : LOW);
     
-    // if (gpio_out_mask[(int)(*step_hal[ch].step_direction_port)] & gpio_mask[(int)(*step_hal[ch].step_direction_port)])
-    // {
-    //     if (gpio_mask[(int)(*step_hal[ch].step_direction_port)])
-    //     {
-    //         *step_hal[ch].step_direction_pin = *step_hal[ch].step_direction_pin_not ? LOW : HIGH;
-    //         step_hal_prev[ch].step_direction_pin = *step_hal[ch].step_direction_pin;
-    //         digitalWrite((int)(*step_hal[ch].step_direction_port), *step_hal[ch].step_direction_pin);
-    //     } else {
-    //         *step_hal[ch].step_direction_pin = *step_hal[ch].step_direction_pin_not ? HIGH : LOW;
-    //         step_hal_prev[ch].step_direction_pin = *step_hal[ch].step_direction_pin;
-    //         digitalWrite((int)(*step_hal[ch].step_direction_port), *step_hal[ch].step_direction_pin);
-    //     }
-    // }
-
-    // if (gpio_out_mask[(int)(*step_hal[ch].step_port)] & gpio_mask[(int)(*step_hal[ch].step_port)])
-    // {
-    //     if (gpio_mask[(int)(*step_hal[ch].step_port)])
-    //     {
-    //         *step_hal[ch].step_pin = *step_hal[ch].step_pin_not ? LOW : HIGH;
-    //         step_hal_prev[ch].step_pin = *step_hal[ch].step_pin;
-    //         digitalWrite((int)(*step_hal[ch].step_port), *step_hal[ch].step_pin);
-    //     } else {
-    //         *step_hal[ch].step_pin = *step_hal[ch].step_pin_not ? HIGH : LOW;
-    //         step_hal_prev[ch].step_pin = *step_hal[ch].step_direction_pin;
-    //         digitalWrite((int)(*step_hal[ch].step_port), *step_hal[ch].step_pin);
-    //     }
-    // }
-
-    // step_update_data(ch);
-
     return 0;
 }
 
