@@ -167,14 +167,12 @@ static int spindle_control(int ch)
 {
     if (!pwm_hal_prev[ch].is_init)
     {
-        pwm_update_data(ch);
         softPwmCreate((int)(*pwm_hal[ch].spindle_pin), 0, 100);
-        softPwmWrite((int)(*pwm_hal[ch].spindle_pin), 0);
-        digitalWrite((int)(*pwm_hal[ch].spindle_forward_pin), *pwm_hal[ch].spindle_forward_pin_not ? HIGH : LOW);
-        digitalWrite((int)(*pwm_hal[ch].spindle_reverse_pin), *pwm_hal[ch].spindle_reverse_pin_not ? HIGH : LOW);
         pwm_hal_prev[ch].is_init = 1;
         return 1;
     }
+
+    pwm_update_data(ch);
 
     if (!(*pwm_hal[ch].enable))
     {

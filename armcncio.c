@@ -300,11 +300,11 @@ static void pwm_write(void *arg, long period)
                 continue;
             }
         } else {
-            // int spindle_init = spindle_control(ch);
-            // if (spindle_init)
-            // {
-            //     continue;
-            // }
+            int spindle_init = spindle_control(ch);
+            if (spindle_init)
+            {
+                continue;
+            }
         }
     }
 }
