@@ -211,6 +211,20 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         return -1;
     }
 
+    rtapi_snprintf(name, sizeof(name), "%s.spindles", component_name);
+    retval = hal_export_funct(name, spindle_port, 0, 0, 0, component_id);
+    if (retval < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() spindle_port failed \n");
+        return -1;
+    }
+
+    rtapi_snprintf(name, sizeof(name), "%s.steps", component_name);
+    retval = hal_export_funct(name, step_port, 0, 0, 0, component_id);
+    if (retval < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() gpio_read failed \n");
+        return -1;
+    }
+
     return 0;
 }
 
