@@ -122,80 +122,53 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         gpio_hal_not_prev[out_pins_array[out_pins_i]] = *gpio_hal_not[out_pins_array[out_pins_i]];
     }
 
-    spindle_hal = hal_malloc(GPIO_SPINDLE_MAX_COUNT * sizeof(spindle_hal_struct));
-    if (!spindle_hal) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() spindle_hal failed \n");
+    pwm_hal = hal_malloc(GPIO_PWM_MAX_COUNT * sizeof(pwm_hal_struct));
+    if (!pwm_hal) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_hal failed \n");
         return -1;
     }
 
     retval = 0;
-    #define SPINDLE_EXPORT_PIN(CH,IO_TYPE,VAR_TYPE,VAL,NAME,DEFAULT) \
-        retval += hal_pin_##VAR_TYPE##_newf(IO_TYPE, &(spindle_hal[CH].VAL), component_id,\
-        "%s.spindle.%d." NAME, component_name, CH);\
-        *spindle_hal[CH].VAL = DEFAULT;\
-        spindle_hal_prev[CH].VAL = DEFAULT;
+    #define PWM_EXPORT_PIN(CH,IO_TYPE,VAR_TYPE,VAL,NAME,DEFAULT) \
+        retval += hal_pin_##VAR_TYPE##_newf(IO_TYPE, &(pwm_hal[CH].VAL), component_id,\
+        "%s.pwm.%d." NAME, component_name, CH);\
+        *pwm_hal[CH].VAL = DEFAULT;\
+        pwm_hal_prev[CH].VAL = DEFAULT;
     
-    for (int ch = 0; ch < GPIO_SPINDLE_MAX_COUNT; ch++)
+    for (int ch = 0; ch < GPIO_PWM_MAX_COUNT; ch++)
     {
-        SPINDLE_EXPORT_PIN(ch, HAL_IO, float, frequency_command, "frequency-command", 0.0);
+        PWM_EXPORT_PIN(ch, HAL_IN, bit, enable, "enable", 0);
 
-        SPINDLE_EXPORT_PIN(ch, HAL_IN, float, duty_cycle_command, "duty-cycle-command", 0.0);
-        SPINDLE_EXPORT_PIN(ch, HAL_IO, float, duty_cycle_scale, "duty-cycle-scale", 1.0);
+        PWM_EXPORT_PIN(ch, HAL_IO, float, frequency_command, "frequency-command", 0.0);
 
-        SPINDLE_EXPORT_PIN(ch, HAL_IN, bit, spindle_enable, "spindle-enable", 0);
-        SPINDLE_EXPORT_PIN(ch, HAL_IN, u32, spindle_pin, "spindle-pin", UINT32_MAX);
-        SPINDLE_EXPORT_PIN(ch, HAL_IN, bit, spindle_pin_not, "spindle-pin-not", 0);
-        SPINDLE_EXPORT_PIN(ch, HAL_IN, u32, spindle_forward_pin, "spindle-forward-pin", UINT32_MAX);
-        SPINDLE_EXPORT_PIN(ch, HAL_IN, bit, spindle_forward_pin_not, "spindle-forward-pin-not", 0);
-        SPINDLE_EXPORT_PIN(ch, HAL_IN, u32, spindle_reverse_pin, "spindle-reverse-pin", UINT32_MAX);
-        SPINDLE_EXPORT_PIN(ch, HAL_IN, bit, spindle_reverse_pin_not, "spindle-reverse-pin-not", 0);
+        PWM_EXPORT_PIN(ch, HAL_IN, float, duty_cycle_command, "duty-cycle-command", 0.0);
+        PWM_EXPORT_PIN(ch, HAL_IO, float, duty_cycle_scale, "duty-cycle-scale", 1.0);
 
-        spindle_hal_prev[ch].is_init = 0;
+        PWM_EXPORT_PIN(ch, HAL_IN, u32, step_port, "step-port", UINT32_MAX);
+        PWM_EXPORT_PIN(ch, HAL_IN, bit, step_pin, "step-pin", 0);
+        PWM_EXPORT_PIN(ch, HAL_IN, bit, step_pin_not, "step-pin-not", 0);
+        PWM_EXPORT_PIN(ch, HAL_IN, u32, step_direction_port, "step-direction-port", UINT32_MAX);
+        PWM_EXPORT_PIN(ch, HAL_IN, bit, step_direction_pin, "step-direction-pin", 0);
+        PWM_EXPORT_PIN(ch, HAL_IN, bit, step_direction_pin_not, "step-direction-pin-not", 0);
 
-        spindle_hal_count++;
+        PWM_EXPORT_PIN(ch, HAL_IN, u32, spindle_pin, "spindle-pin", UINT32_MAX);
+        PWM_EXPORT_PIN(ch, HAL_IN, bit, spindle_pin_not, "spindle-pin-not", 0);
+        PWM_EXPORT_PIN(ch, HAL_IN, u32, spindle_forward_pin, "spindle-forward-pin", UINT32_MAX);
+        PWM_EXPORT_PIN(ch, HAL_IN, bit, spindle_forward_pin_not, "spindle-forward-pin-not", 0);
+        PWM_EXPORT_PIN(ch, HAL_IN, u32, spindle_reverse_pin, "spindle-reverse-pin", UINT32_MAX);
+        PWM_EXPORT_PIN(ch, HAL_IN, bit, spindle_reverse_pin_not, "spindle-reverse-pin-not", 0);
+
+        pwm_hal_prev[ch].is_init = 0;
+
+        pwm_hal_count++;
     }
 
     if (retval < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() SPINDLE_EXPORT_PIN failed \n");
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() PWM_EXPORT_PIN failed \n");
         return -1;
     }
 
-    #undef SPINDLE_EXPORT_PIN
-
-    step_hal = hal_malloc(GPIO_STEP_MAX_COUNT * sizeof(step_hal_struct));
-    if (!step_hal) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() step_hal failed \n");
-        return -1;
-    }
-
-    retval = 0;
-    #define STEP_EXPORT_PIN(CH,IO_TYPE,VAR_TYPE,VAL,NAME,DEFAULT) \
-        retval += hal_pin_##VAR_TYPE##_newf(IO_TYPE, &(step_hal[CH].VAL), component_id,\
-        "%s.step.%d." NAME, component_name, CH);\
-        *step_hal[CH].VAL = DEFAULT;\
-        step_hal_prev[CH].VAL = DEFAULT;
-    
-    for (int ch = 0; ch < GPIO_STEP_MAX_COUNT; ch++)
-    {
-        STEP_EXPORT_PIN(ch, HAL_IN, bit, step_enable, "step-enable", 0);
-        STEP_EXPORT_PIN(ch, HAL_IN, u32, step_port, "step-port", UINT32_MAX);
-        STEP_EXPORT_PIN(ch, HAL_IN, bit, step_pin, "step-pin", 0);
-        STEP_EXPORT_PIN(ch, HAL_IN, bit, step_pin_not, "step-pin-not", 0);
-        STEP_EXPORT_PIN(ch, HAL_IN, u32, step_direction_port, "step-direction-port", UINT32_MAX);
-        STEP_EXPORT_PIN(ch, HAL_IN, bit, step_direction_pin, "step-direction-pin", 0);
-        STEP_EXPORT_PIN(ch, HAL_IN, bit, step_direction_pin_not, "step-direction-pin-not", 0);
-
-        step_hal_prev[ch].is_init = 0;
-
-        step_hal_count++;
-    }
-
-    if (retval < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() STEP_EXPORT_PIN failed \n");
-        return -1;
-    }
-
-    #undef STEP_EXPORT_PIN
+    #undef PWM_EXPORT_PIN
 
     rtapi_snprintf(name, sizeof(name), "%s.write", component_name);
     retval = hal_export_funct(name, write_port, 0, 0, 0, component_id);
@@ -211,17 +184,17 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
         return -1;
     }
 
-    rtapi_snprintf(name, sizeof(name), "%s.step-write", component_name);
-    retval = hal_export_funct(name, step_port, 0, 1, 0, component_id);
+    rtapi_snprintf(name, sizeof(name), "%s.pwm-read", component_name);
+    retval = hal_export_funct(name, pwm_read, 0, 1, 0, component_id);
     if (retval < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() motion_port failed \n");
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_read failed \n");
         return -1;
     }
 
-    rtapi_snprintf(name, sizeof(name), "%s.spindle-write", component_name);
-    retval = hal_export_funct(name, spindle_port, 0, 1, 0, component_id);
+    rtapi_snprintf(name, sizeof(name), "%s.pwm-write", component_name);
+    retval = hal_export_funct(name, pwm_write, 0, 1, 0, component_id);
     if (retval < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() motion_port failed \n");
+        rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_write failed \n");
         return -1;
     }
 
@@ -230,7 +203,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
 
 static void read_port(void *arg, long period)
 {
-    if (!in_pins_count || !out_pins_count || !spindle_hal_count || !step_hal_count) return;
+    if (!in_pins_count || !out_pins_count || !pwm_hal_count) return;
 
     for (int pin = 0; pin < GPIO_BCM_MAX_COUNT; pin++)
     {
@@ -255,7 +228,7 @@ static void write_port(void *arg, long period)
 {
     static uint32_t mask_0, mask_1;
 
-    if (!in_pins_count || !out_pins_count || !spindle_hal_count || !step_hal_count) return;
+    if (!in_pins_count || !out_pins_count || !pwm_hal_count) return;
 
     for (int pin = 0; pin < GPIO_BCM_MAX_COUNT; pin++)
     {
@@ -303,30 +276,35 @@ static void write_port(void *arg, long period)
     }
 }
 
-static void step_port(void *arg, long period)
+static void pwm_read(void *arg, long period)
 {
-    if (!in_pins_count || !out_pins_count || !spindle_hal_count || !step_hal_count) return;
+    if (!in_pins_count || !out_pins_count || !pwm_hal_count) return;
 
-    for (int step_pin = 0; step_pin < GPIO_STEP_MAX_COUNT; step_pin++)
+    for (int ch = 0; ch < GPIO_PWM_MAX_COUNT; ch++)
     {
-        int step_init = step_control(step_pin);
-        if (step_init)
-        {
-            continue;
-        }
+        continue;
     }
 }
 
-static void spindle_port(void *arg, long period)
+static void pwm_write(void *arg, long period)
 {
-    if (!in_pins_count || !out_pins_count || !spindle_hal_count || !step_hal_count) return;
+    if (!in_pins_count || !out_pins_count || !pwm_hal_count) return;
 
-    for (int spindle_pin = 0; spindle_pin < GPIO_SPINDLE_MAX_COUNT; spindle_pin++)
+    for (int ch = 0; ch < GPIO_PWM_MAX_COUNT; ch++)
     {
-        int spindle_init = spindle_control(spindle_pin);
-        if (spindle_init)
+        if (ch == 0 || ch == 1 || ch == 2 || ch == 3 || ch == 4)
         {
-            continue;
+            int setp_init = step_control(ch);
+            if (setp_init)
+            {
+                continue;
+            }
+        } else {
+            int spindle_init = spindle_control(ch);
+            if (spindle_init)
+            {
+                continue;
+            }
         }
     }
 }
