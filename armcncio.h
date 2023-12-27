@@ -176,9 +176,9 @@ static int spindle_control(int ch)
 
     if (!(*pwm_hal[ch].enable))
     {
-        softPwmWrite((int)(*pwm_hal[ch].spindle_pin), 0);
-        digitalWrite((int)(*pwm_hal[ch].spindle_forward_pin), *pwm_hal[ch].spindle_forward_pin_not ? HIGH : LOW);
-        digitalWrite((int)(*pwm_hal[ch].spindle_reverse_pin), *pwm_hal[ch].spindle_reverse_pin_not ? HIGH : LOW);
+        //softPwmWrite((int)(*pwm_hal[ch].spindle_pin), 0);
+        //digitalWrite((int)(*pwm_hal[ch].spindle_forward_pin), *pwm_hal[ch].spindle_forward_pin_not ? HIGH : LOW);
+        //digitalWrite((int)(*pwm_hal[ch].spindle_reverse_pin), *pwm_hal[ch].spindle_reverse_pin_not ? HIGH : LOW);
     } else {
         int max_rpm = (int)(*pwm_hal[ch].duty_cycle_scale);
         int target_rpm = (int)(*pwm_hal[ch].duty_cycle_command);
