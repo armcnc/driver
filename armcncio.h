@@ -200,9 +200,9 @@ static int spindle_control(int ch)
     if (!(*spindle_hal[ch].spindle_enable))
     {
         softPwmWrite((int)(*spindle_hal[ch].spindle_pin), 0);
-        pullUpDnControl((int)(*spindle_hal[ch].spindle_forward_pin), PUD_OFF);
+        //pullUpDnControl((int)(*spindle_hal[ch].spindle_forward_pin), PUD_OFF);
         digitalWrite((int)(*spindle_hal[ch].spindle_forward_pin), *spindle_hal[ch].spindle_forward_pin_not ? HIGH : LOW);
-        pullUpDnControl((int)(*spindle_hal[ch].spindle_reverse_pin), PUD_OFF);
+        //pullUpDnControl((int)(*spindle_hal[ch].spindle_reverse_pin), PUD_OFF);
         digitalWrite((int)(*spindle_hal[ch].spindle_reverse_pin), *spindle_hal[ch].spindle_reverse_pin_not ? HIGH : LOW);
     } else {
         int max_rpm = (int)(*spindle_hal[ch].duty_cycle_scale);
@@ -211,14 +211,14 @@ static int spindle_control(int ch)
         if (target_rpm < 0)
         {
             target_rpm = -target_rpm;
-            pullUpDnControl((int)(*spindle_hal[ch].spindle_forward_pin), PUD_OFF);
+            //pullUpDnControl((int)(*spindle_hal[ch].spindle_forward_pin), PUD_OFF);
             digitalWrite((int)(*spindle_hal[ch].spindle_forward_pin), *spindle_hal[ch].spindle_forward_pin_not ? HIGH : LOW);
-            pullUpDnControl((int)(*spindle_hal[ch].spindle_reverse_pin), PUD_OFF);
+            //pullUpDnControl((int)(*spindle_hal[ch].spindle_reverse_pin), PUD_OFF);
             digitalWrite((int)(*spindle_hal[ch].spindle_reverse_pin), *spindle_hal[ch].spindle_reverse_pin_not ? LOW : HIGH);
         } else {
-            pullUpDnControl((int)(*spindle_hal[ch].spindle_forward_pin), PUD_OFF);
+            //pullUpDnControl((int)(*spindle_hal[ch].spindle_forward_pin), PUD_OFF);
             digitalWrite((int)(*spindle_hal[ch].spindle_forward_pin), *spindle_hal[ch].spindle_forward_pin_not ? LOW : HIGH);
-            pullUpDnControl((int)(*spindle_hal[ch].spindle_reverse_pin), PUD_OFF);
+            //pullUpDnControl((int)(*spindle_hal[ch].spindle_reverse_pin), PUD_OFF);
             digitalWrite((int)(*spindle_hal[ch].spindle_reverse_pin), *spindle_hal[ch].spindle_reverse_pin_not ? HIGH : LOW);
         }
 
