@@ -307,14 +307,14 @@ static void step_port(void *arg, long period)
 {
     if (!in_pins_count || !out_pins_count || !spindle_hal_count || !step_hal_count) return;
 
-    // for (int step_pin = 0; step_pin < GPIO_STEP_MAX_COUNT; step_pin++)
-    // {
-    //     int step_init = step_control(step_pin);
-    //     if (step_init)
-    //     {
-    //         continue;
-    //     }
-    // }
+    for (int step_pin = 0; step_pin < GPIO_STEP_MAX_COUNT; step_pin++)
+    {
+        int step_init = step_control(step_pin);
+        if (step_init)
+        {
+            continue;
+        }
+    }
 }
 
 static void spindle_port(void *arg, long period)
