@@ -153,6 +153,7 @@ static int step_control(int ch)
     if (!pwm_hal_prev[ch].is_init)
     {
         pwm_hal_prev[ch].is_init = 1;
+        digitalWrite((int)(*pwm_hal[ch].step_port), LOW);
         return 1;
     }
 
