@@ -217,6 +217,16 @@ static void read_port(void *arg, long period)
 
         if (!(gpio_in_mask[pin] & gpio_mask[pin])) continue;
 
+        int is_pwm = 0;
+        for (int ch = 0; ch < GPIO_PWM_MAX_COUNT; ch++)
+        {
+            if (*pwm_hal[ch].spindle_pin == pin || *pwm_hal[ch].spindle_forward_pin == pin || *pwm_hal[ch].spindle_reverse_pin == pin || *pwm_hal[ch].step_port == pin || *pwm_hal[ch].step_direction_port == pin)
+            {
+                is_pwm = 1;
+            }
+        }
+        if (is_pwm) continue;
+
         uint32_t pin_state = digitalRead(pin) == HIGH ? gpio_mask[pin] : 0;
 
         if (pin_state & gpio_mask[pin])
@@ -246,6 +256,16 @@ static void write_port(void *arg, long period)
         if (!(gpio_in_mask[pin] & gpio_mask[pin]) && !(gpio_out_mask[pin] & gpio_mask[pin])) continue;
 
         if (!(gpio_out_mask[pin] & gpio_mask[pin])) continue;
+
+        int is_pwm = 0;
+        for (int ch = 0; ch < GPIO_PWM_MAX_COUNT; ch++)
+        {
+            if (*pwm_hal[ch].spindle_pin == pin || *pwm_hal[ch].spindle_forward_pin == pin || *pwm_hal[ch].spindle_reverse_pin == pin || *pwm_hal[ch].step_port == pin || *pwm_hal[ch].step_direction_port == pin)
+            {
+                is_pwm = 1;
+            }
+        }
+        if (is_pwm) continue;
 
         if (*gpio_hal[pin] != gpio_hal_prev[pin])
         {
