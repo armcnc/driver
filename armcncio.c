@@ -114,7 +114,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
             return -1;
         }
 
-        // pullUpDnControl(out_pins_array[out_pins_i], PUD_OFF);
+        pullUpDnControl(out_pins_array[out_pins_i], PUD_OFF);
 
         *gpio_hal[out_pins_array[out_pins_i]] = digitalRead(out_pins_array[out_pins_i]) == HIGH ? 1 : 0;
         *gpio_hal_not[out_pins_array[out_pins_i]] = *gpio_hal[out_pins_array[out_pins_i]] ? 0 : 1;
@@ -138,10 +138,10 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
     for (int ch = 0; ch < GPIO_PWM_MAX_COUNT; ch++)
     {
 
-        if(ch == 5)
-        {
-            softPwmCreate(16, 0, 100);
-        }
+        // if(ch == 5)
+        // {
+        //     softPwmCreate(16, 0, 100);
+        // }
 
         PWM_EXPORT_PIN(ch, HAL_IN, bit, enable, "enable", 0);
 
