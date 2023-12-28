@@ -166,7 +166,7 @@ static int spindle_control(int ch)
 {
     if (!pwm_hal_prev[ch].is_init)
     {
-        softPwmCreate((int)(*pwm_hal[ch].spindle_pin), 0, 100);
+        softPwmCreate((int)(*pwm_hal[ch].spindle_pin), 0, 50);
         pwm_hal_prev[ch].is_init = 1;
         return 1;
     }

@@ -69,8 +69,8 @@ static void *softPwmThread (void *arg)
   int pin, mark, space ;
   struct sched_param param ;
 
-  param.sched_priority = sched_get_priority_max (SCHED_FIFO) ;
-  pthread_setschedparam (pthread_self (), SCHED_FIFO, &param) ;
+  param.sched_priority = sched_get_priority_max (SCHED_RR) ;
+  pthread_setschedparam (pthread_self (), SCHED_RR, &param) ;
 
   pin = *((int *)arg) ;
   free (arg) ;
