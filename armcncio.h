@@ -156,9 +156,11 @@ static int step_control(int ch)
         pwm_hal_prev[ch].is_init = 1;
         return 1;
     }
-
-    digitalWrite((int)(*pwm_hal[ch].step_direction_port), *pwm_hal[ch].step_direction_pin ? HIGH : LOW);
-    digitalWrite((int)(*pwm_hal[ch].step_port), *pwm_hal[ch].step_pin ? HIGH : LOW);
+    if ((*pwm_hal[ch].enable))
+    {
+        digitalWrite((int)(*pwm_hal[ch].step_direction_port), *pwm_hal[ch].step_direction_pin ? HIGH : LOW);
+        digitalWrite((int)(*pwm_hal[ch].step_port), *pwm_hal[ch].step_pin ? HIGH : LOW);
+    }
     
     return 0;
 }
