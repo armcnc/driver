@@ -138,10 +138,10 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
     for (int ch = 0; ch < GPIO_PWM_MAX_COUNT; ch++)
     {
 
-        // if(ch == 5)
-        // {
-        //     softPwmCreate(16, 0, 100);
-        // }
+        if(ch == 5)
+        {
+            softPwmCreate(16, 0, 100);
+        }
 
         PWM_EXPORT_PIN(ch, HAL_IN, bit, enable, "enable", 0);
 
