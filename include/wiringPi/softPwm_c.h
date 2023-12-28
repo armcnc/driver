@@ -69,8 +69,8 @@ static void *softPwmThread (void *arg)
   int pin, mark, space ;
   struct sched_param param ;
 
-  param.sched_priority = sched_get_priority_max (SCHED_RR) ;
-  pthread_setschedparam (pthread_self (), SCHED_RR, &param) ;
+  param.sched_priority = sched_get_priority_max (SCHED_FIFO) ;
+  pthread_setschedparam (pthread_self (), SCHED_FIFO, &param) ;
 
   pin = *((int *)arg) ;
   free (arg) ;
@@ -87,11 +87,11 @@ static void *softPwmThread (void *arg)
 
     if (mark != 0)
       digitalWrite (pin, HIGH) ;
-    delayMicroseconds (mark * 1) ;
+    delayMicroseconds (mark * 100) ;
 
     if (space != 0)
       digitalWrite (pin, LOW) ;
-    delayMicroseconds (space * 1) ;
+    delayMicroseconds (space * 100) ;
   }
 
   return NULL ;
