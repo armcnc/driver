@@ -161,6 +161,8 @@ static int step_control(int ch)
 
     if ((*pwm_hal[ch].enable))
     {
+        pullUpDnControl((int)(*pwm_hal[ch].step_direction_port), PUD_OFF);
+        pullUpDnControl((int)(*pwm_hal[ch].step_port), PUD_OFF);
         digitalWrite((int)(*pwm_hal[ch].step_direction_port), *pwm_hal[ch].step_direction_pin ? HIGH : LOW);
         digitalWrite((int)(*pwm_hal[ch].step_port), *pwm_hal[ch].step_pin ? HIGH : LOW);
     }else{
