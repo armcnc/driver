@@ -100,6 +100,8 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
     {
         pinMode(out_pins_array[out_pins_i], OUTPUT);
 
+        if(out_pins_array[out_pins_i] == 16) softPwmCreate(out_pins_array[out_pins_i], 0, 100);
+
         gpio_out_mask[out_pins_array[out_pins_i]] |= gpio_mask[out_pins_array[out_pins_i]];
 
         retval = hal_pin_bit_newf(HAL_IN, &gpio_hal[out_pins_array[out_pins_i]], component_id, "%s.gpio.pin%d-%s", component_name, out_pins_array[out_pins_i], "out");
@@ -137,12 +139,6 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
     
     for (int ch = 0; ch < GPIO_PWM_MAX_COUNT; ch++)
     {
-
-        if(ch == 5)
-        {
-            softPwmCreate(16, 0, 100);
-        }
-
         PWM_EXPORT_PIN(ch, HAL_IN, bit, enable, "enable", 0);
 
         PWM_EXPORT_PIN(ch, HAL_IO, float, frequency_command, "frequency-command", 0.0);
