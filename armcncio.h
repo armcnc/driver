@@ -163,6 +163,9 @@ static int step_control(int ch)
     {
         digitalWrite((int)(*pwm_hal[ch].step_direction_port), *pwm_hal[ch].step_direction_pin ? HIGH : LOW);
         digitalWrite((int)(*pwm_hal[ch].step_port), *pwm_hal[ch].step_pin ? HIGH : LOW);
+    }else{
+        pullUpDnControl((int)(*pwm_hal[ch].step_direction_port), PUD_DOWN);
+        pullUpDnControl((int)(*pwm_hal[ch].step_port), PUD_DOWN);
     }
     
     return 0;
