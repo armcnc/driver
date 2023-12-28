@@ -167,11 +167,10 @@ static int spindle_control(int ch)
 {
     if (!pwm_hal_prev[ch].is_init)
     {
+        pwm_update_data(ch);
         pwm_hal_prev[ch].is_init = 1;
         return 1;
     }
-
-    pwm_update_data(ch);
 
     if (!(*pwm_hal[ch].enable))
     {
