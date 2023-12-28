@@ -114,7 +114,7 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
             return -1;
         }
 
-        pullUpDnControl(out_pins_array[out_pins_i], PUD_OFF);
+        // pullUpDnControl(out_pins_array[out_pins_i], PUD_OFF);
 
         *gpio_hal[out_pins_array[out_pins_i]] = digitalRead(out_pins_array[out_pins_i]) == HIGH ? 1 : 0;
         *gpio_hal_not[out_pins_array[out_pins_i]] = *gpio_hal[out_pins_array[out_pins_i]] ? 0 : 1;
