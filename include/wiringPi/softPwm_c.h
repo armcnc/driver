@@ -87,11 +87,11 @@ static void *softPwmThread (void *arg)
 
     if (mark != 0)
       digitalWrite (pin, HIGH) ;
-    delayMicroseconds (mark * 100) ;
+    delayMicroseconds (mark * 1) ;
 
     if (space != 0)
       digitalWrite (pin, LOW) ;
-    delayMicroseconds (space * 100) ;
+    delayMicroseconds (space * 1) ;
   }
 
   return NULL ;
@@ -143,7 +143,7 @@ int softPwmCreate (int pin, int initialValue, int pwmRange)
   if (passPin == NULL)
     return -1 ;
 
-  //digitalWrite (pin, LOW) ;
+  digitalWrite (pin, LOW) ;
   pinMode      (pin, OUTPUT) ;
 
   marks [pin] = initialValue ;
