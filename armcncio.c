@@ -298,16 +298,16 @@ static void pwm_write(void *arg, long period)
 
     for (int ch = 0; ch < GPIO_PWM_MAX_COUNT; ch++)
     {
-        if (ch == 0 || ch == 1 || ch == 2 || ch == 3 || ch == 4)
+        if (ch == 5)
         {
-            int setp_init = step_control(ch);
-            if (setp_init)
+            int spindle_init = spindle_control(ch);
+            if (spindle_init)
             {
                 continue;
             }
         } else {
-            int spindle_init = spindle_control(ch);
-            if (spindle_init)
+            int setp_init = step_control(ch);
+            if (setp_init)
             {
                 continue;
             }
