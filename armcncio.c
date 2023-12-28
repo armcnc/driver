@@ -191,14 +191,14 @@ static int32_t hal_start(const char *component_name, int32_t component_id)
     }
 
     rtapi_snprintf(name, sizeof(name), "%s.pwm-read", component_name);
-    retval = hal_export_funct(name, pwm_read, 0, 1, 0, component_id);
+    retval = hal_export_funct(name, pwm_read, 0, 0, 0, component_id);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_read failed \n");
         return -1;
     }
 
     rtapi_snprintf(name, sizeof(name), "%s.pwm-write", component_name);
-    retval = hal_export_funct(name, pwm_write, 0, 1, 0, component_id);
+    retval = hal_export_funct(name, pwm_write, 0, 0, 0, component_id);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "[errot]: hal_start() pwm_write failed \n");
         return -1;
